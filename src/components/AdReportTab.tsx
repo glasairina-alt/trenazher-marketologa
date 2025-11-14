@@ -98,6 +98,15 @@ export const AdReportTab = ({
         title: "Отлично! 🎉",
         description: "Все показатели рассчитаны правильно!",
       });
+      
+      // Подсказка о следующем шаге
+      setTimeout(() => {
+        toast({
+          title: "Следующий шаг",
+          description: "Теперь нажмите кнопку 'Отправить отчет клиенту' и сообщите Анне в чате, что отчет готов!",
+          duration: 8000,
+        });
+      }, 1500);
     } else {
       setShowError(true);
       toast({
@@ -114,9 +123,6 @@ export const AdReportTab = ({
       metrics.impressions &&
       metrics.clicks &&
       metrics.leads &&
-      metrics.sales &&
-      metrics.revenue &&
-      calculated.ctr &&
       isCorrect
     );
   };
