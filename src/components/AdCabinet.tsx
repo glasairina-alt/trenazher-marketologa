@@ -15,7 +15,7 @@ interface AdCabinetProps {
   setCurrentStage: (stage: StageType) => void;
   isCabinetLocked: boolean;
   uploadedCreativeUrl: string;
-  adData: { headline: string; text: string };
+  adData?: { headline: string; text: string };
   setAdData: (data: { headline: string; text: string }) => void;
 }
 
@@ -24,7 +24,7 @@ export const AdCabinet = ({
   setCurrentStage,
   isCabinetLocked,
   uploadedCreativeUrl,
-  adData,
+  adData = { headline: "", text: "" },
   setAdData,
 }: AdCabinetProps) => {
   const { toast } = useToast();
@@ -34,15 +34,15 @@ export const AdCabinet = ({
   const [campaignLaunched, setCampaignLaunched] = useState(false);
 
   const canLaunch =
-    adData.headline.trim() !== "" &&
-    adData.text.trim() !== "" &&
+    adData?.headline?.trim() !== "" &&
+    adData?.text?.trim() !== "" &&
     uploadedCreativeUrl !== "";
 
   const handleLaunch = () => {
     if (!canLaunch) {
       let errorMsg = "Вы не настроили рекламное объявление. ";
-      if (adData.headline.trim() === "") errorMsg += "Заполните Заголовок. ";
-      if (adData.text.trim() === "") errorMsg += "Заполните Текст. ";
+      if (!adData?.headline?.trim()) errorMsg += "Заполните Заголовок. ";
+      if (!adData?.text?.trim()) errorMsg += "Заполните Текст. ";
       if (uploadedCreativeUrl === "")
         errorMsg += "Дождитесь согласования креатива от клиента.";
 
@@ -135,7 +135,7 @@ export const AdCabinet = ({
               <Label htmlFor="headline">Заголовок</Label>
               <Input
                 id="headline"
-                value={adData.headline}
+                value={adData?.headline || ""}
                 onChange={(e) =>
                   setAdData({ ...adData, headline: e.target.value })
                 }
@@ -143,7 +143,7 @@ export const AdCabinet = ({
                 maxLength={60}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {adData.headline.length}/60 символов
+                {(adData?.headline || "").length}/60 символов
               </p>
             </div>
 
@@ -151,14 +151,14 @@ export const AdCabinet = ({
               <Label htmlFor="text">Текст объявления</Label>
               <Textarea
                 id="text"
-                value={adData.text}
+                value={adData?.text || ""}
                 onChange={(e) => setAdData({ ...adData, text: e.target.value })}
                 placeholder="Введите текст объявления..."
                 rows={3}
                 maxLength={220}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {adData.text.length}/220 символов
+                {(adData?.text || "").length}/220 символов
               </p>
             </div>
 
@@ -179,10 +179,10 @@ export const AdCabinet = ({
                 </div>
                 <div className="p-3">
                   <h4 className="font-semibold text-sm line-clamp-2 mb-1">
-                    {adData.headline || "Заголовок объявления"}
+                    {adData?.headline || "Заголовок объявления"}
                   </h4>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                    {adData.text || "Текст вашего объявления появится здесь..."}
+                    {adData?.text || "Текст вашего объявления появится здесь..."}
                   </p>
                   <button className="w-full bg-primary text-primary-foreground rounded py-1.5 text-xs font-medium flex items-center justify-center gap-1">
                     Перейти
