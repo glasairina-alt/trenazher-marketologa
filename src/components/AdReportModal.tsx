@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,21 +10,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import type { StageType } from "@/types/stages";
 
 interface AdReportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  currentStage: StageType;
+  setCurrentStage: (stage: StageType) => void;
 }
 
-export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
+export const AdReportModal = ({
+  open,
+  onOpenChange,
+  currentStage,
+  setCurrentStage,
+}: AdReportModalProps) => {
   const { toast } = useToast();
   const [metrics, setMetrics] = useState({
     spend: "15000",
     impressions: "110867",
     clicks: "410",
     leads: "23",
-    sales: "",
-    revenue: "",
+    sales: "20",
+    revenue: "55300",
   });
 
   const [calculated, setCalculated] = useState({
@@ -37,6 +45,17 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
     avgCheck: "",
     romi: "",
   });
+
+  useEffect(() => {
+    if (open && (currentStage === "STAGE_7_REPORT_DATA_2" || currentStage === "STAGE_8_REPORT_SUBMIT")) {
+      // Автоматически устанавливаем данные о продажах
+      setMetrics(prev => ({
+        ...prev,
+        sales: "20",
+        revenue: "55300"
+      }));
+    }
+  }, [open, currentStage]);
 
   const handleCalculate = () => {
     const spend = parseFloat(metrics.spend);
@@ -79,12 +98,41 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
     });
   };
 
+  const allFieldsFilled = () => {
+    return (
+      metrics.spend &&
+      metrics.impressions &&
+      metrics.clicks &&
+      metrics.leads &&
+      metrics.sales &&
+      metrics.revenue &&
+      calculated.ctr
+    );
+  };
+
   const handleSendReport = () => {
+    if (!allFieldsFilled()) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все поля и рассчитайте метрики",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
       title: "Отчет отправлен",
       description: "Отчет успешно отправлен клиенту",
     });
     onOpenChange(false);
+
+    if (currentStage === "STAGE_7_REPORT_DATA_2") {
+      toast({
+        title: "Задача",
+        description: "Обязательно оповестите Анну, что отчет готов.",
+      });
+      setCurrentStage("STAGE_8_REPORT_SUBMIT");
+    }
   };
 
   return (
@@ -137,25 +185,25 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
               />
             </div>
             <div>
-              <Label>Продажи (запросите у клиента)</Label>
+              <Label>Продажи</Label>
               <Input
                 value={metrics.sales}
                 onChange={(e) =>
                   setMetrics({ ...metrics, sales: e.target.value })
                 }
                 type="number"
-                placeholder="0"
+                placeholder="Запросите у клиента"
               />
             </div>
             <div>
-              <Label>Доход (руб., запросите у клиента)</Label>
+              <Label>Доход (руб.)</Label>
               <Input
                 value={metrics.revenue}
                 onChange={(e) =>
                   setMetrics({ ...metrics, revenue: e.target.value })
                 }
                 type="number"
-                placeholder="0"
+                placeholder="Запросите у клиента"
               />
             </div>
           </div>
@@ -228,8 +276,8 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
                   <strong>CPC</strong> - стоимость клика (расход / клики)
                 </p>
                 <p>
-                  <strong>CPM</strong> - стоимость 1000 показов (расход / показы
-                  × 1000)
+                  <strong>CPM</strong> - стоимость 1000 показов (расход /
+                  показы × 1000)
                 </p>
                 <p>
                   <strong>CR1</strong> - конверсия в заявку (заявки / клики ×
@@ -239,12 +287,12 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
                   <strong>CPL</strong> - стоимость заявки (расход / заявки)
                 </p>
                 <p>
-                  <strong>CR2</strong> - конверсия в продажу (продажи / заявки ×
-                  100)
+                  <strong>CR2</strong> - конверсия в продажу (продажи / заявки
+                  × 100)
                 </p>
                 <p>
-                  <strong>ROMI</strong> - возврат инвестиций ((доход - расход) /
-                  расход × 100)
+                  <strong>ROMI</strong> - возврат инвестиций ((доход - расход)
+                  / расход × 100)
                 </p>
               </div>
             </div>
@@ -255,9 +303,9 @@ export const AdReportModal = ({ open, onOpenChange }: AdReportModalProps) => {
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Закрыть
           </Button>
-          {calculated.ctr && (
-            <Button onClick={handleSendReport}>Отправить отчет</Button>
-          )}
+          <Button onClick={handleSendReport} disabled={!allFieldsFilled()}>
+            Отправить отчет
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
