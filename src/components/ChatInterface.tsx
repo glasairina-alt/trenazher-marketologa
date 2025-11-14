@@ -14,6 +14,7 @@ interface ChatInterfaceProps {
   setIsCabinetLocked: (locked: boolean) => void;
   setUploadedCreativeUrl: (url: string) => void;
   adData: { headline: string; text: string };
+  onAutoTriggerStage?: () => void;
 }
 
 export const ChatInterface = ({
@@ -22,6 +23,7 @@ export const ChatInterface = ({
   setIsCabinetLocked,
   setUploadedCreativeUrl,
   adData,
+  onAutoTriggerStage,
 }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -43,23 +45,27 @@ export const ChatInterface = ({
     }
   }, [messages, isTyping]);
 
-  // Автоматический триггер для стадий, которые должны запускаться без сообщения пользователя
+  // Автоматический триггер после отправки отчета
   useEffect(() => {
-    const triggerStageLogic = async () => {
-      if (currentStage === "STAGE_8_REPORT_SUBMIT" && messages.length > 0 && 
-          messages[messages.length - 1].type !== "bot" &&
-          !messages.some(m => m.text.includes("Прошло 3 часа"))) {
-        await sleep(2000);
-        addMessage("**Прошло 3 часа. Клиент не отвечает.**", "system");
-        await sleep(1000);
-        addMessage(
-          "**Подсказка:** Напомните Анне в чате, что вы отправили отчет и ждете ее реакции.",
-          "system-alert"
+    const triggerReportStage = async () => {
+      if (currentStage === "STAGE_8_REPORT_SUBMIT") {
+        const hasTriggered = messages.some(m => 
+          m.text.includes("Прошло 3 часа. Клиент не отвечает")
         );
+        
+        if (!hasTriggered) {
+          await sleep(2000);
+          addMessage("**Прошло 3 часа. Клиент не отвечает.**", "system");
+          await sleep(1000);
+          addMessage(
+            "**Подсказка:** Напомните Анне в чате, что вы отправили отчет и ждете ее реакции.",
+            "system-alert"
+          );
+        }
       }
     };
     
-    triggerStageLogic();
+    triggerReportStage();
   }, [currentStage]);
 
   const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
