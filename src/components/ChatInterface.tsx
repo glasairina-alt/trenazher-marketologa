@@ -14,6 +14,7 @@ interface ChatInterfaceProps {
   setIsCabinetLocked: (locked: boolean) => void;
   setUploadedCreativeUrl: (url: string) => void;
   adData: { headline: string; text: string };
+  isActive: boolean;
   onAutoTriggerStage?: () => void;
 }
 
@@ -23,6 +24,7 @@ export const ChatInterface = ({
   setIsCabinetLocked,
   setUploadedCreativeUrl,
   adData,
+  isActive,
   onAutoTriggerStage,
 }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -196,7 +198,7 @@ export const ChatInterface = ({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((message) => (
+          {(isActive ? messages : messages.filter(m => m.type === "bot" || m.type === "bot-image").slice(-1)).map((message) => (
             <div
               key={message.id}
               className={cn(
