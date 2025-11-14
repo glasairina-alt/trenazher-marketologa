@@ -15,6 +15,8 @@ interface ChatInterfaceProps {
   setUploadedCreativeUrl: (url: string) => void;
   adData: { headline: string; text: string };
   isActive: boolean;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   onAutoTriggerStage?: () => void;
 }
 
@@ -25,16 +27,10 @@ export const ChatInterface = ({
   setUploadedCreativeUrl,
   adData,
   isActive,
+  messages,
+  setMessages,
   onAutoTriggerStage,
 }: ChatInterfaceProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      type: "bot",
-      text: "Привет! Введите /start чтобы начать кейс.",
-      timestamp: new Date(),
-    },
-  ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAttachEnabled, setFileAttachEnabled] = useState(false);

@@ -5,7 +5,7 @@ import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
 import { MessageCircle, TrendingUp, FileText } from "lucide-react";
-import type { StageType } from "@/types/stages";
+import type { StageType, Message } from "@/types/stages";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -16,6 +16,14 @@ const Index = () => {
     headline: "",
     text: "",
   });
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      type: "bot",
+      text: "Привет! Введите /start чтобы начать кейс.",
+      timestamp: new Date(),
+    },
+  ]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,7 +73,7 @@ const Index = () => {
             </Tooltip>
           </TabsList>
 
-          <TabsContent value="chat" className="mt-6" forceMount>
+          <TabsContent value="chat" className="mt-6">
             <div className="max-w-4xl mx-auto">
               <ChatInterface
                 currentStage={currentStage}
@@ -74,6 +82,8 @@ const Index = () => {
                 setUploadedCreativeUrl={setUploadedCreativeUrl}
                 adData={adData}
                 isActive={activeTab === "chat"}
+                messages={messages}
+                setMessages={setMessages}
               />
             </div>
           </TabsContent>
