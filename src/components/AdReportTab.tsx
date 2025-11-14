@@ -78,53 +78,18 @@ export const AdReportTab = ({
     );
   };
 
-  const handleCalculate = () => {
-    const spend = parseFloat(metrics.spend);
-    const impressions = parseFloat(metrics.impressions);
-    const clicks = parseFloat(metrics.clicks);
-    const leads = parseFloat(metrics.leads);
-    const sales = parseFloat(metrics.sales || "0");
-    const revenue = parseFloat(metrics.revenue || "0");
-
-    if (!spend || !impressions || !clicks || !leads) {
+  const handleCheckAnswers = () => {
+    if (!calculated.ctr || !calculated.cpc || !calculated.cpm || !calculated.cr1 || 
+        !calculated.cpl || !calculated.cr2 || !calculated.avgCheck || !calculated.romi) {
       toast({
         title: "Ошибка",
-        description: "Заполните все обязательные поля",
+        description: "Заполните все рассчитанные показатели",
         variant: "destructive",
       });
       return;
     }
 
-    const ctr = ((clicks / impressions) * 100).toFixed(2);
-    const cpc = (spend / clicks).toFixed(2);
-    const cpm = ((spend / impressions) * 1000).toFixed(2);
-    const cr1 = ((leads / clicks) * 100).toFixed(2);
-    const cpl = (spend / leads).toFixed(2);
-
-    let cr2 = "0";
-    let avgCheck = "0";
-    let romi = "0";
-
-    if (sales > 0 && revenue > 0) {
-      cr2 = ((sales / leads) * 100).toFixed(2);
-      avgCheck = (revenue / sales).toFixed(2);
-      romi = (((revenue - spend) / spend) * 100).toFixed(2);
-    }
-
-    const newCalculated = {
-      ctr,
-      cpc,
-      cpm,
-      cr1,
-      cpl,
-      cr2,
-      avgCheck,
-      romi,
-    };
-
-    setCalculated(newCalculated);
-
-    const correct = checkAnswers(newCalculated);
+    const correct = checkAnswers(calculated);
     setIsCorrect(correct);
     
     if (correct) {
@@ -270,8 +235,8 @@ export const AdReportTab = ({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Рассчитанные показатели</h3>
-              <Button onClick={handleCalculate}>
-                Рассчитать показатели
+              <Button onClick={handleCheckAnswers}>
+                Проверить расчеты
               </Button>
             </div>
             
@@ -285,35 +250,75 @@ export const AdReportTab = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>CTR (%)</Label>
-                <Input value={calculated.ctr} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.ctr} 
+                  onChange={(e) => setCalculated({ ...calculated, ctr: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>CPC (₽)</Label>
-                <Input value={calculated.cpc} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.cpc} 
+                  onChange={(e) => setCalculated({ ...calculated, cpc: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>CPM (₽)</Label>
-                <Input value={calculated.cpm} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.cpm} 
+                  onChange={(e) => setCalculated({ ...calculated, cpm: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>CR1 (%) - Клик → Лид</Label>
-                <Input value={calculated.cr1} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.cr1} 
+                  onChange={(e) => setCalculated({ ...calculated, cr1: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>CPL (₽)</Label>
-                <Input value={calculated.cpl} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.cpl} 
+                  onChange={(e) => setCalculated({ ...calculated, cpl: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>CR2 (%) - Лид → Продажа</Label>
-                <Input value={calculated.cr2} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.cr2} 
+                  onChange={(e) => setCalculated({ ...calculated, cr2: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>Средний чек (₽)</Label>
-                <Input value={calculated.avgCheck} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.avgCheck} 
+                  onChange={(e) => setCalculated({ ...calculated, avgCheck: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
               <div>
                 <Label>ROMI (%)</Label>
-                <Input value={calculated.romi} readOnly placeholder="0.00" />
+                <Input 
+                  type="number"
+                  value={calculated.romi} 
+                  onChange={(e) => setCalculated({ ...calculated, romi: e.target.value })}
+                  placeholder="0.00" 
+                />
               </div>
             </div>
           </div>
