@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
-import { TrendingUp } from "lucide-react";
+import { MessageCircle, TrendingUp } from "lucide-react";
 import type { StageType } from "@/types/stages";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState("chat");
   const [currentStage, setCurrentStage] = useState<StageType>("INITIAL");
   const [isCabinetLocked, setIsCabinetLocked] = useState(true);
   const [uploadedCreativeUrl, setUploadedCreativeUrl] = useState("");
@@ -32,28 +34,43 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div className="lg:sticky lg:top-24 h-fit">
-            <ChatInterface
-              currentStage={currentStage}
-              setCurrentStage={setCurrentStage}
-              setIsCabinetLocked={setIsCabinetLocked}
-              setUploadedCreativeUrl={setUploadedCreativeUrl}
-              adData={adData}
-            />
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="chat" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              Чат с клиентом
+            </TabsTrigger>
+            <TabsTrigger value="cabinet" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Рекламный кабинет
+            </TabsTrigger>
+          </TabsList>
 
-          <div>
-            <AdCabinet
-              currentStage={currentStage}
-              setCurrentStage={setCurrentStage}
-              isCabinetLocked={isCabinetLocked}
-              uploadedCreativeUrl={uploadedCreativeUrl}
-              adData={adData}
-              setAdData={setAdData}
-            />
-          </div>
-        </div>
+          <TabsContent value="chat" className="mt-6">
+            <div className="max-w-4xl mx-auto">
+              <ChatInterface
+                currentStage={currentStage}
+                setCurrentStage={setCurrentStage}
+                setIsCabinetLocked={setIsCabinetLocked}
+                setUploadedCreativeUrl={setUploadedCreativeUrl}
+                adData={adData}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="cabinet" className="mt-6">
+            <div className="max-w-4xl mx-auto">
+              <AdCabinet
+                currentStage={currentStage}
+                setCurrentStage={setCurrentStage}
+                isCabinetLocked={isCabinetLocked}
+                uploadedCreativeUrl={uploadedCreativeUrl}
+                adData={adData}
+                setAdData={setAdData}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <footer className="border-t border-border bg-card mt-12">
