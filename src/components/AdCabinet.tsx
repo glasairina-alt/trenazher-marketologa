@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Lock, TrendingUp, ExternalLink } from "lucide-react";
+import { Lock } from "lucide-react";
 import { AdReportModal } from "@/components/AdReportModal";
 import { useToast } from "@/hooks/use-toast";
 import type { StageType } from "@/types/stages";
@@ -83,9 +83,9 @@ export const AdCabinet = ({
   }, [currentStage]);
 
   return (
-    <Card className="relative">
+    <Card className="relative overflow-hidden">
       {isCabinetLocked && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
           <div className="text-center">
             <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <p className="text-lg font-semibold text-foreground">
@@ -98,38 +98,78 @@ export const AdCabinet = ({
         </div>
       )}
 
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          Рекламный кабинет
-        </CardTitle>
-        <Badge variant="outline">Имитатор VK Реклама</Badge>
+      <CardHeader className="bg-gradient-to-r from-[#4680C2] to-[#5181B8] text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <svg className="h-6 w-6" viewBox="0 0 48 48" fill="currentColor">
+                <path d="M24 4.5C12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25 35.3 4.5 24 4.5zm6.7 24.7c.4.4.4 1 0 1.4l-1.4 1.4c-.4.4-1 .4-1.4 0L24 28.1l-3.9 3.9c-.4.4-1 .4-1.4 0l-1.4-1.4c-.4-.4-.4-1 0-1.4l3.9-3.9-3.9-3.9c-.4-.4-.4-1 0-1.4l1.4-1.4c.4-.4 1-.4 1.4 0l3.9 3.9 3.9-3.9c.4-.4 1-.4 1.4 0l1.4 1.4c.4.4.4 1 0 1.4L28.1 24l2.6 5.2z"/>
+              </svg>
+              Кабинет VK Реклама
+            </CardTitle>
+            <p className="text-sm text-white/90 mt-1">Управление рекламными кампаниями</p>
+          </div>
+          <Badge className="bg-white/20 text-white border-white/30">Симулятор</Badge>
+        </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 bg-[#F0F2F5]">
         {/* Step 1: Campaign Settings */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">1. Настройка кампании</h3>
-          <div className="text-sm text-muted-foreground">
-            <p>✓ Тип: Сайт</p>
-            <p>✓ Формат: Баннерная реклама</p>
+        <div className="bg-white rounded-lg p-4 border border-[#E7E8EC]">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-[#2C2D2E]">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#4680C2] text-white text-sm font-bold">1</div>
+            Настройка кампании
+          </h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-[#626D7A]">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <span>Тип: Сайт</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#626D7A]">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <span>Формат: Баннерная реклама</span>
+            </div>
           </div>
         </div>
 
         {/* Step 2: Audience */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">
-            2. Настройка Аудитории (г. Калуга)
+        <div className="bg-white rounded-lg p-4 border border-[#E7E8EC]">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-[#2C2D2E]">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#4680C2] text-white text-sm font-bold">2</div>
+            Настройка Аудитории
           </h3>
-          <div className="text-sm text-muted-foreground mb-2">
-            <p>✓ Возраст: 18-24, 25-34, 35-45</p>
-            <p>✓ Интересы: Отношения, Семья, Подарки и Праздники</p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-[#626D7A]">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <span>Город: Калуга</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#626D7A]">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <span>Возраст: 18-24, 25-34, 35-45</span>
+            </div>
+            <div className="flex items-center gap-2 text-[#626D7A]">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <span>Интересы: Отношения, Семья, Подарки и Праздники</span>
+            </div>
           </div>
         </div>
 
         {/* Step 3: Ad Creation */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">3. Создание Объявления</h3>
+        <div className="bg-white rounded-lg p-4 border border-[#E7E8EC]">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-[#2C2D2E]">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#4680C2] text-white text-sm font-bold">3</div>
+            Создание Объявления
+          </h3>
           <div className="space-y-3">
             <div>
               <Label htmlFor="headline">Заголовок</Label>
@@ -163,10 +203,10 @@ export const AdCabinet = ({
             </div>
 
             {/* Preview */}
-            <div className="border rounded-lg p-4 bg-muted/30">
-              <h4 className="text-sm font-semibold mb-2">Превью объявления:</h4>
-              <div className="bg-card border rounded-lg overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <div className="border-2 border-[#E7E8EC] rounded-lg p-3 bg-[#F7F8FA]">
+              <h4 className="text-xs font-semibold mb-2 text-[#626D7A] uppercase">Превью объявления</h4>
+              <div className="bg-white border border-[#E7E8EC] rounded-lg overflow-hidden shadow-sm">
+                <div className="aspect-video bg-gradient-to-br from-[#E1E8ED] to-[#C8D4DE] flex items-center justify-center relative">
                   {uploadedCreativeUrl ? (
                     <img
                       src={uploadedCreativeUrl}
@@ -174,19 +214,21 @@ export const AdCabinet = ({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-4xl opacity-30">🌹</div>
+                    <div className="text-5xl opacity-40">🌹</div>
                   )}
+                  <div className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">
+                    Реклама
+                  </div>
                 </div>
                 <div className="p-3">
-                  <h4 className="font-semibold text-sm line-clamp-2 mb-1">
+                  <h4 className="font-semibold text-sm line-clamp-2 mb-1 text-[#2C2D2E]">
                     {adData?.headline || "Заголовок объявления"}
                   </h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                  <p className="text-xs text-[#626D7A] line-clamp-2 mb-3">
                     {adData?.text || "Текст вашего объявления появится здесь..."}
                   </p>
-                  <button className="w-full bg-primary text-primary-foreground rounded py-1.5 text-xs font-medium flex items-center justify-center gap-1">
+                  <button className="w-full bg-[#4680C2] hover:bg-[#5181B8] text-white rounded py-2 text-xs font-medium transition-colors">
                     Перейти
-                    <ExternalLink className="h-3 w-3" />
                   </button>
                 </div>
               </div>
@@ -195,40 +237,45 @@ export const AdCabinet = ({
         </div>
 
         {/* Step 4: Budget & Launch */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">4. Бюджет и Запуск</h3>
+        <div className="bg-white rounded-lg p-4 border border-[#E7E8EC]">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-[#2C2D2E]">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#4680C2] text-white text-sm font-bold">4</div>
+            Бюджет и Запуск
+          </h3>
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="p-3 border rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Общий бюджет</p>
-              <p className="text-lg font-bold">{budget.toLocaleString()} ₽</p>
+            <div className="p-3 bg-[#F7F8FA] border border-[#E7E8EC] rounded-lg text-center">
+              <p className="text-xs text-[#626D7A] mb-1">Общий бюджет</p>
+              <p className="text-lg font-bold text-[#2C2D2E]">{budget.toLocaleString()} ₽</p>
             </div>
-            <div className="p-3 border rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Остаток</p>
-              <p className="text-lg font-bold text-success">0 ₽</p>
+            <div className="p-3 bg-[#F7F8FA] border border-[#E7E8EC] rounded-lg text-center">
+              <p className="text-xs text-[#626D7A] mb-1">Остаток</p>
+              <p className="text-lg font-bold text-green-600">0 ₽</p>
             </div>
-            <div className="p-3 border rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Конверсии</p>
-              <p className="text-lg font-bold">{conversions}</p>
+            <div className="p-3 bg-[#F7F8FA] border border-[#E7E8EC] rounded-lg text-center">
+              <p className="text-xs text-[#626D7A] mb-1">Конверсии</p>
+              <p className="text-lg font-bold text-[#4680C2]">{conversions}</p>
             </div>
           </div>
 
           <Button
             onClick={handleLaunch}
             disabled={!canLaunch || campaignLaunched}
-            className="w-full"
+            className="w-full bg-[#4680C2] hover:bg-[#5181B8] text-white"
           >
-            {campaignLaunched ? "Кампания запущена" : "Запустить кампанию"}
+            {campaignLaunched ? "✓ Кампания запущена" : "Запустить кампанию"}
           </Button>
         </div>
 
         {/* Step 5: Reports */}
         {campaignLaunched && (
-          <div>
-            <h3 className="text-lg font-semibold mb-3">5. Отчеты</h3>
+          <div className="bg-white rounded-lg p-4 border border-[#E7E8EC]">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-[#2C2D2E]">
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#4680C2] text-white text-sm font-bold">5</div>
+              Отчеты
+            </h3>
             <Button
               onClick={() => setShowReport(true)}
-              variant="outline"
-              className="w-full"
+              className="w-full bg-[#5181B8] hover:bg-[#4680C2] text-white"
             >
               Сформировать отчет
             </Button>

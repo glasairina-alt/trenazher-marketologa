@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Paperclip, MessageCircle, Bot, User } from "lucide-react";
+import { Send, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
@@ -157,10 +157,12 @@ export const ChatInterface = ({
     <Card className="flex flex-col h-[600px]">
       <div className="border-b border-border bg-card p-4 rounded-t-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+              А
+            </div>
             <div>
-              <h2 className="font-semibold text-foreground">Анна (Клиент)</h2>
+              <h2 className="font-semibold text-foreground">Чат с клиентом</h2>
               <span className="text-xs text-success">Online</span>
             </div>
           </div>
@@ -182,19 +184,15 @@ export const ChatInterface = ({
               {message.type !== "system" && message.type !== "system-alert" && (
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-bold",
-                    message.type === "user" && "bg-chat-user",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-bold text-lg",
+                    message.type === "user" && "bg-gradient-to-br from-green-500 to-emerald-600",
                     (message.type === "bot" ||
                       message.type === "bot-image" ||
                       message.type === "user-image") &&
-                      "bg-chat-bot"
+                      "bg-gradient-to-br from-purple-500 to-pink-500"
                   )}
                 >
-                  {message.type === "user" ? (
-                    <User className="h-5 w-5" />
-                  ) : (
-                    <Bot className="h-5 w-5" />
-                  )}
+                  {message.type === "user" ? "Я" : "А"}
                 </div>
               )}
 
@@ -244,8 +242,8 @@ export const ChatInterface = ({
 
           {isTyping && (
             <div className="flex gap-3 items-start">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-chat-bot text-white">
-                <Bot className="h-5 w-5" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
+                А
               </div>
               <div className="rounded-lg bg-secondary px-4 py-2 rounded-bl-sm">
                 <div className="flex gap-1">
