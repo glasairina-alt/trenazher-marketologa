@@ -1,0 +1,24 @@
+export type StageType =
+  | "INITIAL"
+  | "STAGE_1_INITIAL_REPLY"
+  | "STAGE_1_WAIT_FOR_REPLY"
+  | "STAGE_2_CREATIVE_1"
+  | "STAGE_2_CREATIVE_2"
+  | "STAGE_3_LAUNCH"
+  | "STAGE_3_LAUNCH_WAIT_USER"
+  | "STAGE_4_PANIC"
+  | "STAGE_5_REPORT"
+  | "STAGE_6_REPORT_WAIT"
+  | "STAGE_7_REPORT_DATA"
+  | "STAGE_7_REPORT_DATA_2"
+  | "STAGE_8_REPORT_SUBMIT"
+  | "STAGE_9_EXPLAIN"
+  | "FINAL";
+
+export interface Message {
+  id: number;
+  type: "user" | "bot" | "system" | "system-alert" | "bot-image" | "user-image";
+  text: string;
+  imageUrl?: string;
+  timestamp: Date;
+}

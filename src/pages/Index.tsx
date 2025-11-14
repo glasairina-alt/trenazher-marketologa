@@ -1,46 +1,59 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
-import { MessageCircle, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
+import type { StageType } from "@/types/stages";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("chat");
+  const [currentStage, setCurrentStage] = useState<StageType>("INITIAL");
+  const [isCabinetLocked, setIsCabinetLocked] = useState(true);
+  const [uploadedCreativeUrl, setUploadedCreativeUrl] = useState("");
+  const [adData, setAdData] = useState({
+    headline: "",
+    text: "",
+  });
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <TrendingUp className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">
-              Тренажер Маркетолога
-            </h1>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                Тренажер Маркетолога
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Кейс: «Срочный запуск 14 февраля»
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-            <TabsTrigger value="chat" className="flex items-center gap-2">
-              <MessageCircle className="h-4 w-4" />
-              Чат с наставником
-            </TabsTrigger>
-            <TabsTrigger value="cabinet" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Рекламный кабинет
-            </TabsTrigger>
-          </TabsList>
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="lg:sticky lg:top-24 h-fit">
+            <ChatInterface
+              currentStage={currentStage}
+              setCurrentStage={setCurrentStage}
+              setIsCabinetLocked={setIsCabinetLocked}
+              setUploadedCreativeUrl={setUploadedCreativeUrl}
+              adData={adData}
+            />
+          </div>
 
-          <TabsContent value="chat" className="mt-6">
-            <ChatInterface />
-          </TabsContent>
-
-          <TabsContent value="cabinet" className="mt-6">
-            <AdCabinet />
-          </TabsContent>
-        </Tabs>
+          <div>
+            <AdCabinet
+              currentStage={currentStage}
+              setCurrentStage={setCurrentStage}
+              isCabinetLocked={isCabinetLocked}
+              uploadedCreativeUrl={uploadedCreativeUrl}
+              adData={adData}
+              setAdData={setAdData}
+            />
+          </div>
+        </div>
       </main>
 
       <footer className="border-t border-border bg-card mt-12">

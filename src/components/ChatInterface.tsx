@@ -3,29 +3,37 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Paperclip, MessageCircle, Bot, AlertCircle } from "lucide-react";
+import { Send, Paperclip, MessageCircle, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Message, StageType } from "@/types/stages";
+import { handleStageLogic } from "@/utils/stageHandlers";
 
-interface Message {
-  id: number;
-  type: "user" | "bot" | "system";
-  text: string;
-  timestamp: Date;
+interface ChatInterfaceProps {
+  currentStage: StageType;
+  setCurrentStage: (stage: StageType) => void;
+  setIsCabinetLocked: (locked: boolean) => void;
+  setUploadedCreativeUrl: (url: string) => void;
+  adData: { headline: string; text: string };
 }
 
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    type: "bot",
-    text: "Привет! Как я могу помочь вам сегодня?",
-    timestamp: new Date(),
-  },
-];
-
-export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export const ChatInterface = ({
+  currentStage,
+  setCurrentStage,
+  setIsCabinetLocked,
+  setUploadedCreativeUrl,
+  adData,
+}: ChatInterfaceProps) => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      type: "bot",
+      text: "Привет! Введите /start чтобы начать кейс.",
+      timestamp: new Date(),
+    },
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [fileAttachEnabled, setFileAttachEnabled] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,54 +43,107 @@ export const ChatInterface = () => {
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now(),
-      type: "user",
-      text: inputValue,
+  const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
+    const newMessage: Message = {
+      id: Date.now() + Math.random(),
+      type,
+      text,
+      imageUrl,
       timestamp: new Date(),
     };
+    setMessages((prev) => [...prev, newMessage]);
+  };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const showTyping = async () => {
     setIsTyping(true);
-
-    // Симуляция ответа бота
-    setTimeout(() => {
-      const botResponse = generateBotResponse(inputValue);
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        type: "bot",
-        text: botResponse,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-      setIsTyping(false);
-    }, 1500);
   };
 
-  const generateBotResponse = (userInput: string): string => {
-    const lowerInput = userInput.toLowerCase();
-    
-    if (lowerInput.includes("тренд") || lowerInput.includes("маркетинг")) {
-      return "В этом месяце популярны следующие направления: персонализация контента, видеомаркетинг и активное взаимодействие через социальные сети. Какая тема вас интересует больше всего?";
-    }
-    
-    if (lowerInput.includes("реклам") || lowerInput.includes("кампани")) {
-      return "Для создания эффективной рекламной кампании рекомендую перейти в раздел 'Рекламный кабинет'. Там вы сможете попрактиковаться в настройке таргетинга и создании объявлений для VK.";
-    }
-    
-    if (lowerInput.includes("метрик") || lowerInput.includes("аналитик")) {
-      return "Основные метрики для оценки эффективности рекламы: CTR (кликабельность), CPC (стоимость клика), CPM (стоимость 1000 показов), CR (конверсия), CPL (стоимость лида) и ROMI (возврат инвестиций в маркетинг).";
-    }
-    
-    return "Спасибо за ваш вопрос! Я помогу вам разобраться в маркетинге. Можете задать более конкретный вопрос о трендах, рекламных кампаниях или метриках эффективности.";
+  const hideTyping = async () => {
+    setIsTyping(false);
   };
 
-  const handleFileClick = () => {
-    fileInputRef.current?.click();
+  const handleSend = async () => {
+    if (!inputValue.trim() || isTyping) return;
+
+    const userInput = inputValue.trim();
+    addMessage(userInput, "user");
+    setInputValue("");
+
+    // Команда /start
+    if (userInput.toLowerCase() === "/start") {
+      setMessages([]);
+      addMessage(
+        "**Кейс:** Клиент 'Анна' (магазин цветов) присылает вам сообщение 12 февраля.",
+        "system"
+      );
+      await sleep(1000);
+      addMessage(
+        "Здравствуйте! Мне посоветовали вас. У нас скоро 14 февраля, надо срочно запустить рекламу — праздник же! 💐 Бюджет… ну, тысяч 15 максимум. Жду от вас креативы и запуск завтра! Ах да — сайта нет, только социальная сеть ВК, но я ей давно не занималась.",
+        "bot"
+      );
+      await sleep(500);
+      addMessage("**Задача:** Ответьте клиенту.", "system-alert");
+      setCurrentStage("STAGE_1_INITIAL_REPLY");
+      setIsCabinetLocked(true);
+      setUploadedCreativeUrl("");
+      return;
+    }
+
+    // Обработка остальных этапов
+    await handleStageLogic({
+      currentStage,
+      userInput,
+      setCurrentStage,
+      addMessage,
+      setFileAttachEnabled,
+      setIsCabinetLocked,
+      showTyping,
+      hideTyping,
+      sleep,
+    });
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      addMessage("Пожалуйста, загрузите изображение", "system-alert");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imageUrl = e.target.result as string;
+      addMessage("", "user-image", imageUrl);
+      fileInputRef.current!.value = "";
+
+      await sleep(500);
+      await showTyping();
+      await sleep(1000);
+      await hideTyping();
+
+      if (currentStage === "STAGE_2_CREATIVE_1") {
+        addMessage("Мне не нравится ваш креатив. Переделайте его.", "bot");
+        await sleep(500);
+        addMessage(
+          "**Задача:** Вам нужно переделывать креатив и прислать его снова.",
+          "system-alert"
+        );
+        setCurrentStage("STAGE_2_CREATIVE_2");
+      } else if (currentStage === "STAGE_2_CREATIVE_2") {
+        setUploadedCreativeUrl(imageUrl);
+        addMessage("Да, этот мне нравится. Запускайте рекламу.", "bot");
+        setFileAttachEnabled(false);
+        setCurrentStage("STAGE_3_LAUNCH");
+        setIsCabinetLocked(false);
+        await sleep(1000);
+        addMessage(
+          "**Подсказка:** Вам нужно зайти в рекламный кабинет (справа) и нажать кнопку \"Запустить кампанию\".",
+          "system-alert"
+        );
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -93,59 +154,90 @@ export const ChatInterface = () => {
   };
 
   return (
-    <Card className="mx-auto max-w-4xl">
-      <div className="border-b border-border bg-card p-4">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-primary" />
-          <h2 className="font-semibold text-foreground">Чат с AI-наставником</h2>
+    <Card className="flex flex-col h-[600px]">
+      <div className="border-b border-border bg-card p-4 rounded-t-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            <div>
+              <h2 className="font-semibold text-foreground">Анна (Клиент)</h2>
+              <span className="text-xs text-success">Online</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <ScrollArea className="h-[500px] p-4">
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={cn(
                 "flex gap-3 items-start",
-                message.type === "user" && "flex-row-reverse"
+                message.type === "user" && "flex-row-reverse",
+                (message.type === "system" || message.type === "system-alert") &&
+                  "justify-center"
               )}
             >
-              <div
-                className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-bold",
-                  message.type === "user" && "bg-chat-user",
-                  message.type === "bot" && "bg-chat-bot",
-                  message.type === "system" && "bg-chat-system"
-                )}
-              >
-                {message.type === "user" ? (
-                  "А"
-                ) : message.type === "bot" ? (
-                  <Bot className="h-5 w-5" />
-                ) : (
-                  <AlertCircle className="h-5 w-5" />
-                )}
-              </div>
+              {message.type !== "system" && message.type !== "system-alert" && (
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-bold",
+                    message.type === "user" && "bg-chat-user",
+                    (message.type === "bot" ||
+                      message.type === "bot-image" ||
+                      message.type === "user-image") &&
+                      "bg-chat-bot"
+                  )}
+                >
+                  {message.type === "user" ? (
+                    <User className="h-5 w-5" />
+                  ) : (
+                    <Bot className="h-5 w-5" />
+                  )}
+                </div>
+              )}
 
               <div
                 className={cn(
                   "rounded-lg px-4 py-2 max-w-[80%]",
                   message.type === "user" &&
                     "bg-chat-user text-white rounded-br-sm",
-                  message.type === "bot" &&
+                  (message.type === "bot" || message.type === "bot-image") &&
                     "bg-secondary text-secondary-foreground rounded-bl-sm",
-                  message.type === "system" &&
-                    "bg-chat-system/10 text-foreground border border-chat-system/20"
+                  (message.type === "system" || message.type === "system-alert") &&
+                    "bg-chat-system/10 text-foreground border border-chat-system/20 max-w-full text-center",
+                  message.type === "system-alert" && "bg-destructive/10 border-destructive/20"
                 )}
               >
-                <p className="text-sm leading-relaxed">{message.text}</p>
-                <p className="mt-1 text-xs opacity-70">
-                  {message.timestamp.toLocaleTimeString("ru-RU", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
+                {message.type === "bot-image" ? (
+                  <div className="w-48 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded flex items-center justify-center">
+                    <span className="text-4xl">🌹</span>
+                  </div>
+                ) : message.type === "user-image" && message.imageUrl ? (
+                  <img
+                    src={message.imageUrl}
+                    alt="Uploaded creative"
+                    className="max-w-full h-auto rounded"
+                  />
+                ) : (
+                  <>
+                    <div
+                      className="text-sm leading-relaxed whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{
+                        __html: message.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+                      }}
+                    />
+                    {message.type !== "system" && message.type !== "system-alert" && (
+                      <p className="mt-1 text-xs opacity-70">
+                        {message.timestamp.toLocaleTimeString("ru-RU", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -168,23 +260,24 @@ export const ChatInterface = () => {
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border bg-card p-4">
+      <div className="border-t border-border bg-card p-4 rounded-b-lg">
         <div className="flex gap-2">
           <input
             ref={fileInputRef}
             type="file"
             className="hidden"
+            accept="image/*"
             onChange={(e) => {
               if (e.target.files?.[0]) {
-                // Handle file upload
-                console.log("File selected:", e.target.files[0]);
+                handleFileUpload(e.target.files[0]);
               }
             }}
           />
           <Button
             variant="outline"
             size="icon"
-            onClick={handleFileClick}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={!fileAttachEnabled}
             className="shrink-0"
           >
             <Paperclip className="h-4 w-4" />
@@ -195,8 +288,9 @@ export const ChatInterface = () => {
             onKeyPress={handleKeyPress}
             placeholder="Введите сообщение..."
             className="flex-1"
+            disabled={isTyping}
           />
-          <Button onClick={handleSend} className="shrink-0">
+          <Button onClick={handleSend} className="shrink-0" disabled={isTyping}>
             <Send className="h-4 w-4" />
           </Button>
         </div>
