@@ -21,6 +21,8 @@ export const AdReportTab = ({
     impressions: "",
     clicks: "",
     leads: "",
+    sales: "",
+    revenue: "",
   });
 
   const [calculated, setCalculated] = useState({
@@ -29,6 +31,9 @@ export const AdReportTab = ({
     cpm: "",
     cr1: "",
     cpl: "",
+    cr2: "",
+    avgCheck: "",
+    romi: "",
   });
 
   const handleCalculate = () => {
@@ -36,6 +41,8 @@ export const AdReportTab = ({
     const impressions = parseFloat(metrics.impressions);
     const clicks = parseFloat(metrics.clicks);
     const leads = parseFloat(metrics.leads);
+    const sales = parseFloat(metrics.sales || "0");
+    const revenue = parseFloat(metrics.revenue || "0");
 
     if (!spend || !impressions || !clicks || !leads) {
       toast({
@@ -52,12 +59,25 @@ export const AdReportTab = ({
     const cr1 = ((leads / clicks) * 100).toFixed(2);
     const cpl = (spend / leads).toFixed(2);
 
+    let cr2 = "0";
+    let avgCheck = "0";
+    let romi = "0";
+
+    if (sales > 0 && revenue > 0) {
+      cr2 = ((sales / leads) * 100).toFixed(2);
+      avgCheck = (revenue / sales).toFixed(2);
+      romi = (((revenue - spend) / spend) * 100).toFixed(2);
+    }
+
     setCalculated({
       ctr,
       cpc,
       cpm,
       cr1,
       cpl,
+      cr2,
+      avgCheck,
+      romi,
     });
 
     toast({
@@ -72,6 +92,8 @@ export const AdReportTab = ({
       metrics.impressions &&
       metrics.clicks &&
       metrics.leads &&
+      metrics.sales &&
+      metrics.revenue &&
       calculated.ctr
     );
   };
@@ -159,14 +181,31 @@ export const AdReportTab = ({
                   placeholder="23"
                 />
               </div>
+              <div>
+                <Label htmlFor="sales">Продажи</Label>
+                <Input
+                  id="sales"
+                  type="number"
+                  value={metrics.sales}
+                  onChange={(e) =>
+                    setMetrics({ ...metrics, sales: e.target.value })
+                  }
+                  placeholder="Запросите у клиента"
+                />
+              </div>
+              <div>
+                <Label htmlFor="revenue">Выручка (₽)</Label>
+                <Input
+                  id="revenue"
+                  type="number"
+                  value={metrics.revenue}
+                  onChange={(e) =>
+                    setMetrics({ ...metrics, revenue: e.target.value })
+                  }
+                  placeholder="Запросите у клиента"
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Подсказка для запроса данных */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="text-sm font-medium text-amber-900">
-              💡 Подсказка: Для расчета полных показателей ROMI, CR2 и среднего чека необходимо запросить у клиента данные о продажах и выручке
-            </p>
           </div>
 
           {/* Рассчитанные метрики */}
@@ -198,9 +237,20 @@ export const AdReportTab = ({
                 <Label>CPL (₽)</Label>
                 <Input value={calculated.cpl} readOnly placeholder="0.00" />
               </div>
+              <div>
+                <Label>CR2 (%) - Лид → Продажа</Label>
+                <Input value={calculated.cr2} readOnly placeholder="0.00" />
+              </div>
+              <div>
+                <Label>Средний чек (₽)</Label>
+                <Input value={calculated.avgCheck} readOnly placeholder="0.00" />
+              </div>
+              <div>
+                <Label>ROMI (%)</Label>
+                <Input value={calculated.romi} readOnly placeholder="0.00" />
+              </div>
             </div>
           </div>
-
 
           {/* Кнопка отправки */}
           <div className="flex justify-end">
