@@ -154,9 +154,9 @@ export const AdReportTab = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Card className="relative overflow-hidden">
+      <Card className="relative overflow-hidden min-h-[600px]">
         {isReportLocked && (
-          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-start pt-32 justify-center rounded-lg">
             <div className="text-center">
               <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <p className="text-lg font-semibold text-foreground">
