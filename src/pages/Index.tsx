@@ -45,7 +45,11 @@ const Index = () => {
               <TrendingUp className="h-4 w-4" />
               Рекламный кабинет
             </TabsTrigger>
-            <TabsTrigger value="report" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="report" 
+              className="flex items-center gap-2"
+              disabled={currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2" && currentStage !== "STAGE_8_REPORT_SUBMIT" && currentStage !== "STAGE_9_EXPLAIN" && currentStage !== "FINAL"}
+            >
               <FileText className="h-4 w-4" />
               Отчет
             </TabsTrigger>
@@ -59,6 +63,7 @@ const Index = () => {
                 setIsCabinetLocked={setIsCabinetLocked}
                 setUploadedCreativeUrl={setUploadedCreativeUrl}
                 adData={adData}
+                isActive={activeTab === "chat"}
               />
             </div>
           </TabsContent>
