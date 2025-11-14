@@ -105,6 +105,7 @@ export const AdCabinet = ({
     headline.trim() !== "" &&
     shortDescription.trim() !== "" &&
     siteUrl.trim() !== "" &&
+    buttonLabel !== "" &&
     uploadedCreativeUrl !== "";
 
   const handleLaunch = () => {
@@ -208,7 +209,7 @@ export const AdCabinet = ({
             <p className="text-white/90 text-sm mt-1">VK Реклама</p>
           </div>
           <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/30 hover:bg-white/20">
-            + АВТОНОМНАЯ
+            + СИМУЛЯТОР
           </Button>
         </div>
       </CardHeader>
@@ -677,7 +678,7 @@ export const AdCabinet = ({
                     <Input
                       value={siteUrl}
                       onChange={(e) => setSiteUrl(e.target.value)}
-                      placeholder="http://mail.ru/"
+                      placeholder="mysite.com/"
                       className="bg-[#F0F2F5] border-[#E7E8EC]"
                     />
                   </div>
