@@ -100,7 +100,6 @@ export const ChatInterface = ({
 
     // Команда /start
     if (userInput.toLowerCase() === "/start") {
-      setMessages([]);
       addMessage(
         "**Кейс:** Клиент 'Анна' (магазин цветов) присылает вам сообщение 12 февраля.",
         "system"
