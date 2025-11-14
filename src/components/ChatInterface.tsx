@@ -162,7 +162,7 @@ export const ChatInterface = ({
               А
             </div>
             <div>
-              <h2 className="font-semibold text-foreground">Чат с клиентом</h2>
+              <h2 className="font-semibold text-foreground">Анна</h2>
               <span className="text-xs text-success">Online</span>
             </div>
           </div>
