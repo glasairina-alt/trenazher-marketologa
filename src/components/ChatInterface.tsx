@@ -198,7 +198,7 @@ export const ChatInterface = ({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {(isActive ? messages : messages.filter(m => m.type === "bot" || m.type === "bot-image").slice(-1)).map((message) => (
+          {messages.map((message) => (
             <div
               key={message.id}
               className={cn(
