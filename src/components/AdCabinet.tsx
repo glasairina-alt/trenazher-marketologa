@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import defaultLogo from "@/assets/default-ad-logo.png";
 
 interface AdCabinetProps {
   currentStage: StageType;
@@ -59,6 +60,10 @@ export const AdCabinet = ({
   const [longDescription, setLongDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
   const [siteUrl, setSiteUrl] = useState("");
+  const [buttonLabel, setButtonLabel] = useState("");
+  
+  // Interests
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   
   // Collapsible sections
   const [sectionsOpen, setSectionsOpen] = useState({
@@ -67,6 +72,32 @@ export const AdCabinet = ({
     audiences: false,
     devices: false,
   });
+
+  const availableInterests = [
+    "Путешествия",
+    "Технологии",
+    "Спорт",
+    "Кулинария",
+    "Мода",
+    "Музыка",
+    "Кино",
+    "Книги",
+    "Автомобили",
+    "Недвижимость",
+    "Образование",
+    "Здоровье",
+    "Бизнес",
+    "Искусство",
+    "Игры"
+  ];
+
+  const toggleInterest = (interest: string) => {
+    setSelectedInterests(prev => 
+      prev.includes(interest) 
+        ? prev.filter(i => i !== interest)
+        : [...prev, interest]
+    );
+  };
 
   const canLaunch =
     campaignType !== "" &&
@@ -430,14 +461,37 @@ export const AdCabinet = ({
                   <ChevronDown className="h-5 w-5 text-[#4680C2]" />
                 )}
               </div>
-              <p className="text-sm text-[#818C99]">Не выбран</p>
+              <p className="text-sm text-[#818C99]">
+                {selectedInterests.length > 0 
+                  ? `Выбрано: ${selectedInterests.length}` 
+                  : "Не выбран"}
+              </p>
             </CardHeader>
             {sectionsOpen.interests && (
               <CardContent>
-                <Input
-                  placeholder="Поиск интересов..."
-                  className="bg-[#F0F2F5] border-[#E7E8EC]"
-                />
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Поиск интересов..."
+                    className="bg-[#F0F2F5] border-[#E7E8EC] mb-3"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    {availableInterests.map((interest) => (
+                      <div key={interest} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`interest-${interest}`}
+                          checked={selectedInterests.includes(interest)}
+                          onCheckedChange={() => toggleInterest(interest)}
+                        />
+                        <Label
+                          htmlFor={`interest-${interest}`}
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          {interest}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             )}
           </Card>
@@ -633,7 +687,7 @@ export const AdCabinet = ({
                     <Label className="text-sm mb-2 block">
                       Надпись на кнопке <span className="text-red-500">*</span>
                     </Label>
-                    <Select>
+                    <Select value={buttonLabel} onValueChange={setButtonLabel}>
                       <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
                         <SelectValue placeholder="Не выбрана" />
                       </SelectTrigger>
@@ -673,24 +727,50 @@ export const AdCabinet = ({
                         </TabsTrigger>
                       </TabsList>
                       <TabsContent value="feed" className="p-4 m-0">
-                        <div className="space-y-3">
-                          {uploadedCreativeUrl && (
+                        <div className="bg-white rounded-lg border border-[#E7E8EC] overflow-hidden">
+                          {/* Header with logo and menu */}
+                          <div className="flex items-center justify-between p-3 border-b border-[#E7E8EC]">
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={uploadedCreativeUrl || defaultLogo} 
+                                alt="Logo" 
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                              <div>
+                                <div className="text-sm font-medium">{headline || "Заголовок"}</div>
+                                <div className="text-xs text-[#818C99]">Реклама</div>
+                              </div>
+                            </div>
+                            <button className="text-[#818C99]">⋯</button>
+                          </div>
+                          
+                          {/* Creative image */}
+                          {uploadedCreativeUrl ? (
                             <img 
                               src={uploadedCreativeUrl} 
                               alt="Preview" 
-                              className="w-full rounded-lg"
+                              className="w-full"
                             />
-                          )}
-                          {!uploadedCreativeUrl && (
-                            <div className="aspect-video bg-[#F0F2F5] rounded-lg flex items-center justify-center">
+                          ) : (
+                            <div className="aspect-video bg-[#F0F2F5] flex items-center justify-center">
                               <p className="text-sm text-[#818C99]">ЗАГРУЗИТЕ ИЗОБРАЖЕНИЕ ИЛИ ВИДЕО 1:1</p>
                             </div>
                           )}
-                          <div className="space-y-1">
-                            <div className="text-sm font-medium">{headline || "Заголовок"}</div>
-                            <div className="text-xs text-[#818C99]">{shortDescription || "Короткое описание"}</div>
+                          
+                          {/* Description and button */}
+                          <div className="p-3 space-y-3">
+                            <div className="text-sm">{shortDescription || "Короткое описание"}</div>
+                            {buttonLabel && (
+                              <Button 
+                                className="w-full bg-[#4680C2] hover:bg-[#4680C2]/90 text-white"
+                              >
+                                {buttonLabel === "learn" && "Узнать подробнее"}
+                                {buttonLabel === "go" && "Перейти"}
+                                {buttonLabel === "order" && "Заказать"}
+                                {buttonLabel === "buy" && "Купить"}
+                              </Button>
+                            )}
                           </div>
-                          <Badge className="bg-[#4680C2] text-white text-xs">Реклама</Badge>
                         </div>
                       </TabsContent>
                       <TabsContent value="story" className="p-4 m-0">
