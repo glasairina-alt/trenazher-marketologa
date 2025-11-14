@@ -118,20 +118,14 @@ export const AdReportTab = ({
   };
 
   const canSendReport = () => {
-    return (
-      metrics.spend &&
-      metrics.impressions &&
-      metrics.clicks &&
-      metrics.leads &&
-      isCorrect
-    );
+    return isCorrect;
   };
 
   const handleSendReport = () => {
     if (!canSendReport()) {
       toast({
         title: "Ошибка",
-        description: "Заполните все поля и правильно рассчитайте метрики",
+        description: "Сначала проверьте расчеты — все показатели должны быть верны",
         variant: "destructive",
       });
       return;
