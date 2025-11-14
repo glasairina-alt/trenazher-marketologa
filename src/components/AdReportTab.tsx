@@ -36,6 +36,48 @@ export const AdReportTab = ({
     romi: "",
   });
 
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  const correctAnswers = {
+    ctr: [0.37],
+    cpc: [36.68, 36.7],
+    cpm: [135.29, 135.3],
+    cr1: [5.6],
+    cpl: [652.17, 652.2, 652],
+    cr2: [86.95, 86.6],
+    avgCheck: [2765],
+    romi: [268.7, 269],
+  };
+
+  const checkAnswers = (calculatedMetrics: {
+    ctr: string;
+    cpc: string;
+    cpm: string;
+    cr1: string;
+    cpl: string;
+    cr2: string;
+    avgCheck: string;
+    romi: string;
+  }) => {
+    const isValueCorrect = (value: string, correctValues: number[]) => {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) return false;
+      return correctValues.some(correct => Math.abs(numValue - correct) < 0.01);
+    };
+
+    return (
+      isValueCorrect(calculatedMetrics.ctr, correctAnswers.ctr) &&
+      isValueCorrect(calculatedMetrics.cpc, correctAnswers.cpc) &&
+      isValueCorrect(calculatedMetrics.cpm, correctAnswers.cpm) &&
+      isValueCorrect(calculatedMetrics.cr1, correctAnswers.cr1) &&
+      isValueCorrect(calculatedMetrics.cpl, correctAnswers.cpl) &&
+      isValueCorrect(calculatedMetrics.cr2, correctAnswers.cr2) &&
+      isValueCorrect(calculatedMetrics.avgCheck, correctAnswers.avgCheck) &&
+      isValueCorrect(calculatedMetrics.romi, correctAnswers.romi)
+    );
+  };
+
   const handleCalculate = () => {
     const spend = parseFloat(metrics.spend);
     const impressions = parseFloat(metrics.impressions);
@@ -69,7 +111,7 @@ export const AdReportTab = ({
       romi = (((revenue - spend) / spend) * 100).toFixed(2);
     }
 
-    setCalculated({
+    const newCalculated = {
       ctr,
       cpc,
       cpm,
@@ -78,15 +120,30 @@ export const AdReportTab = ({
       cr2,
       avgCheck,
       romi,
-    });
+    };
 
-    toast({
-      title: "Метрики рассчитаны",
-      description: "Все показатели успешно вычислены",
-    });
+    setCalculated(newCalculated);
+
+    const correct = checkAnswers(newCalculated);
+    setIsCorrect(correct);
+    
+    if (correct) {
+      setShowError(false);
+      toast({
+        title: "Отлично! 🎉",
+        description: "Все показатели рассчитаны правильно!",
+      });
+    } else {
+      setShowError(true);
+      toast({
+        title: "Проверьте расчеты",
+        description: "Некоторые показатели рассчитаны неверно. Проверьте формулы.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const allFieldsFilled = () => {
+  const canSendReport = () => {
     return (
       metrics.spend &&
       metrics.impressions &&
@@ -94,15 +151,16 @@ export const AdReportTab = ({
       metrics.leads &&
       metrics.sales &&
       metrics.revenue &&
-      calculated.ctr
+      calculated.ctr &&
+      isCorrect
     );
   };
 
   const handleSendReport = () => {
-    if (!allFieldsFilled()) {
+    if (!canSendReport()) {
       toast({
         title: "Ошибка",
-        description: "Заполните все поля и рассчитайте метрики",
+        description: "Заполните все поля и правильно рассчитайте метрики",
         variant: "destructive",
       });
       return;
@@ -216,6 +274,14 @@ export const AdReportTab = ({
                 Рассчитать показатели
               </Button>
             </div>
+            
+            {showError && calculated.ctr && (
+              <div className="mb-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+                <p className="text-sm font-medium text-destructive">
+                  ⚠️ Некоторые показатели рассчитаны неверно. Проверьте формулы и введенные данные.
+                </p>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>CTR (%)</Label>
@@ -256,8 +322,9 @@ export const AdReportTab = ({
           <div className="flex justify-end">
             <Button
               onClick={handleSendReport}
-              disabled={!allFieldsFilled()}
+              disabled={!canSendReport()}
               size="lg"
+              className={isCorrect ? "animate-pulse hover:animate-none" : ""}
             >
               Отправить отчет клиенту
             </Button>
