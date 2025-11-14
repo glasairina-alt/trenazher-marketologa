@@ -87,6 +87,7 @@ const Index = () => {
                 uploadedCreativeUrl={uploadedCreativeUrl}
                 adData={adData}
                 setAdData={setAdData}
+                setActiveTab={setActiveTab}
               />
             </div>
           </TabsContent>

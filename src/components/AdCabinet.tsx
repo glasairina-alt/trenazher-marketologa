@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Globe, ShoppingBag, Smartphone, FileText, ChevronDown, ChevronUp } from "lucide-react";
-import { AdReportModal } from "@/components/AdReportModal";
 import { useToast } from "@/hooks/use-toast";
 import type { StageType } from "@/types/stages";
 import {
@@ -28,6 +27,7 @@ interface AdCabinetProps {
   uploadedCreativeUrl: string;
   adData?: { headline: string; text: string };
   setAdData: (data: { headline: string; text: string }) => void;
+  setActiveTab: (tab: string) => void;
 }
 
 export const AdCabinet = ({
@@ -37,11 +37,11 @@ export const AdCabinet = ({
   uploadedCreativeUrl,
   adData = { headline: "", text: "" },
   setAdData,
+  setActiveTab,
 }: AdCabinetProps) => {
   const { toast } = useToast();
   const [budget] = useState(15000);
   const [conversions, setConversions] = useState(0);
-  const [showReport, setShowReport] = useState(false);
   const [campaignLaunched, setCampaignLaunched] = useState(false);
   
   // Campaign settings
@@ -866,7 +866,7 @@ export const AdCabinet = ({
                     <p className="text-2xl font-semibold">{conversions}</p>
                   </div>
                   <Button
-                    onClick={() => setShowReport(true)}
+                    onClick={() => setActiveTab("report")}
                     className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white"
                   >
                     Сформировать отчет
@@ -877,15 +877,6 @@ export const AdCabinet = ({
           )}
         </div>
       </CardContent>
-
-      {showReport && (
-        <AdReportModal
-          open={showReport}
-          onOpenChange={setShowReport}
-          currentStage={currentStage}
-          setCurrentStage={setCurrentStage}
-        />
-      )}
     </Card>
   );
 };
