@@ -43,28 +43,22 @@ export const ChatInterface = ({
     }
   }, [messages, isTyping]);
 
-  // Автоматический триггер после отправки отчета
+  // Автоматический триггер после отправки отчета - удален из ChatInterface
   useEffect(() => {
-    const triggerReportStage = async () => {
-      if (currentStage === "STAGE_8_REPORT_SUBMIT") {
+    if (currentStage === "STAGE_8_REPORT_SUBMIT") {
+      const triggerReportStage = async () => {
         const hasTriggered = messages.some(m => 
-          m.text.includes("Прошло 3 часа. Клиент не отвечает")
+          m.text.includes("Напомните Анне в чате")
         );
         
         if (!hasTriggered) {
-          await sleep(2000);
-          addMessage("**Прошло 3 часа. Клиент не отвечает.**", "system");
-          await sleep(1000);
-          addMessage(
-            "**Подсказка:** Напомните Анне в чате, что вы отправили отчет и ждете ее реакции.",
-            "system-alert"
-          );
+          // Автоматический переход к следующему этапу уже происходит в stageHandlers
         }
-      }
-    };
-    
-    triggerReportStage();
-  }, [currentStage]);
+      };
+      
+      triggerReportStage();
+    }
+  }, [currentStage, messages]);
 
   const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
     const newMessage: Message = {
@@ -143,6 +137,13 @@ export const ChatInterface = ({
       await showTyping();
       await sleep(1000);
       await hideTyping();
+
+      if (currentStage === "STAGE_8_REPORT_SUBMIT") {
+        addMessage("", "user-image", imageUrl);
+        await sleep(1000);
+        setCurrentStage("STAGE_8_REPORT_SENT");
+        return;
+      }
 
       if (currentStage === "STAGE_2_CREATIVE_1") {
         addMessage("Мне не нравится ваш креатив. Переделайте его.", "bot");

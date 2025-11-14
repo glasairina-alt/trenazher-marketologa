@@ -135,28 +135,35 @@ export const AdCabinet = ({
     }
 
     setCampaignLaunched(true);
-    setConversions(23);
     setAdData({ headline, text: shortDescription });
     
     toast({
-      title: "Кампания запущена!",
-      description: "Реклама успешно запущена",
+      title: "Реклама запущена! 🚀",
+      description: "Поздравляю! Вы запустили рекламную кампанию.",
+      duration: 5000,
     });
 
     setTimeout(() => {
-      setCurrentStage("STAGE_7_REPORT_DATA");
-      setActiveTab("report");
       toast({
-        title: "Переход к отчету",
-        description: "Теперь вы можете заполнить отчет по рекламной кампании",
+        title: "Подсказка",
+        description: "Теперь подождем, когда пойдут первые заявки. Сообщите своему клиенту в чате, что вы запустили рекламу.",
+        duration: 10000,
       });
-    }, 1000);
+      setCurrentStage("STAGE_3_LAUNCH_WAIT_USER");
+      setActiveTab("chat");
+    }, 1500);
   };
 
   useEffect(() => {
-    if (
+    if (currentStage === "STAGE_5_ORDERS_COMING") {
+      setConversions(2);
+    } else if (
+      currentStage === "STAGE_7_REPORT_DATA" ||
       currentStage === "STAGE_7_REPORT_DATA_2" ||
-      currentStage === "STAGE_8_REPORT_SUBMIT"
+      currentStage === "STAGE_8_REPORT_SUBMIT" ||
+      currentStage === "STAGE_8_REPORT_SENT" ||
+      currentStage === "STAGE_9_EXPLAIN" ||
+      currentStage === "STAGE_10_SETTINGS"
     ) {
       setConversions(23);
     }
@@ -826,25 +833,35 @@ export const AdCabinet = ({
           {campaignLaunched && (
             <Card className="border-[#E7E8EC] bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-medium">Статистика кампании</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-medium">Статистика кампании</CardTitle>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    Активна
+                  </Badge>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-[#818C99]">Расход бюджета</p>
-                    <p className="text-xl font-semibold">15 000 ₽</p>
+                <div className="space-y-4">
+                  <div className="p-3 bg-[#F0F2F5] rounded-lg">
+                    <p className="text-sm text-[#818C99] mb-1">Остаток бюджета</p>
+                    <p className="text-2xl font-semibold">
+                      {currentStage === "STAGE_5_ORDERS_COMING" ? "10 547" : 
+                       (budget - 4453).toLocaleString("ru-RU")} ₽
+                    </p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-[#818C99]">Показы</p>
-                    <p className="text-xl font-semibold">110 867</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-[#818C99]">Клики</p>
-                    <p className="text-xl font-semibold">410</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-[#818C99]">Конверсии</p>
-                    <p className="text-xl font-semibold">{conversions}</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <p className="text-sm text-[#818C99]">Показы</p>
+                      <p className="text-xl font-semibold">110 867</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-[#818C99]">Клики</p>
+                      <p className="text-xl font-semibold">410</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-[#818C99]">Конверсии</p>
+                      <p className="text-xl font-semibold">{conversions}</p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -852,23 +869,33 @@ export const AdCabinet = ({
           )}
 
           {/* Reports section */}
-          {campaignLaunched && (
+          {campaignLaunched && (currentStage === "STAGE_5_ORDERS_COMING" || currentStage === "STAGE_5_REPORT" || currentStage === "STAGE_6_REPORT_WAIT" || currentStage === "STAGE_7_REPORT_DATA" || currentStage === "STAGE_7_REPORT_DATA_2" || currentStage === "STAGE_8_REPORT_SUBMIT" || currentStage === "STAGE_8_REPORT_SENT" || currentStage === "STAGE_9_EXPLAIN" || currentStage === "STAGE_10_SETTINGS" || currentStage === "FINAL") && (
             <Card className="border-[#E7E8EC] bg-white">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-medium">Отчеты</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-[#818C99]">Конверсии</p>
-                    <p className="text-2xl font-semibold">{conversions}</p>
+                <div className="space-y-3">
+                  {currentStage === "STAGE_5_ORDERS_COMING" && (
+                    <div className="p-3 bg-chat-system/10 border border-chat-system/20 rounded-lg mb-3">
+                      <p className="text-sm text-foreground">
+                        💡 <strong>Подсказка:</strong> Конверсии появились! Вернитесь в чат и ответьте клиенту.
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm text-[#818C99]">Конверсии</p>
+                      <p className="text-2xl font-semibold">{conversions}</p>
+                    </div>
+                    <Button
+                      onClick={() => setActiveTab("report")}
+                      className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white"
+                      disabled={currentStage !== "STAGE_5_REPORT" && currentStage !== "STAGE_6_REPORT_WAIT" && currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2"}
+                    >
+                      Сформировать отчет
+                    </Button>
                   </div>
-                  <Button
-                    onClick={() => setActiveTab("report")}
-                    className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white"
-                  >
-                    Сформировать отчет
-                  </Button>
                 </div>
               </CardContent>
             </Card>

@@ -138,18 +138,18 @@ export const AdReportTab = ({
     });
 
     if (currentStage === "STAGE_7_REPORT_DATA_2") {
-      toast({
-        title: "Задача",
-        description: "Обязательно оповестите Анну, что отчет готов.",
-      });
       setCurrentStage("STAGE_8_REPORT_SUBMIT");
     }
   };
 
-  const isReportLocked = currentStage !== "STAGE_7_REPORT_DATA" && 
+  const isReportLocked = currentStage !== "STAGE_5_REPORT" && 
+    currentStage !== "STAGE_6_REPORT_WAIT" &&
+    currentStage !== "STAGE_7_REPORT_DATA" && 
     currentStage !== "STAGE_7_REPORT_DATA_2" && 
     currentStage !== "STAGE_8_REPORT_SUBMIT" && 
+    currentStage !== "STAGE_8_REPORT_SENT" &&
     currentStage !== "STAGE_9_EXPLAIN" && 
+    currentStage !== "STAGE_10_SETTINGS" &&
     currentStage !== "FINAL";
 
   return (
@@ -344,7 +344,7 @@ export const AdReportTab = ({
           </div>
 
           {/* Кнопка отправки */}
-          <div className="flex justify-end">
+          <div className="flex flex-col gap-3">
             <Button
               onClick={handleSendReport}
               disabled={!canSendReport()}
@@ -353,6 +353,14 @@ export const AdReportTab = ({
             >
               Отправить отчет клиенту
             </Button>
+            
+            {isCorrect && (
+              <div className="p-3 bg-chat-system/10 border border-chat-system/20 rounded-lg">
+                <p className="text-sm text-center text-muted-foreground">
+                  💡 <strong>Подсказка:</strong> После того, как вы отправите отчет, вернитесь в чат и напишите клиенту, что вы отправили отчет.
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
