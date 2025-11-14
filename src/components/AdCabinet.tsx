@@ -101,7 +101,6 @@ export const AdCabinet = ({
 
   const canLaunch =
     campaignType !== "" &&
-    regions.length > 0 &&
     headline.trim() !== "" &&
     shortDescription.trim() !== "" &&
     siteUrl.trim() !== "" &&
@@ -112,7 +111,6 @@ export const AdCabinet = ({
     if (!canLaunch) {
       const missing: string[] = [];
       if (campaignType === "") missing.push("Тип кампании");
-      if (regions.length === 0) missing.push("Регионы");
       if (headline.trim() === "") missing.push("Заголовок");
       if (shortDescription.trim() === "") missing.push("Короткое описание");
       if (siteUrl.trim() === "") missing.push("Ссылка на сайт");
@@ -146,12 +144,12 @@ export const AdCabinet = ({
     });
 
     setTimeout(() => {
+      setCurrentStage("STAGE_7_REPORT_DATA");
+      setActiveTab("report");
       toast({
-        title: "Поздравляю!",
-        description:
-          "Вы запустили рекламную кампанию. Теперь подождем, когда пойдут первые заявки. Сообщите своему клиенту, что вы запустили рекламу.",
+        title: "Переход к отчету",
+        description: "Теперь вы можете заполнить отчет по рекламной кампании",
       });
-      setCurrentStage("STAGE_3_LAUNCH_WAIT_USER");
     }, 1000);
   };
 
