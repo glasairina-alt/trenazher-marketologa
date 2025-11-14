@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { StageType } from "@/types/stages";
 
@@ -145,9 +146,28 @@ export const AdReportTab = ({
     }
   };
 
+  const isReportLocked = currentStage !== "STAGE_7_REPORT_DATA" && 
+    currentStage !== "STAGE_7_REPORT_DATA_2" && 
+    currentStage !== "STAGE_8_REPORT_SUBMIT" && 
+    currentStage !== "STAGE_9_EXPLAIN" && 
+    currentStage !== "FINAL";
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
+      <Card className="relative overflow-hidden">
+        {isReportLocked && (
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div className="text-center">
+              <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg font-semibold text-foreground">
+                Отчет заблокирован
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Запустите рекламную кампанию и получите данные от клиента
+              </p>
+            </div>
+          </div>
+        )}
         <CardHeader>
           <CardTitle>Отчет по рекламной кампании</CardTitle>
         </CardHeader>
