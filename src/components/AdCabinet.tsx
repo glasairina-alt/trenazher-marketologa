@@ -110,17 +110,31 @@ export const AdCabinet = ({
 
   const handleLaunch = () => {
     if (!canLaunch) {
-      let errorMsg = "Заполните все обязательные поля кампании. ";
-      
+      const missing: string[] = [];
+      if (campaignType === "") missing.push("Тип кампании");
+      if (regions.length === 0) missing.push("Регионы");
+      if (headline.trim() === "") missing.push("Заголовок");
+      if (shortDescription.trim() === "") missing.push("Короткое описание");
+      if (siteUrl.trim() === "") missing.push("Ссылка на сайт");
+      if (buttonLabel === "") missing.push("Надпись на кнопке");
+      if (!uploadedCreativeUrl) missing.push("Логотип/креатив");
+
       toast({
-        title: "Ошибка",
-        description: errorMsg,
+        title: "Заполните обязательные поля",
+        description: missing.length ? missing.join(", ") : "Проверьте форму",
         variant: "destructive",
       });
       return;
     }
 
-    if (currentStage !== "STAGE_3_LAUNCH") return;
+    if (currentStage !== "STAGE_3_LAUNCH") {
+      toast({
+        title: "Действие недоступно",
+        description: "К запуску перейдем на соответствующем шаге сценария",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setCampaignLaunched(true);
     setConversions(23);
@@ -801,7 +815,7 @@ export const AdCabinet = ({
                 </div>
                 <Button
                   onClick={handleLaunch}
-                  disabled={!canLaunch || campaignLaunched}
+                  disabled={campaignLaunched}
                   className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white px-8"
                 >
                   {campaignLaunched ? "Кампания запущена" : "Запустить кампанию"}
