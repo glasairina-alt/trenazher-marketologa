@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
-import { MessageCircle, TrendingUp } from "lucide-react";
+import { AdReportTab } from "@/components/AdReportTab";
+import { MessageCircle, TrendingUp, FileText } from "lucide-react";
 import type { StageType } from "@/types/stages";
 
 const Index = () => {
@@ -35,7 +36,7 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3">
             <TabsTrigger value="chat" className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
               Чат с клиентом
@@ -43,6 +44,10 @@ const Index = () => {
             <TabsTrigger value="cabinet" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               Рекламный кабинет
+            </TabsTrigger>
+            <TabsTrigger value="report" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Отчет
             </TabsTrigger>
           </TabsList>
 
@@ -69,6 +74,13 @@ const Index = () => {
                 setAdData={setAdData}
               />
             </div>
+          </TabsContent>
+
+          <TabsContent value="report" className="mt-6">
+            <AdReportTab
+              currentStage={currentStage}
+              setCurrentStage={setCurrentStage}
+            />
           </TabsContent>
         </Tabs>
       </main>

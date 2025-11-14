@@ -809,6 +809,35 @@ export const AdCabinet = ({
             </CardContent>
           </Card>
 
+          {/* Statistics section */}
+          {campaignLaunched && (
+            <Card className="border-[#E7E8EC] bg-white">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium">Статистика кампании</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm text-[#818C99]">Расход бюджета</p>
+                    <p className="text-xl font-semibold">15 000 ₽</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-[#818C99]">Показы</p>
+                    <p className="text-xl font-semibold">110 867</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-[#818C99]">Клики</p>
+                    <p className="text-xl font-semibold">410</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-[#818C99]">Конверсии</p>
+                    <p className="text-xl font-semibold">{conversions}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Reports section */}
           {campaignLaunched && (
             <Card className="border-[#E7E8EC] bg-white">
