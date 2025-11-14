@@ -65,7 +65,7 @@ const Index = () => {
             </Tooltip>
           </TabsList>
 
-          <TabsContent value="chat" className="mt-6">
+          <TabsContent value="chat" className="mt-6" forceMount>
             <div className="max-w-4xl mx-auto">
               <ChatInterface
                 currentStage={currentStage}
