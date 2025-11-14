@@ -155,6 +155,26 @@ export const AdCabinet = ({
   };
 
   useEffect(() => {
+    // Автоматически устанавливаем campaignLaunched если мы на этапах после запуска
+    if (
+      currentStage === "STAGE_3_LAUNCH_WAIT_USER" ||
+      currentStage === "STAGE_4_PANIC" ||
+      currentStage === "STAGE_4_WAIT_RESOLUTION" ||
+      currentStage === "STAGE_5_ORDERS_COMING" ||
+      currentStage === "STAGE_5_REPORT" ||
+      currentStage === "STAGE_6_REPORT_WAIT" ||
+      currentStage === "STAGE_7_REPORT_DATA" ||
+      currentStage === "STAGE_7_REPORT_DATA_2" ||
+      currentStage === "STAGE_8_REPORT_SUBMIT" ||
+      currentStage === "STAGE_8_REPORT_SENT" ||
+      currentStage === "STAGE_9_EXPLAIN" ||
+      currentStage === "STAGE_10_SETTINGS" ||
+      currentStage === "FINAL"
+    ) {
+      setCampaignLaunched(true);
+    }
+
+    // Устанавливаем конверсии в зависимости от этапа
     if (currentStage === "STAGE_5_ORDERS_COMING") {
       setConversions(2);
     } else if (
@@ -163,7 +183,8 @@ export const AdCabinet = ({
       currentStage === "STAGE_8_REPORT_SUBMIT" ||
       currentStage === "STAGE_8_REPORT_SENT" ||
       currentStage === "STAGE_9_EXPLAIN" ||
-      currentStage === "STAGE_10_SETTINGS"
+      currentStage === "STAGE_10_SETTINGS" ||
+      currentStage === "FINAL"
     ) {
       setConversions(23);
     }
