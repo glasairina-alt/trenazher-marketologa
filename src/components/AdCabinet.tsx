@@ -220,7 +220,7 @@ export const AdCabinet = ({
   return (
     <Card className="relative overflow-hidden">
       {isCabinetLocked && (
-        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg p-4">
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-start justify-center rounded-lg p-4 pt-8 sm:pt-12">
           <div className="text-center">
             <Lock className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
             <p className="text-base sm:text-lg font-semibold text-foreground">
