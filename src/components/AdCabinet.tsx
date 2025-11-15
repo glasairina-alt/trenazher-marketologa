@@ -280,9 +280,9 @@ export const AdCabinet = ({
           <Card className="border-[#E7E8EC] bg-white">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-medium">Кампания</CardTitle>
-                <Button variant="ghost" size="sm" className="h-8 text-[#4680C2]">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <CardTitle className="text-sm sm:text-base font-medium">Кампания</CardTitle>
+                <Button variant="ghost" size="sm" className="h-6 sm:h-8 text-[#4680C2]">
+                  <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </Button>
@@ -304,9 +304,9 @@ export const AdCabinet = ({
                     <span className="sm:hidden">✨ Смарт</span>
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="actions" className="space-y-4 mt-4">
+                <TabsContent value="actions" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">
+                    <Label className="text-xs sm:text-sm font-medium mb-2 sm:mb-3 block">
                       Что будете рекламировать? <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -340,14 +340,14 @@ export const AdCabinet = ({
           {/* Regions */}
           <Card className="border-[#E7E8EC] bg-white">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">
+              <CardTitle className="text-sm sm:text-base font-medium">
                 Регионы показа <span className="text-red-500">*</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="text-sm text-[#818C99]">Быстрый выбор</div>
-                <div className="flex gap-2">
+                <div className="text-xs sm:text-sm text-[#818C99]">Быстрый выбор</div>
+                <div className="flex gap-1 sm:gap-2 flex-wrap">
                   {["Россия", "Москва", "Санкт-Петербург"].map((region) => (
                     <Button
                       key={region}
@@ -360,7 +360,7 @@ export const AdCabinet = ({
                             : [...prev, region]
                         );
                       }}
-                      className={regions.includes(region) ? "bg-[#4680C2] text-white" : ""}
+                      className={`text-xs sm:text-sm px-2 sm:px-3 ${regions.includes(region) ? "bg-[#4680C2] text-white" : ""}`}
                     >
                       {region}
                     </Button>
@@ -368,7 +368,7 @@ export const AdCabinet = ({
                 </div>
                 <Input
                   placeholder="Страна, регион или город"
-                  className="bg-[#F0F2F5] border-[#E7E8EC]"
+                  className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
                 />
               </div>
             </CardContent>
@@ -377,16 +377,16 @@ export const AdCabinet = ({
           {/* Audience expansion */}
           <Card className="border-[#E7E8EC] bg-white">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">
+              <CardTitle className="text-sm sm:text-base font-medium">
                 Расширение аудитории
               </CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup value={expandAudience} onValueChange={setExpandAudience}>
                 <div className="flex items-start space-x-2">
-                  <RadioGroupItem value="recommended" id="recommended" />
+                  <RadioGroupItem value="recommended" id="recommended" className="mt-0.5" />
                   <div className="space-y-1">
-                    <Label htmlFor="recommended" className="font-normal cursor-pointer">
+                    <Label htmlFor="recommended" className="font-normal cursor-pointer text-xs sm:text-sm">
                       Расширить аудиторию <span className="text-[#4680C2]">(рекомендуется)</span>
                     </Label>
                     <p className="text-xs text-[#818C99]">
@@ -405,20 +405,20 @@ export const AdCabinet = ({
               onClick={() => toggleSection('demographics')}
             >
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-medium">Демография</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-medium">Демография</CardTitle>
                 {sectionsOpen.demographics ? (
-                  <ChevronUp className="h-5 w-5 text-[#4680C2]" />
+                  <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-[#4680C2]" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-[#4680C2]" />
+                  <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-[#4680C2]" />
                 )}
               </div>
             </CardHeader>
             {sectionsOpen.demographics && (
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label className="text-sm mb-2 block">Пол</Label>
+                  <Label className="text-xs sm:text-sm mb-2 block">Пол</Label>
                   <Select value={gender} onValueChange={setGender}>
-                    <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
+                    <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
                       <SelectValue placeholder="Любой" />
                     </SelectTrigger>
                     <SelectContent>
@@ -430,10 +430,10 @@ export const AdCabinet = ({
                 </div>
 
                 <div>
-                  <Label className="text-sm mb-2 block">Возраст</Label>
+                  <Label className="text-xs sm:text-sm mb-2 block">Возраст</Label>
                   <div className="flex gap-2">
                     <Select value={ageFrom} onValueChange={setAgeFrom}>
-                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
+                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
                         <SelectValue placeholder="От" />
                       </SelectTrigger>
                       <SelectContent>
@@ -443,7 +443,7 @@ export const AdCabinet = ({
                       </SelectContent>
                     </Select>
                     <Select value={ageTo} onValueChange={setAgeTo}>
-                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
+                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
                         <SelectValue placeholder="До" />
                       </SelectTrigger>
                       <SelectContent>
@@ -456,9 +456,9 @@ export const AdCabinet = ({
                 </div>
 
                 <div>
-                  <Label className="text-sm mb-2 block">Возрастная маркировка</Label>
+                  <Label className="text-xs sm:text-sm mb-2 block">Возрастная маркировка</Label>
                   <Select value={ageRating} onValueChange={setAgeRating}>
-                    <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
+                    <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
                       <SelectValue placeholder="Не выбрана" />
                     </SelectTrigger>
                     <SelectContent>
@@ -477,7 +477,7 @@ export const AdCabinet = ({
                     checked={socialAd}
                     onCheckedChange={(checked) => setSocialAd(checked as boolean)}
                   />
-                  <Label htmlFor="social-ad" className="text-sm font-normal cursor-pointer">
+                  <Label htmlFor="social-ad" className="text-xs sm:text-sm font-normal cursor-pointer">
                     Социальная реклама
                   </Label>
                 </div>
@@ -601,32 +601,32 @@ export const AdCabinet = ({
           <Card className="border-[#E7E8EC] bg-white">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-medium">Объявление</CardTitle>
-                <Button variant="ghost" size="sm" className="h-8 text-[#4680C2]">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <CardTitle className="text-sm sm:text-base font-medium">Объявление</CardTitle>
+                <Button variant="ghost" size="sm" className="h-6 sm:h-8 text-[#4680C2]">
+                  <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Logo upload */}
                   <div>
-                    <Label className="text-sm mb-2 block">
+                    <Label className="text-xs sm:text-sm mb-2 block">
                       Логотип <span className="text-red-500">*</span>
                     </Label>
-                    <div className="border-2 border-dashed border-[#E7E8EC] rounded-lg p-6 text-center bg-[#F9FAFB]">
+                    <div className="border-2 border-dashed border-[#E7E8EC] rounded-lg p-4 sm:p-6 text-center bg-[#F9FAFB]">
                       {uploadedCreativeUrl ? (
                         <img 
                           src={uploadedCreativeUrl} 
                           alt="Logo" 
-                          className="max-h-20 mx-auto rounded"
+                          className="max-h-16 sm:max-h-20 mx-auto rounded"
                         />
                       ) : (
                         <div>
-                          <Button variant="link" className="text-[#4680C2]">
+                          <Button variant="link" className="text-[#4680C2] text-xs sm:text-sm">
                             + Выбрать логотип
                           </Button>
                           <p className="text-xs text-[#818C99] mt-1">
@@ -639,7 +639,7 @@ export const AdCabinet = ({
 
                   {/* Headline */}
                   <div>
-                    <Label className="text-sm mb-2 block">
+                    <Label className="text-xs sm:text-sm mb-2 block">
                       Заголовок <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
@@ -647,7 +647,7 @@ export const AdCabinet = ({
                         value={headline}
                         onChange={(e) => setHeadline(e.target.value)}
                         placeholder="Не выбран"
-                        className="bg-[#F0F2F5] border-[#E7E8EC]"
+                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
                         maxLength={40}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
@@ -658,7 +658,7 @@ export const AdCabinet = ({
 
                   {/* Short description */}
                   <div>
-                    <Label className="text-sm mb-2 block">
+                    <Label className="text-xs sm:text-sm mb-2 block">
                       Короткое описание <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
@@ -666,7 +666,7 @@ export const AdCabinet = ({
                         value={shortDescription}
                         onChange={(e) => setShortDescription(e.target.value)}
                         placeholder=""
-                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[80px]"
+                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[80px] text-sm"
                         maxLength={90}
                       />
                       <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
@@ -677,13 +677,13 @@ export const AdCabinet = ({
 
                   {/* Long description */}
                   <div>
-                    <Label className="text-sm mb-2 block">Длинное описание</Label>
+                    <Label className="text-xs sm:text-sm mb-2 block">Длинное описание</Label>
                     <div className="relative">
                       <Textarea
                         value={longDescription}
                         onChange={(e) => setLongDescription(e.target.value)}
                         placeholder=""
-                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[120px]"
+                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[100px] sm:min-h-[120px] text-sm"
                         maxLength={16384}
                       />
                       <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
@@ -694,13 +694,13 @@ export const AdCabinet = ({
 
                   {/* Button text */}
                   <div>
-                    <Label className="text-sm mb-2 block">Текст рядом с кнопкой</Label>
+                    <Label className="text-xs sm:text-sm mb-2 block">Текст рядом с кнопкой</Label>
                     <div className="relative">
                       <Input
                         value={buttonText}
                         onChange={(e) => setButtonText(e.target.value)}
                         placeholder="Не выбран"
-                        className="bg-[#F0F2F5] border-[#E7E8EC]"
+                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
                         maxLength={30}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
@@ -711,24 +711,24 @@ export const AdCabinet = ({
 
                   {/* Site URL */}
                   <div>
-                    <Label className="text-sm mb-2 block">
+                    <Label className="text-xs sm:text-sm mb-2 block">
                       Ссылка на сайт <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       value={siteUrl}
                       onChange={(e) => setSiteUrl(e.target.value)}
                       placeholder="mysite.com/"
-                      className="bg-[#F0F2F5] border-[#E7E8EC]"
+                      className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
                     />
                   </div>
 
                   {/* Button label */}
                   <div>
-                    <Label className="text-sm mb-2 block">
+                    <Label className="text-xs sm:text-sm mb-2 block">
                       Надпись на кнопке <span className="text-red-500">*</span>
                     </Label>
                     <Select value={buttonLabel} onValueChange={setButtonLabel}>
-                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC]">
+                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
                         <SelectValue placeholder="Не выбрана" />
                       </SelectTrigger>
                       <SelectContent>
@@ -743,45 +743,46 @@ export const AdCabinet = ({
 
                 {/* Preview */}
                 <div>
-                  <Label className="text-sm mb-3 block">Предпросмотр</Label>
+                  <Label className="text-xs sm:text-sm mb-2 sm:mb-3 block">Предпросмотр</Label>
                   <div className="border border-[#E7E8EC] rounded-lg overflow-hidden bg-white">
                     <Tabs defaultValue="feed" className="w-full">
                       <TabsList className="w-full justify-start rounded-none border-b border-[#E7E8EC] bg-transparent h-auto p-0">
                         <TabsTrigger 
                           value="feed" 
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
                           Пост
                         </TabsTrigger>
                         <TabsTrigger 
                           value="story" 
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
                           В ленте
                         </TabsTrigger>
                         <TabsTrigger 
                           value="fullscreen" 
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
-                          Полноэкранный блок
+                          <span className="hidden sm:inline">Полноэкранный блок</span>
+                          <span className="sm:hidden">Полный блок</span>
                         </TabsTrigger>
                       </TabsList>
-                      <TabsContent value="feed" className="p-4 m-0">
+                      <TabsContent value="feed" className="p-2 sm:p-4 m-0">
                         <div className="bg-white rounded-lg border border-[#E7E8EC] overflow-hidden">
                           {/* Header with logo and menu */}
-                          <div className="flex items-center justify-between p-3 border-b border-[#E7E8EC]">
-                            <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between p-2 sm:p-3 border-b border-[#E7E8EC]">
+                            <div className="flex items-center gap-2 min-w-0">
                               <img 
                                 src={uploadedCreativeUrl || defaultLogo} 
                                 alt="Logo" 
-                                className="w-10 h-10 rounded-full object-cover"
+                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
                               />
-                              <div>
-                                <div className="text-sm font-medium">{headline || "Заголовок"}</div>
+                              <div className="min-w-0">
+                                <div className="text-xs sm:text-sm font-medium truncate">{headline || "Заголовок"}</div>
                                 <div className="text-xs text-[#818C99]">Реклама</div>
                               </div>
                             </div>
-                            <button className="text-[#818C99]">⋯</button>
+                            <button className="text-[#818C99] shrink-0 ml-2">⋯</button>
                           </div>
                           
                           {/* Creative image */}
@@ -792,17 +793,17 @@ export const AdCabinet = ({
                               className="w-full"
                             />
                           ) : (
-                            <div className="aspect-video bg-[#F0F2F5] flex items-center justify-center">
-                              <p className="text-sm text-[#818C99]">ЗАГРУЗИТЕ ИЗОБРАЖЕНИЕ ИЛИ ВИДЕО 1:1</p>
+                            <div className="aspect-video bg-[#F0F2F5] flex items-center justify-center p-2">
+                              <p className="text-xs sm:text-sm text-[#818C99] text-center">ЗАГРУЗИТЕ ИЗОБРАЖЕНИЕ ИЛИ ВИДЕО 1:1</p>
                             </div>
                           )}
                           
                           {/* Description and button */}
-                          <div className="p-3 space-y-3">
-                            <div className="text-sm">{shortDescription || "Короткое описание"}</div>
+                          <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
+                            <div className="text-xs sm:text-sm break-words">{shortDescription || "Короткое описание"}</div>
                             {buttonLabel && (
                               <Button 
-                                className="w-full bg-[#4680C2] hover:bg-[#4680C2]/90 text-white"
+                                className="w-full bg-[#4680C2] hover:bg-[#4680C2]/90 text-white text-xs sm:text-sm h-8 sm:h-10"
                               >
                                 {buttonLabel === "learn" && "Узнать подробнее"}
                                 {buttonLabel === "go" && "Перейти"}
