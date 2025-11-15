@@ -75,7 +75,7 @@ export const handleStageLogic = async ({
 
     case "STAGE_3_LAUNCH_WAIT_USER":
       addMessage(
-        "**Задача:** Напишите ответ клиенту, что кампания запущена.",
+        "**Подсказка:** Теперь подождем, когда пойдут первые заявки. Сообщите своему клиенту в чате, что вы запустили рекламу.",
         "system-alert"
       );
       setCurrentStage("STAGE_3_WAIT_CLIENT_RESPONSE");
