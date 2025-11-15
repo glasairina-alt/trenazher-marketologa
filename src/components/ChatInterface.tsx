@@ -234,7 +234,9 @@ export const ChatInterface = ({
               >
                 {message.type === "bot-image" ? (
                   <div className="w-48 h-32 bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 rounded flex items-center justify-center">
-                    <span className="text-6xl">{flowerEmojis[message.id % flowerEmojis.length]}</span>
+                    <div className="text-7xl leading-none select-none" style={{ fontSize: '5rem' }}>
+                      {flowerEmojis[message.id % flowerEmojis.length]}
+                    </div>
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
