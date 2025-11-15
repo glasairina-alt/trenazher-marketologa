@@ -7,6 +7,7 @@ import { Send, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
+import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } from "docx";
 
 interface ChatInterfaceProps {
   currentStage: StageType;
@@ -203,29 +204,74 @@ export const ChatInterface = ({
     }
   };
 
-  const downloadDialogs = () => {
+  const downloadDialogs = async () => {
     // Фильтруем только диалоги клиент-ученик (без системных сообщений и подсказок)
     const clientDialogs = messages.filter(
       (msg) => msg.type === "bot" || msg.type === "user"
     );
 
-    // Форматируем диалоги в текст
-    let dialogText = "Диалоги: Клиент-Маркетолог\n";
-    dialogText += "Кейс: «Срочный запуск 14 февраля»\n";
-    dialogText += "="+ "=".repeat(50) + "\n\n";
+    // Создаем параграфы для документа
+    const paragraphs: Paragraph[] = [];
 
+    // Заголовок документа
+    paragraphs.push(
+      new Paragraph({
+        text: "Диалоги: Клиент-Маркетолог",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+      })
+    );
+
+    paragraphs.push(
+      new Paragraph({
+        text: "Кейс: «Срочный запуск 14 февраля»",
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 },
+      })
+    );
+
+    // Добавляем диалоги
     clientDialogs.forEach((msg) => {
       const speaker = msg.type === "user" ? "Маркетолог" : "Клиент (Анна)";
       const timestamp = msg.timestamp.toLocaleString("ru-RU");
-      dialogText += `[${timestamp}] ${speaker}:\n${msg.text}\n\n`;
+
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `[${timestamp}] ${speaker}:`,
+              bold: true,
+            }),
+          ],
+          spacing: { before: 200, after: 100 },
+        })
+      );
+
+      paragraphs.push(
+        new Paragraph({
+          text: msg.text,
+          spacing: { after: 200 },
+        })
+      );
     });
 
-    // Создаем blob и скачиваем файл
-    const blob = new Blob([dialogText], { type: "text/plain;charset=utf-8" });
+    // Создаем документ
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: paragraphs,
+        },
+      ],
+    });
+
+    // Генерируем и скачиваем файл
+    const blob = await Packer.toBlob(doc);
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "dialogi-klient-marketolog.txt";
+    link.download = "dialogi-klient-marketolog.docx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
