@@ -227,7 +227,7 @@ export const ChatInterface = ({
                   (message.type === "bot" || message.type === "bot-image") &&
                     "bg-secondary text-secondary-foreground rounded-bl-sm",
                   (message.type === "system" || message.type === "system-alert") &&
-                    "bg-chat-system/10 text-foreground border border-chat-system/20 max-w-full text-center",
+                    "bg-chat-system/10 text-foreground border border-chat-system/20 max-w-full text-left",
                   message.type === "system-alert" && "bg-destructive/10 border-destructive/20"
                 )}
               >
@@ -246,7 +246,9 @@ export const ChatInterface = ({
                     <div
                       className="text-sm leading-relaxed whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{
-                        __html: message.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+                        __html: message.text
+                          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>'),
                       }}
                     />
                     {message.type !== "system" && message.type !== "system-alert" && (
