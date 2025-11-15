@@ -220,31 +220,31 @@ export const AdCabinet = ({
   return (
     <Card className="relative overflow-hidden">
       {isCabinetLocked && (
-        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg p-4">
           <div className="text-center">
-            <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-lg font-semibold text-foreground">
+            <Lock className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+            <p className="text-base sm:text-lg font-semibold text-foreground">
               Рекламный кабинет заблокирован
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2">
               Следуйте инструкциям в чате
             </p>
           </div>
         </div>
       )}
 
-      <CardHeader className="bg-gradient-to-r from-[#4680C2] to-[#5181B8] text-white border-b-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <svg className="h-6 w-6" viewBox="0 0 48 48" fill="currentColor">
+      <CardHeader className="bg-gradient-to-r from-[#4680C2] to-[#5181B8] text-white border-b-0 p-3 sm:p-6">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="flex items-center gap-2 text-white text-base sm:text-lg">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 shrink-0" viewBox="0 0 48 48" fill="currentColor">
                 <path d="M24 4.32c-10.94 0-19.81 8.88-19.81 19.81 0 10.94 8.87 19.81 19.81 19.81 10.93 0 19.81-8.87 19.81-19.81 0-10.93-8.88-19.81-19.81-19.81zM31.87 27.64c.53 1.49-1.09 2.77-2.45 1.86l-7.13-4.82c-.64-.43-1.03-1.15-1.03-1.92v-8.38c0-.85.69-1.54 1.54-1.54s1.54.69 1.54 1.54v7.58l6.53 4.42c.45.31.72.82.72 1.37 0 .35-.11.68-.3.96-.19.29-.42.53-.72.68z"/>
               </svg>
-              Рекламный кабинет
+              <span className="truncate">Рекламный кабинет</span>
             </CardTitle>
-            <p className="text-white/90 text-sm mt-1">VK Реклама</p>
+            <p className="text-white/90 text-xs sm:text-sm mt-1">VK Реклама</p>
           </div>
-          <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/30 hover:bg-white/20">
+          <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/30 hover:bg-white/20 text-xs sm:text-sm shrink-0 h-8 sm:h-9 px-2 sm:px-4">
             + СИМУЛЯТОР
           </Button>
         </div>
@@ -252,31 +252,31 @@ export const AdCabinet = ({
 
       <CardContent className="p-0 bg-[#F0F2F5]">
         {/* Steps indicator */}
-        <div className="flex items-center gap-2 p-4 bg-white border-b border-[#E7E8EC]">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[#4680C2] text-white flex items-center justify-center text-sm font-medium">
+        <div className="flex items-center gap-1 sm:gap-2 p-3 sm:p-4 bg-white border-b border-[#E7E8EC] overflow-x-auto">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="w-6 h-6 rounded-full bg-[#4680C2] text-white flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
               1
             </div>
-            <span className="text-sm font-medium">Настройка кампании</span>
+            <span className="text-xs sm:text-sm font-medium whitespace-nowrap">Настройка кампании</span>
           </div>
-          <span className="text-[#AEB7C2]">—</span>
-          <div className="flex items-center gap-2 opacity-50">
-            <div className="w-6 h-6 rounded-full bg-[#E7E8EC] text-[#AEB7C2] flex items-center justify-center text-sm font-medium">
+          <span className="text-[#AEB7C2] text-xs sm:text-sm">—</span>
+          <div className="flex items-center gap-1 sm:gap-2 opacity-50">
+            <div className="w-6 h-6 rounded-full bg-[#E7E8EC] text-[#AEB7C2] flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
               2
             </div>
-            <span className="text-sm text-[#AEB7C2]">Группы объявлений</span>
+            <span className="text-xs sm:text-sm text-[#AEB7C2] whitespace-nowrap">Группы объявлений</span>
           </div>
-          <span className="text-[#AEB7C2]">—</span>
-          <div className="flex items-center gap-2 opacity-50">
-            <div className="w-6 h-6 rounded-full bg-[#E7E8EC] text-[#AEB7C2] flex items-center justify-center text-sm font-medium">
+          <span className="text-[#AEB7C2] text-xs sm:text-sm">—</span>
+          <div className="flex items-center gap-1 sm:gap-2 opacity-50">
+            <div className="w-6 h-6 rounded-full bg-[#E7E8EC] text-[#AEB7C2] flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
               3
             </div>
-            <span className="text-sm text-[#AEB7C2]">Объявления</span>
+            <span className="text-xs sm:text-sm text-[#AEB7C2] whitespace-nowrap">Объявления</span>
           </div>
         </div>
 
         {/* Campaign section */}
-        <div className="p-4 space-y-4">
+        <div className="p-2 sm:p-4 space-y-3 sm:space-y-4">
           <Card className="border-[#E7E8EC] bg-white">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -291,14 +291,17 @@ export const AdCabinet = ({
             <CardContent className="space-y-4">
               <Tabs defaultValue="actions" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 bg-[#F0F2F5]">
-                  <TabsTrigger value="actions" className="text-sm">
-                    Целевые действия
+                  <TabsTrigger value="actions" className="text-xs sm:text-sm px-1 sm:px-3">
+                    <span className="hidden sm:inline">Целевые действия</span>
+                    <span className="sm:hidden">Действия</span>
                   </TabsTrigger>
-                  <TabsTrigger value="awareness" className="text-sm">
-                    Узнаваемость и охват
+                  <TabsTrigger value="awareness" className="text-xs sm:text-sm px-1 sm:px-3">
+                    <span className="hidden sm:inline">Узнаваемость и охват</span>
+                    <span className="sm:hidden">Охват</span>
                   </TabsTrigger>
-                  <TabsTrigger value="smart" className="text-sm">
-                    ✨ Смарт-кампания
+                  <TabsTrigger value="smart" className="text-xs sm:text-sm px-1 sm:px-3">
+                    <span className="hidden sm:inline">✨ Смарт-кампания</span>
+                    <span className="sm:hidden">✨ Смарт</span>
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="actions" className="space-y-4 mt-4">
@@ -306,22 +309,22 @@ export const AdCabinet = ({
                     <Label className="text-sm font-medium mb-3 block">
                       Что будете рекламировать? <span className="text-red-500">*</span>
                     </Label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       {campaignTypes.map((type) => {
                         const Icon = type.icon;
                         return (
                           <button
                             key={type.id}
                             onClick={() => setCampaignType(type.id)}
-                            className={`p-4 rounded-lg border-2 text-left transition-all hover:border-[#4680C2] ${
+                            className={`p-3 sm:p-4 rounded-lg border-2 text-left transition-all hover:border-[#4680C2] ${
                               campaignType === type.id
                                 ? "border-[#4680C2] bg-[#E8F0FE]"
                                 : "border-[#E7E8EC] bg-white"
                             }`}
                           >
-                            <Icon className="h-5 w-5 mb-2" />
-                            <div className="font-medium text-sm">{type.title}</div>
-                            <div className="text-xs text-[#818C99] mt-1">
+                            <Icon className="h-4 w-4 sm:h-5 sm:w-5 mb-2" />
+                            <div className="font-medium text-xs sm:text-sm">{type.title}</div>
+                            <div className="text-xs text-[#818C99] mt-1 hidden sm:block">
                               {type.description}
                             </div>
                           </button>
@@ -829,16 +832,16 @@ export const AdCabinet = ({
 
           {/* Launch section */}
           <Card className="border-[#E7E8EC] bg-white">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <p className="text-sm text-[#818C99]">Бюджет кампании</p>
-                  <p className="text-2xl font-semibold">{budget.toLocaleString('ru-RU')} ₽</p>
+                  <p className="text-xs sm:text-sm text-[#818C99]">Бюджет кампании</p>
+                  <p className="text-xl sm:text-2xl font-semibold">{budget.toLocaleString('ru-RU')} ₽</p>
                 </div>
                 <Button
                   onClick={handleLaunch}
                   disabled={campaignLaunched}
-                  className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white px-8"
+                  className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white px-4 sm:px-8 w-full sm:w-auto text-sm sm:text-base"
                 >
                   {campaignLaunched ? "Кампания запущена" : "Запустить кампанию"}
                 </Button>
@@ -851,33 +854,33 @@ export const AdCabinet = ({
             <Card className="border-[#E7E8EC] bg-white">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-medium">Статистика кампании</CardTitle>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <CardTitle className="text-sm sm:text-base font-medium">Статистика кампании</CardTitle>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
                     Активна
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="p-3 bg-[#F0F2F5] rounded-lg">
-                    <p className="text-sm text-[#818C99] mb-1">Остаток бюджета</p>
-                    <p className="text-2xl font-semibold">
+                    <p className="text-xs sm:text-sm text-[#818C99] mb-1">Остаток бюджета</p>
+                    <p className="text-xl sm:text-2xl font-semibold">
                       {currentStage === "STAGE_5_ORDERS_COMING" ? "10 547" : 
                        (budget - 4453).toLocaleString("ru-RU")} ₽
                     </p>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     <div className="space-y-1">
-                      <p className="text-sm text-[#818C99]">Показы</p>
-                      <p className="text-xl font-semibold">10 361</p>
+                      <p className="text-xs sm:text-sm text-[#818C99]">Показы</p>
+                      <p className="text-base sm:text-xl font-semibold">10 361</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-[#818C99]">Клики</p>
-                      <p className="text-xl font-semibold">41</p>
+                      <p className="text-xs sm:text-sm text-[#818C99]">Клики</p>
+                      <p className="text-base sm:text-xl font-semibold">41</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-[#818C99]">Конверсии</p>
-                      <p className="text-xl font-semibold">{conversions}</p>
+                      <p className="text-xs sm:text-sm text-[#818C99]">Конверсии</p>
+                      <p className="text-base sm:text-xl font-semibold">{conversions}</p>
                     </div>
                   </div>
                 </div>
@@ -889,25 +892,25 @@ export const AdCabinet = ({
           {campaignLaunched && (currentStage === "STAGE_5_ORDERS_COMING" || currentStage === "STAGE_5_REPORT" || currentStage === "STAGE_6_REPORT_WAIT" || currentStage === "STAGE_7_REPORT_DATA" || currentStage === "STAGE_7_REPORT_DATA_2" || currentStage === "STAGE_8_REPORT_SUBMIT" || currentStage === "STAGE_8_REPORT_SENT" || currentStage === "STAGE_9_EXPLAIN" || currentStage === "STAGE_10_SETTINGS" || currentStage === "FINAL") && (
             <Card className="border-[#E7E8EC] bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-medium">Отчеты</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-medium">Отчеты</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {currentStage === "STAGE_5_ORDERS_COMING" && (
-                    <div className="p-3 bg-chat-system/10 border border-chat-system/20 rounded-lg mb-3">
-                      <p className="text-sm text-foreground">
+                    <div className="p-2 sm:p-3 bg-chat-system/10 border border-chat-system/20 rounded-lg mb-3">
+                      <p className="text-xs sm:text-sm text-foreground">
                         💡 <strong>Подсказка:</strong> Конверсии появились! Вернитесь в чат и ответьте клиенту.
                       </p>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="space-y-1">
-                      <p className="text-sm text-[#818C99]">Конверсии</p>
-                      <p className="text-2xl font-semibold">{conversions}</p>
+                      <p className="text-xs sm:text-sm text-[#818C99]">Конверсии</p>
+                      <p className="text-xl sm:text-2xl font-semibold">{conversions}</p>
                     </div>
                     <Button
                       onClick={() => setActiveTab("report")}
-                      className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white"
+                      className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white w-full sm:w-auto text-xs sm:text-sm"
                       disabled={currentStage !== "STAGE_5_REPORT" && currentStage !== "STAGE_6_REPORT_WAIT" && currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2"}
                     >
                       Сформировать отчет
