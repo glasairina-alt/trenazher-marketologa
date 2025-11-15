@@ -144,11 +144,6 @@ export const AdCabinet = ({
     });
 
     setTimeout(() => {
-      toast({
-        title: "Подсказка",
-        description: "Теперь подождем, когда пойдут первые заявки. Сообщите своему клиенту в чате, что вы запустили рекламу.",
-        duration: 10000,
-      });
       setCurrentStage("STAGE_3_LAUNCH_WAIT_USER");
       setActiveTab("chat");
     }, 1500);
