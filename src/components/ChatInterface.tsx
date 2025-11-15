@@ -7,6 +7,7 @@ import { Send, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
+import bouquetImage from "@/assets/bouquet.png";
 
 interface ChatInterfaceProps {
   currentStage: StageType;
@@ -232,8 +233,8 @@ export const ChatInterface = ({
                 )}
               >
                 {message.type === "bot-image" ? (
-                  <div className="w-48 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded flex items-center justify-center">
-                    <span className="text-4xl">🌹</span>
+                  <div className="w-48 h-32 rounded flex items-center justify-center overflow-hidden">
+                    <img src={bouquetImage} alt="Букет цветов" className="w-full h-full object-cover" />
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
