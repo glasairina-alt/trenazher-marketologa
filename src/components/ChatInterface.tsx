@@ -180,6 +180,7 @@ export const ChatInterface = ({
           "**Задача:** Вам нужно переделывать креатив и прислать его снова.",
           "system-alert"
         );
+        setFileAttachEnabled(true);
         setCurrentStage("STAGE_2_CREATIVE_2");
       } else if (currentStage === "STAGE_2_CREATIVE_2") {
         setUploadedCreativeUrl(imageUrl);
@@ -411,7 +412,8 @@ export const ChatInterface = ({
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept="image/*"
+            accept="image/*,image/heic,image/heif"
+            capture="environment"
             onChange={(e) => {
               if (e.target.files?.[0]) {
                 handleFileUpload(e.target.files[0]);
