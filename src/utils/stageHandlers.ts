@@ -193,9 +193,13 @@ export const handleStageLogic = async ({
         "**Подсказка:** Напомните Анне в чате, что вы отправили отчет и ждете ее реакции.",
         "system-alert"
       );
-      break;
-
-    case "STAGE_8_REPORT_SENT":
+      await sleep(1000);
+      // Автоматически переходим к следующей стадии и запускаем её логику
+      setCurrentStage("STAGE_8_REPORT_SENT");
+      await sleep(2000);
+      await showTyping();
+      await sleep(1000);
+      await hideTyping();
       addMessage("Посмотрю отчет завтра.", "bot");
       await sleep(2000);
       addMessage("**Наступило 17 февраля.**", "system");
@@ -213,6 +217,10 @@ export const handleStageLogic = async ({
         "system-alert"
       );
       setCurrentStage("STAGE_9_EXPLAIN");
+      break;
+
+    case "STAGE_8_REPORT_SENT":
+      // Эта стадия теперь обрабатывается в STAGE_8_REPORT_SUBMIT
       break;
 
     case "STAGE_9_EXPLAIN":
