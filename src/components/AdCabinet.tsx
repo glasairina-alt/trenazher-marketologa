@@ -869,11 +869,11 @@ export const AdCabinet = ({
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1">
                       <p className="text-sm text-[#818C99]">Показы</p>
-                      <p className="text-xl font-semibold">110 867</p>
+                      <p className="text-xl font-semibold">10 361</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-[#818C99]">Клики</p>
-                      <p className="text-xl font-semibold">410</p>
+                      <p className="text-xl font-semibold">41</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-[#818C99]">Конверсии</p>
