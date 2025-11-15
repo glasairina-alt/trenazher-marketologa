@@ -7,7 +7,9 @@ import { Send, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
-import bouquetImage from "@/assets/bouquet.png";
+import bouquetChrysanthemums from "@/assets/bouquet-chrysanthemums.png";
+import bouquetTulips from "@/assets/bouquet-tulips.png";
+import bouquetRoses from "@/assets/bouquet-roses.png";
 
 interface ChatInterfaceProps {
   currentStage: StageType;
@@ -32,6 +34,7 @@ export const ChatInterface = ({
   setMessages,
   onAutoTriggerStage,
 }: ChatInterfaceProps) => {
+  const bouquets = [bouquetRoses, bouquetTulips, bouquetChrysanthemums];
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAttachEnabled, setFileAttachEnabled] = useState(false);
@@ -234,7 +237,11 @@ export const ChatInterface = ({
               >
                 {message.type === "bot-image" ? (
                   <div className="w-48 h-32 rounded flex items-center justify-center overflow-hidden">
-                    <img src={bouquetImage} alt="Букет цветов" className="w-full h-full object-cover" />
+                    <img 
+                      src={bouquets[message.id % bouquets.length]} 
+                      alt="Букет цветов" 
+                      className="w-full h-full object-cover" 
+                    />
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
