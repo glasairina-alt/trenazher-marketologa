@@ -345,6 +345,16 @@ export const AdReportTab = ({
 
           {/* Кнопка отправки */}
           <div className="flex flex-col gap-3">
+            {!isCorrect && calculated.ctr && calculated.cpc && calculated.cpm && 
+             calculated.cr1 && calculated.cpl && calculated.cr2 && 
+             calculated.avgCheck && calculated.romi && (
+              <div className="p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                <p className="text-xs sm:text-sm text-center font-medium">
+                  ⬆️ <strong>Важно:</strong> Сначала нажмите кнопку "Проверить расчеты" выше!
+                </p>
+              </div>
+            )}
+            
             <Button
               onClick={handleSendReport}
               disabled={!canSendReport()}
@@ -356,7 +366,7 @@ export const AdReportTab = ({
             
             {isCorrect && (
               <div className="p-3 bg-chat-system/10 border border-chat-system/20 rounded-lg">
-                <p className="text-sm text-center text-muted-foreground">
+                <p className="text-xs sm:text-sm text-center text-muted-foreground">
                   💡 <strong>Подсказка:</strong> После того, как вы отправите отчет, вернитесь в чат и напишите клиенту, что вы отправили отчет.
                 </p>
               </div>
