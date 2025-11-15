@@ -296,7 +296,7 @@ export const ChatInterface = ({
 
       <ScrollArea className="flex-1 p-3 sm:p-4">
         <div className="space-y-3 sm:space-y-4">
-          {messages.map((message) => (
+          {messages.map((message, idx) => (
             <div
               key={message.id}
               className={cn(
@@ -335,8 +335,8 @@ export const ChatInterface = ({
               >
                 {message.type === "bot-image" ? (
                   <div className="w-48 h-32 bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 rounded flex items-center justify-center">
-                    <div className="text-xl sm:text-2xl font-bold text-black select-none px-3 sm:px-4 py-2 bg-white rounded-lg shadow-sm">
-                      {flowerLabels[message.id % flowerLabels.length]}
+                    <div className="text-base sm:text-lg font-semibold text-foreground select-none px-3 sm:px-4 py-2 bg-background rounded-lg shadow-md text-center leading-tight">
+                      {flowerLabels[idx % flowerLabels.length]}
                     </div>
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
