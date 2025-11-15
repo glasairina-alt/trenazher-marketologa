@@ -28,14 +28,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-bold text-foreground truncate">
                 Тренажер Маркетолога
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">
                 Кейс: «Срочный запуск 14 февраля»
               </p>
             </div>
@@ -43,7 +43,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3">
             <TabsTrigger value="chat" className="flex items-center gap-2">
@@ -111,8 +111,8 @@ const Index = () => {
         </Tabs>
       </main>
 
-      <footer className="border-t border-border bg-card mt-12">
-        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border bg-card mt-8 sm:mt-12">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 text-center text-xs sm:text-sm text-muted-foreground">
           <p>© 2023 Интерактивный тренажер маркетолога</p>
           <p className="mt-2">
             Автор: Ирина Войтович, маркетолог-наставник{" "}

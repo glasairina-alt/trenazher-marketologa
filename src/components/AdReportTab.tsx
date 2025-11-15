@@ -153,29 +153,29 @@ export const AdReportTab = ({
     currentStage !== "FINAL";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
       <Card className="relative overflow-hidden min-h-[600px]">
         {isReportLocked && (
-          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-start pt-32 justify-center rounded-lg">
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex items-start pt-24 sm:pt-32 justify-center rounded-lg p-4">
             <div className="text-center">
-              <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-lg font-semibold text-foreground">
+              <Lock className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <p className="text-base sm:text-lg font-semibold text-foreground">
                 Отчет заблокирован
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
                 Запустите рекламную кампанию и получите данные от клиента
               </p>
             </div>
           </div>
         )}
-        <CardHeader>
-          <CardTitle>Отчет по рекламной кампании</CardTitle>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-lg sm:text-xl">Отчет по рекламной кампании</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           {/* Основные метрики */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Данные из рекламного кабинета</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Данные из рекламного кабинета</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <Label htmlFor="spend">Расход (₽) *</Label>
                 <Input
@@ -253,21 +253,21 @@ export const AdReportTab = ({
 
           {/* Рассчитанные метрики */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Рассчитанные показатели</h3>
-              <Button onClick={handleCheckAnswers}>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+              <h3 className="text-base sm:text-lg font-semibold">Рассчитанные показатели</h3>
+              <Button onClick={handleCheckAnswers} className="w-full sm:w-auto text-sm">
                 Проверить расчеты
               </Button>
             </div>
             
             {showError && calculated.ctr && (
-              <div className="mb-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-                <p className="text-sm font-medium text-destructive">
+              <div className="mb-4 p-3 sm:p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+                <p className="text-xs sm:text-sm font-medium text-destructive">
                   ⚠️ Некоторые показатели рассчитаны неверно. Проверьте формулы и введенные данные.
                 </p>
               </div>
             )}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <Label>CTR (%)</Label>
                 <Input 

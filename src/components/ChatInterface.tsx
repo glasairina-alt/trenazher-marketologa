@@ -178,27 +178,27 @@ export const ChatInterface = ({
 
   return (
     <Card className="flex flex-col h-[600px]">
-      <div className="border-b border-border bg-card p-4 rounded-t-lg">
+      <div className="border-b border-border bg-card p-3 sm:p-4 rounded-t-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg sm:text-xl">
               А
             </div>
             <div>
-              <h2 className="font-semibold text-foreground">Анна</h2>
+              <h2 className="font-semibold text-sm sm:text-base text-foreground">Анна</h2>
               <span className="text-xs text-success">Online</span>
             </div>
           </div>
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-3 sm:p-4">
+        <div className="space-y-3 sm:space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={cn(
-                "flex gap-3 items-start",
+                "flex gap-2 sm:gap-3 items-start",
                 message.type === "user" && "flex-row-reverse",
                 (message.type === "system" || message.type === "system-alert") &&
                   "justify-center"
@@ -207,7 +207,7 @@ export const ChatInterface = ({
               {message.type !== "system" && message.type !== "system-alert" && (
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-bold text-lg",
+                    "flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-white font-bold text-base sm:text-lg",
                     message.type === "user" && "bg-gradient-to-br from-green-500 to-emerald-600",
                     (message.type === "bot" ||
                       message.type === "bot-image" ||
@@ -221,7 +221,7 @@ export const ChatInterface = ({
 
               <div
                 className={cn(
-                  "rounded-lg px-4 py-2 max-w-[80%]",
+                  "rounded-lg px-3 py-2 sm:px-4 max-w-[85%] sm:max-w-[80%] text-sm sm:text-base",
                   message.type === "user" &&
                     "bg-chat-user text-white rounded-br-sm",
                   (message.type === "bot" || message.type === "bot-image") &&
@@ -266,11 +266,11 @@ export const ChatInterface = ({
           ))}
 
           {isTyping && (
-            <div className="flex gap-3 items-start">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
+            <div className="flex gap-2 sm:gap-3 items-start">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-base sm:text-lg">
                 А
               </div>
-              <div className="rounded-lg bg-secondary px-4 py-2 rounded-bl-sm">
+              <div className="rounded-lg bg-secondary px-3 py-2 sm:px-4 rounded-bl-sm">
                 <div className="flex gap-1">
                   <div className="h-2 w-2 rounded-full bg-foreground/40 animate-bounce" />
                   <div className="h-2 w-2 rounded-full bg-foreground/40 animate-bounce [animation-delay:0.15s]" />
@@ -283,7 +283,7 @@ export const ChatInterface = ({
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border bg-card p-4 rounded-b-lg">
+      <div className="border-t border-border bg-card p-3 sm:p-4 rounded-b-lg">
         <div className="flex gap-2">
           <input
             ref={fileInputRef}
