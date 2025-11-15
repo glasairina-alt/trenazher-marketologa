@@ -335,7 +335,7 @@ export const ChatInterface = ({
               >
                 {message.type === "bot-image" ? (
                   <div className="w-48 h-32 bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 rounded flex items-center justify-center">
-                    <div className="text-2xl font-bold text-foreground select-none px-4 py-2 bg-background/80 rounded-lg">
+                    <div className="text-xl sm:text-2xl font-bold text-black select-none px-3 sm:px-4 py-2 bg-white rounded-lg shadow-sm">
                       {flowerLabels[message.id % flowerLabels.length]}
                     </div>
                   </div>
