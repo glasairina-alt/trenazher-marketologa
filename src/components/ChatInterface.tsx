@@ -203,6 +203,35 @@ export const ChatInterface = ({
     }
   };
 
+  const downloadDialogs = () => {
+    // Фильтруем только диалоги клиент-ученик (без системных сообщений и подсказок)
+    const clientDialogs = messages.filter(
+      (msg) => msg.type === "bot" || msg.type === "user"
+    );
+
+    // Форматируем диалоги в текст
+    let dialogText = "Диалоги: Клиент-Маркетолог\n";
+    dialogText += "Кейс: «Срочный запуск 14 февраля»\n";
+    dialogText += "="+ "=".repeat(50) + "\n\n";
+
+    clientDialogs.forEach((msg) => {
+      const speaker = msg.type === "user" ? "Маркетолог" : "Клиент (Анна)";
+      const timestamp = msg.timestamp.toLocaleString("ru-RU");
+      dialogText += `[${timestamp}] ${speaker}:\n${msg.text}\n\n`;
+    });
+
+    // Создаем blob и скачиваем файл
+    const blob = new Blob([dialogText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "dialogi-klient-marketolog.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card className="flex flex-col h-[600px]">
       <div className="border-b border-border bg-card p-3 sm:p-4 rounded-t-lg">
@@ -308,6 +337,24 @@ export const ChatInterface = ({
               </div>
             </div>
           )}
+
+          {currentStage === "FINAL" && (
+            <div className="flex justify-center mt-4">
+              <Button 
+                onClick={downloadDialogs}
+                variant="default"
+                className="gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Скачать мои диалоги
+              </Button>
+            </div>
+          )}
+          
           <div ref={scrollRef} />
         </div>
       </ScrollArea>
