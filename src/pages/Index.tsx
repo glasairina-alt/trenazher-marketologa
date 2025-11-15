@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
@@ -54,23 +53,13 @@ const Index = () => {
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Рекламный кабинет</span>
             </TabsTrigger>
-            <Tooltip>
-              <TooltipTrigger asChild>
             <TabsTrigger 
               value="report" 
               className="flex items-center gap-2"
-              disabled={currentStage !== "STAGE_5_REPORT" && currentStage !== "STAGE_6_REPORT_WAIT" && currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2" && currentStage !== "STAGE_8_REPORT_SUBMIT" && currentStage !== "STAGE_8_REPORT_SENT" && currentStage !== "STAGE_9_EXPLAIN" && currentStage !== "STAGE_10_SETTINGS" && currentStage !== "FINAL"}
             >
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Отчет</span>
             </TabsTrigger>
-          </TooltipTrigger>
-          {(currentStage !== "STAGE_5_REPORT" && currentStage !== "STAGE_6_REPORT_WAIT" && currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2" && currentStage !== "STAGE_8_REPORT_SUBMIT" && currentStage !== "STAGE_8_REPORT_SENT" && currentStage !== "STAGE_9_EXPLAIN" && currentStage !== "STAGE_10_SETTINGS" && currentStage !== "FINAL") && (
-                <TooltipContent>
-                  <p>Вкладка станет доступна после запуска рекламной кампании и получения данных от клиента</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
           </TabsList>
 
           <TabsContent value="chat" className="mt-6">
