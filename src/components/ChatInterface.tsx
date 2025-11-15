@@ -61,6 +61,33 @@ export const ChatInterface = ({
     }
   }, [currentStage, messages]);
 
+  // Автоматический триггер при переходе на стадию после запуска рекламы
+  useEffect(() => {
+    if (currentStage === "STAGE_3_LAUNCH_WAIT_USER") {
+      const triggerLaunchMessages = async () => {
+        const hasTriggered = messages.some(m => 
+          m.text.includes("Реклама запущена!")
+        );
+        
+        if (!hasTriggered) {
+          await handleStageLogic({
+            currentStage,
+            userInput: "",
+            setCurrentStage,
+            addMessage,
+            setFileAttachEnabled,
+            setIsCabinetLocked,
+            showTyping,
+            hideTyping,
+            sleep,
+          });
+        }
+      };
+      
+      triggerLaunchMessages();
+    }
+  }, [currentStage, messages]);
+
   const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
     const newMessage: Message = {
       id: Date.now() + Math.random(),
