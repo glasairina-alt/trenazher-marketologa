@@ -158,6 +158,7 @@ export const AdCabinet = ({
     // Автоматически устанавливаем campaignLaunched если мы на этапах после запуска
     if (
       currentStage === "STAGE_3_LAUNCH_WAIT_USER" ||
+      currentStage === "STAGE_3_WAIT_CLIENT_RESPONSE" ||
       currentStage === "STAGE_4_PANIC" ||
       currentStage === "STAGE_4_WAIT_RESOLUTION" ||
       currentStage === "STAGE_5_ORDERS_COMING" ||

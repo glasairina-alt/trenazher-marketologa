@@ -74,6 +74,14 @@ export const handleStageLogic = async ({
       break;
 
     case "STAGE_3_LAUNCH_WAIT_USER":
+      addMessage(
+        "**Задача:** Напишите ответ клиенту, что кампания запущена.",
+        "system-alert"
+      );
+      setCurrentStage("STAGE_3_WAIT_CLIENT_RESPONSE");
+      break;
+
+    case "STAGE_3_WAIT_CLIENT_RESPONSE":
       addMessage("Здорово! Очень ждем первые заявки.", "bot");
       await sleep(2000);
       addMessage("**Прошло 2 часа.**", "system");
