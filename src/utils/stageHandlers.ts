@@ -80,7 +80,7 @@ export const handleStageLogic = async ({
       );
       await sleep(1500);
       addMessage(
-        "**Подсказка:** Теперь подождем, когда пойдут первые заявки. Сообщите своему клиенту в чате, что вы запустили рекламу.",
+        "**Задача:** Напиши клиенту о запуске рекламы.",
         "system-alert"
       );
       setCurrentStage("STAGE_3_WAIT_CLIENT_RESPONSE");
