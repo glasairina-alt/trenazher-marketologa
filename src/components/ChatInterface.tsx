@@ -63,14 +63,15 @@ export const ChatInterface = ({
 
   // Автоматический триггер при переходе на стадию после запуска рекламы
   useEffect(() => {
-    if (currentStage === "STAGE_3_LAUNCH_WAIT_USER") {
-      const triggerLaunchMessages = async () => {
-        const hasTriggered = messages.some(m => 
-          m.text.includes("Реклама запущена!")
-        );
-        
-        if (!hasTriggered) {
-          await handleStageLogic({
+    if (currentStage === "STAGE_3_LAUNCH_WAIT_USER" && isActive) {
+      const hasTriggered = messages.some(m => 
+        m.text.includes("Реклама запущена!")
+      );
+      
+      if (!hasTriggered) {
+        // Небольшая задержка для переключения вкладки
+        setTimeout(() => {
+          handleStageLogic({
             currentStage,
             userInput: "",
             setCurrentStage,
@@ -81,12 +82,10 @@ export const ChatInterface = ({
             hideTyping,
             sleep,
           });
-        }
-      };
-      
-      triggerLaunchMessages();
+        }, 100);
+      }
     }
-  }, [currentStage, messages]);
+  }, [currentStage, isActive]);
 
   const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
     const newMessage: Message = {
