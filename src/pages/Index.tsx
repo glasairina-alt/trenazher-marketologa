@@ -58,7 +58,11 @@ const Index = () => {
               <TooltipTrigger asChild>
             <TabsTrigger 
               value="report" 
-              className="flex items-center gap-2"
+              className={`flex items-center gap-2 ${
+                activeTab === "report" 
+                  ? "ring-2 ring-primary ring-offset-2 animate-pulse data-[state=active]:bg-primary/10" 
+                  : ""
+              }`}
               disabled={currentStage !== "STAGE_5_REPORT" && currentStage !== "STAGE_6_REPORT_WAIT" && currentStage !== "STAGE_7_REPORT_DATA" && currentStage !== "STAGE_7_REPORT_DATA_2" && currentStage !== "STAGE_8_REPORT_SUBMIT" && currentStage !== "STAGE_8_REPORT_SENT" && currentStage !== "STAGE_9_EXPLAIN" && currentStage !== "STAGE_10_SETTINGS" && currentStage !== "FINAL"}
             >
               <FileText className="h-4 w-4" />
