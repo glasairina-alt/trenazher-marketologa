@@ -412,19 +412,96 @@ export const AdCabinet = ({
                 className="pb-3 cursor-pointer hover:bg-[#F9FAFB]"
                 onClick={() => toggleSection('demographics')}
               >
-...
-                  Социальная реклама
-                </Label>
-              </div>
-            </CardContent>
-          )}
-        </Card>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm sm:text-base font-medium">Демография</CardTitle>
+                  {sectionsOpen.demographics ? (
+                    <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-[#4680C2]" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-[#4680C2]" />
+                  )}
+                </div>
+              </CardHeader>
+              {sectionsOpen.demographics && (
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div>
+                    <Label className="text-xs sm:text-sm mb-2 block">Пол</Label>
+                    <Select value={gender} onValueChange={setGender}>
+                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                        <SelectValue placeholder="Любой" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Любой</SelectItem>
+                        <SelectItem value="male">Мужской</SelectItem>
+                        <SelectItem value="female">Женский</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs sm:text-sm mb-2 block">Возраст</Label>
+                    <div className="flex gap-2">
+                      <Select value={ageFrom} onValueChange={setAgeFrom}>
+                        <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                          <SelectValue placeholder="От" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[12, 14, 16, 18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70].map(age => (
+                            <SelectItem key={age} value={age.toString()}>{age}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={ageTo} onValueChange={setAgeTo}>
+                        <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                          <SelectValue placeholder="До" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75].map(age => (
+                            <SelectItem key={age} value={age.toString()}>{age}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs sm:text-sm mb-2 block">Возрастная маркировка</Label>
+                    <Select value={ageRating} onValueChange={setAgeRating}>
+                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                        <SelectValue placeholder="Не выбрана" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0+">0+</SelectItem>
+                        <SelectItem value="6+">6+</SelectItem>
+                        <SelectItem value="12+">12+</SelectItem>
+                        <SelectItem value="16+">16+</SelectItem>
+                        <SelectItem value="18+">18+</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="social-ad" 
+                      checked={socialAd}
+                      onCheckedChange={(checked) => setSocialAd(checked as boolean)}
+                    />
+                    <Label htmlFor="social-ad" className="text-xs sm:text-sm font-normal cursor-pointer">
+                      Социальная реклама
+                    </Label>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
           ) : (
             <LockedSection onClick={() => setIsPaywallOpen(true)}>
               <Card className="border-[#E7E8EC] bg-white">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm sm:text-base font-medium">Демография</CardTitle>
                 </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="h-10 bg-[#F0F2F5] rounded"></div>
+                  <div className="h-10 bg-[#F0F2F5] rounded"></div>
+                </CardContent>
               </Card>
             </LockedSection>
           )}
@@ -436,11 +513,50 @@ export const AdCabinet = ({
                 className="pb-3 cursor-pointer hover:bg-[#F9FAFB]"
                 onClick={() => toggleSection('interests')}
               >
-...
-              </div>
-            </CardContent>
-          )}
-        </Card>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-medium">
+                    Интересы и поведение аудитории
+                  </CardTitle>
+                  {sectionsOpen.interests ? (
+                    <ChevronUp className="h-5 w-5 text-[#4680C2]" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-[#4680C2]" />
+                  )}
+                </div>
+                <p className="text-sm text-[#818C99]">
+                  {selectedInterests.length > 0 
+                    ? `Выбрано: ${selectedInterests.length}` 
+                    : "Не выбран"}
+                </p>
+              </CardHeader>
+              {sectionsOpen.interests && (
+                <CardContent>
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="Поиск интересов..."
+                      className="bg-[#F0F2F5] border-[#E7E8EC] mb-3"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      {availableInterests.map((interest) => (
+                        <div key={interest} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`interest-${interest}`}
+                            checked={selectedInterests.includes(interest)}
+                            onCheckedChange={() => toggleInterest(interest)}
+                          />
+                          <Label
+                            htmlFor={`interest-${interest}`}
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {interest}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
           ) : (
             <LockedSection onClick={() => setIsPaywallOpen(true)}>
               <Card className="border-[#E7E8EC] bg-white">
@@ -448,7 +564,11 @@ export const AdCabinet = ({
                   <CardTitle className="text-base font-medium">
                     Интересы и поведение аудитории
                   </CardTitle>
+                  <p className="text-sm text-[#818C99]">Не выбран</p>
                 </CardHeader>
+                <CardContent>
+                  <div className="h-32 bg-[#F0F2F5] rounded"></div>
+                </CardContent>
               </Card>
             </LockedSection>
           )}
