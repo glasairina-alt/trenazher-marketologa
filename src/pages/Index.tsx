@@ -23,6 +23,10 @@ const Index = () => {
       timestamp: new Date(),
     },
   ]);
+  
+  // TODO: Подключить проверку оплаты из вашей БД
+  // Пример: const [isPaidUser, setIsPaidUser] = useState(false);
+  const [isPaidUser, setIsPaidUser] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,6 +91,14 @@ const Index = () => {
                 adData={adData}
                 setAdData={setAdData}
                 setActiveTab={setActiveTab}
+                isPaidUser={isPaidUser}
+                onPurchaseRequest={() => {
+                  // TODO: Здесь вызовите вашу логику оплаты
+                  // После успешной оплаты: setIsPaidUser(true)
+                  console.log("Запрос на оплату 790₽");
+                  // Временно для теста:
+                  // setIsPaidUser(true);
+                }}
               />
             </div>
           </TabsContent>
