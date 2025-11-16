@@ -574,169 +574,398 @@ export const AdCabinet = ({
           )}
 
           {/* Ad Creative */}
-          <Card className="border-[#E7E8EC] bg-white">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm sm:text-base font-medium">Объявление</CardTitle>
-                <Button variant="ghost" size="sm" className="h-6 sm:h-8 text-[#4680C2]">
-                  <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                  </svg>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-3 sm:space-y-4">
-                  {/* Logo upload */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">
-                      Логотип <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="border-2 border-dashed border-[#E7E8EC] rounded-lg p-4 sm:p-6 text-center bg-[#F9FAFB]">
-                      {uploadedCreativeUrl ? (
-                        <img 
-                          src={uploadedCreativeUrl} 
-                          alt="Logo" 
-                          className="max-h-16 sm:max-h-20 mx-auto rounded"
-                        />
-                      ) : (
-                        <div>
-                          <Button variant="link" className="text-[#4680C2] text-xs sm:text-sm">
-                            + Выбрать логотип
-                          </Button>
-                          <p className="text-xs text-[#818C99] mt-1">
-                            Минимум 100×100 пикселей • JPEG, PNG или GIF
-                          </p>
+          {!isPaidUser ? (
+            <LockedSection onClick={() => setIsPaywallOpen(true)}>
+              <Card className="border-[#E7E8EC] bg-white">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm sm:text-base font-medium">Объявление</CardTitle>
+                    <Button variant="ghost" size="sm" className="h-6 sm:h-8 text-[#4680C2]">
+                      <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      </svg>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-3 sm:space-y-4">
+                      {/* Logo upload */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Логотип <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="border-2 border-dashed border-[#E7E8EC] rounded-lg p-4 sm:p-6 text-center bg-[#F9FAFB]">
+                          {uploadedCreativeUrl ? (
+                            <img 
+                              src={uploadedCreativeUrl} 
+                              alt="Logo" 
+                              className="max-h-16 sm:max-h-20 mx-auto rounded"
+                            />
+                          ) : (
+                            <div>
+                              <Button variant="link" className="text-[#4680C2] text-xs sm:text-sm">
+                                + Выбрать логотип
+                              </Button>
+                              <p className="text-xs text-[#818C99] mt-1">
+                                Минимум 100×100 пикселей • JPEG, PNG или GIF
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+
+                      {/* Headline */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Заголовок <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            value={headline}
+                            onChange={(e) => setHeadline(e.target.value)}
+                            placeholder="Не выбран"
+                            className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
+                            maxLength={40}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
+                            {headline.length} / 40
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Short description */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Короткое описание <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="relative">
+                          <Textarea
+                            value={shortDescription}
+                            onChange={(e) => setShortDescription(e.target.value)}
+                            placeholder=""
+                            className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[80px] text-sm"
+                            maxLength={90}
+                          />
+                          <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
+                            {shortDescription.length} / 90
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Long description */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">Длинное описание</Label>
+                        <div className="relative">
+                          <Textarea
+                            value={longDescription}
+                            onChange={(e) => setLongDescription(e.target.value)}
+                            placeholder=""
+                            className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[120px] text-sm"
+                            maxLength={500}
+                          />
+                          <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
+                            {longDescription.length} / 500
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Call to action */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Текст рядом с кнопкой <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          value={buttonText}
+                          onChange={(e) => setButtonText(e.target.value)}
+                          placeholder="Не выбран"
+                          className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
+                          maxLength={80}
+                        />
+                      </div>
+
+                      {/* Website URL */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Ссылка на сайт <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          value={siteUrl}
+                          onChange={(e) => setSiteUrl(e.target.value)}
+                          placeholder="mysite.com/"
+                          className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
+                        />
+                      </div>
+
+                      {/* Button label */}
+                      <div>
+                        <Label className="text-xs sm:text-sm mb-2 block">
+                          Надпись на кнопке <span className="text-red-500">*</span>
+                        </Label>
+                        <Select value={buttonLabel} onValueChange={setButtonLabel}>
+                          <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                            <SelectValue placeholder="Не выбрано" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="learn">Узнать подробнее</SelectItem>
+                            <SelectItem value="go">Перейти</SelectItem>
+                            <SelectItem value="order">Заказать</SelectItem>
+                            <SelectItem value="buy">Купить</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Preview section */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">Предпросмотр</Label>
+                      <Tabs defaultValue="feed" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 bg-[#F0F2F5] h-auto">
+                          <TabsTrigger 
+                            value="feed"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
+                          >
+                            Лента
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="story"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
+                          >
+                            <span className="hidden sm:inline">В сторис</span>
+                            <span className="sm:hidden">Сторис</span>
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="fullscreen"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
+                          >
+                            <span className="hidden sm:inline">Полноэкранный блок</span>
+                            <span className="sm:hidden">Полный блок</span>
+                          </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="feed" className="p-2 sm:p-4 m-0">
+                          <div className="bg-white rounded-lg border border-[#E7E8EC] overflow-hidden">
+                            {/* Header with logo and menu */}
+                            <div className="flex items-center justify-between p-2 sm:p-3 border-b border-[#E7E8EC]">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <img 
+                                  src={uploadedCreativeUrl || defaultLogo} 
+                                  alt="Logo" 
+                                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
+                                />
+                                <div className="min-w-0">
+                                  <div className="text-xs sm:text-sm font-medium truncate">{headline || "Заголовок"}</div>
+                                  <div className="text-xs text-[#818C99]">Реклама</div>
+                                </div>
+                              </div>
+                              <button className="text-[#818C99] shrink-0 ml-2">⋯</button>
+                            </div>
+                            
+                            {/* Creative image */}
+                            {uploadedCreativeUrl ? (
+                              <img 
+                                src={uploadedCreativeUrl} 
+                                alt="Preview" 
+                                className="w-full"
+                              />
+                            ) : (
+                              <div className="aspect-video bg-[#F0F2F5] flex items-center justify-center p-2">
+                                <p className="text-xs sm:text-sm text-[#818C99] text-center">ЗАГРУЗИТЕ ИЗОБРАЖЕНИЕ ИЛИ ВИДЕО 1:1</p>
+                              </div>
+                            )}
+                            
+                            {/* Description and button */}
+                            <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
+                              <div className="text-xs sm:text-sm break-words">{shortDescription || "Короткое описание"}</div>
+                              {buttonLabel && (
+                                <Button 
+                                  className="w-full bg-[#4680C2] hover:bg-[#4680C2]/90 text-white text-xs sm:text-sm h-8 sm:h-10"
+                                >
+                                  {buttonLabel === "learn" && "Узнать подробнее"}
+                                  {buttonLabel === "go" && "Перейти"}
+                                  {buttonLabel === "order" && "Заказать"}
+                                  {buttonLabel === "buy" && "Купить"}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="story" className="p-4 m-0">
+                          <div className="text-center text-sm text-[#818C99]">
+                            Предпросмотр ленты
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="fullscreen" className="p-4 m-0">
+                          <div className="text-center text-sm text-[#818C99]">
+                            Предпросмотр полноэкранного блока
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </div>
-
-                  {/* Headline */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">
-                      Заголовок <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        value={headline}
-                        onChange={(e) => setHeadline(e.target.value)}
-                        placeholder="Не выбран"
-                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
-                        maxLength={40}
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
-                        {headline.length} / 40
-                      </span>
+                </CardContent>
+              </Card>
+            </LockedSection>
+          ) : (
+            <Card className="border-[#E7E8EC] bg-white">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm sm:text-base font-medium">Объявление</CardTitle>
+                  <Button variant="ghost" size="sm" className="h-6 sm:h-8 text-[#4680C2]">
+                    <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3 sm:space-y-4">
+                <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="space-y-3 sm:space-y-4">
+                    {/* Logo upload */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Логотип <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="border-2 border-dashed border-[#E7E8EC] rounded-lg p-4 sm:p-6 text-center bg-[#F9FAFB]">
+                        {uploadedCreativeUrl ? (
+                          <img 
+                            src={uploadedCreativeUrl} 
+                            alt="Logo" 
+                            className="max-h-16 sm:max-h-20 mx-auto rounded"
+                          />
+                        ) : (
+                          <div>
+                            <Button variant="link" className="text-[#4680C2] text-xs sm:text-sm">
+                              + Выбрать логотип
+                            </Button>
+                            <p className="text-xs text-[#818C99] mt-1">
+                              Минимум 100×100 пикселей • JPEG, PNG или GIF
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Short description */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">
-                      Короткое описание <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Textarea
-                        value={shortDescription}
-                        onChange={(e) => setShortDescription(e.target.value)}
-                        placeholder=""
-                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[80px] text-sm"
-                        maxLength={90}
-                      />
-                      <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
-                        {shortDescription.length} / 90
-                      </span>
+                    {/* Headline */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Заголовок <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          value={headline}
+                          onChange={(e) => setHeadline(e.target.value)}
+                          placeholder="Не выбран"
+                          className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
+                          maxLength={40}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
+                          {headline.length} / 40
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Long description */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">Длинное описание</Label>
-                    <div className="relative">
-                      <Textarea
-                        value={longDescription}
-                        onChange={(e) => setLongDescription(e.target.value)}
-                        placeholder=""
-                        className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[100px] sm:min-h-[120px] text-sm"
-                        maxLength={16384}
-                      />
-                      <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
-                        {longDescription.length} / 16384
-                      </span>
+                    {/* Short description */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Короткое описание <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Textarea
+                          value={shortDescription}
+                          onChange={(e) => setShortDescription(e.target.value)}
+                          placeholder=""
+                          className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[80px] text-sm"
+                          maxLength={90}
+                        />
+                        <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
+                          {shortDescription.length} / 90
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Button text */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">Текст рядом с кнопкой</Label>
-                    <div className="relative">
+                    {/* Long description */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">Длинное описание</Label>
+                      <div className="relative">
+                        <Textarea
+                          value={longDescription}
+                          onChange={(e) => setLongDescription(e.target.value)}
+                          placeholder=""
+                          className="bg-[#F0F2F5] border-[#E7E8EC] min-h-[120px] text-sm"
+                          maxLength={500}
+                        />
+                        <span className="absolute right-3 bottom-3 text-xs text-[#818C99]">
+                          {longDescription.length} / 500
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Call to action */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Текст рядом с кнопкой <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         value={buttonText}
                         onChange={(e) => setButtonText(e.target.value)}
                         placeholder="Не выбран"
-                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm pr-16"
-                        maxLength={30}
+                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
+                        maxLength={80}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818C99]">
-                        {buttonText.length} / 30
-                      </span>
+                    </div>
+
+                    {/* Website URL */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Ссылка на сайт <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        value={siteUrl}
+                        onChange={(e) => setSiteUrl(e.target.value)}
+                        placeholder="mysite.com/"
+                        className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
+                      />
+                    </div>
+
+                    {/* Button label */}
+                    <div>
+                      <Label className="text-xs sm:text-sm mb-2 block">
+                        Надпись на кнопке <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={buttonLabel} onValueChange={setButtonLabel}>
+                        <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
+                          <SelectValue placeholder="Не выбрано" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="learn">Узнать подробнее</SelectItem>
+                          <SelectItem value="go">Перейти</SelectItem>
+                          <SelectItem value="order">Заказать</SelectItem>
+                          <SelectItem value="buy">Купить</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
-                  {/* Site URL */}
+                  {/* Preview section */}
                   <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">
-                      Ссылка на сайт <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      value={siteUrl}
-                      onChange={(e) => setSiteUrl(e.target.value)}
-                      placeholder="mysite.com/"
-                      className="bg-[#F0F2F5] border-[#E7E8EC] text-sm"
-                    />
-                  </div>
-
-                  {/* Button label */}
-                  <div>
-                    <Label className="text-xs sm:text-sm mb-2 block">
-                      Надпись на кнопке <span className="text-red-500">*</span>
-                    </Label>
-                    <Select value={buttonLabel} onValueChange={setButtonLabel}>
-                      <SelectTrigger className="bg-[#F0F2F5] border-[#E7E8EC] text-sm">
-                        <SelectValue placeholder="Не выбрана" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="learn">Узнать подробнее</SelectItem>
-                        <SelectItem value="go">Перейти</SelectItem>
-                        <SelectItem value="order">Заказать</SelectItem>
-                        <SelectItem value="buy">Купить</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Preview */}
-                <div>
-                  <Label className="text-xs sm:text-sm mb-2 sm:mb-3 block">Предпросмотр</Label>
-                  <div className="border border-[#E7E8EC] rounded-lg overflow-hidden bg-white">
+                    <Label className="text-xs sm:text-sm mb-2 block">Предпросмотр</Label>
                     <Tabs defaultValue="feed" className="w-full">
-                      <TabsList className="w-full justify-start rounded-none border-b border-[#E7E8EC] bg-transparent h-auto p-0">
+                      <TabsList className="grid w-full grid-cols-3 bg-[#F0F2F5] h-auto">
                         <TabsTrigger 
-                          value="feed" 
+                          value="feed"
                           className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
-                          Пост
+                          Лента
                         </TabsTrigger>
                         <TabsTrigger 
-                          value="story" 
+                          value="story"
                           className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
-                          В ленте
+                          <span className="hidden sm:inline">В сторис</span>
+                          <span className="sm:hidden">Сторис</span>
                         </TabsTrigger>
                         <TabsTrigger 
-                          value="fullscreen" 
+                          value="fullscreen"
                           className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#4680C2] data-[state=active]:bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                         >
                           <span className="hidden sm:inline">Полноэкранный блок</span>
@@ -803,9 +1032,9 @@ export const AdCabinet = ({
                     </Tabs>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Launch section */}
           <Card className="border-[#E7E8EC] bg-white">
