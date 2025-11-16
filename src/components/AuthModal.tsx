@@ -54,7 +54,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           </DialogTitle>
           <DialogDescription className="text-center">
             {isLogin 
-              ? "Войдите, чтобы продолжить обучение" 
+              ? "Войдите, чтобы продолжить работу в тренажере" 
               : "Зарегистрируйтесь, чтобы сохранить прогресс"}
           </DialogDescription>
         </DialogHeader>
