@@ -1,4 +1,5 @@
 import { Lock } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -13,16 +14,23 @@ interface LockedSectionProps {
 }
 
 export const LockedSection = ({ onClick, children, className }: LockedSectionProps) => {
+  const [open, setOpen] = useState(false);
   return (
     <div className={cn("relative", className)}>
       <div className="opacity-30 pointer-events-none">
         {children}
       </div>
       <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-sm">
-        <Tooltip>
+        <Tooltip open={open} onOpenChange={setOpen}>
           <TooltipTrigger asChild>
             <button
-              onClick={onClick}
+              onClick={() => {
+                setOpen(true);
+                setTimeout(() => {
+                  setOpen(false);
+                  onClick();
+                }, 500);
+              }}
               className="flex flex-col items-center gap-2 p-6 rounded-lg bg-card border-2 border-primary/20 hover:border-primary/40 hover:bg-card/80 transition-all shadow-lg group"
             >
               <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -33,7 +41,7 @@ export const LockedSection = ({ onClick, children, className }: LockedSectionPro
               </span>
             </button>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent side="top" align="center">
             <p>Доступно на платном тарифе</p>
           </TooltipContent>
         </Tooltip>
