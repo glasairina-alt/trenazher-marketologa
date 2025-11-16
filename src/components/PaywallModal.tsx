@@ -17,12 +17,10 @@ interface PaywallModalProps {
 
 export const PaywallModal = ({ isOpen, onClose, onPurchase }: PaywallModalProps) => {
   const features = [
-    "Полный доступ к рекламному кабинету",
+    "Полный доступ к симулятору рекламного кабинета",
     "Запуск рекламной кампании",
     "Работа с паникой клиента",
-    "Построение отчета по итогам",
-    "Анализ результатов кампании",
-    "Получение сертификата о прохождении"
+    "Построение маркетингового отчета по итогам"
   ];
 
   return (
@@ -36,7 +34,7 @@ export const PaywallModal = ({ isOpen, onClose, onPurchase }: PaywallModalProps)
             Разблокируйте полный доступ
           </DialogTitle>
           <DialogDescription className="text-center text-base">
-            Чтобы продолжить обучение и запустить рекламную кампанию, приобретите полный доступ к тренажеру
+            Чтобы продолжить работу в тренажере и запустить рекламную кампанию, приобретите полный доступ
           </DialogDescription>
         </DialogHeader>
 
@@ -50,9 +48,8 @@ export const PaywallModal = ({ isOpen, onClose, onPurchase }: PaywallModalProps)
             ))}
           </div>
 
-          <div className="text-center space-y-2">
+          <div className="text-center">
             <div className="text-4xl font-bold text-foreground">790 ₽</div>
-            <div className="text-sm text-muted-foreground">Одноразовый платеж</div>
           </div>
         </Card>
 
