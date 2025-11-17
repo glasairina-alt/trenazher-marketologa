@@ -6,11 +6,12 @@ import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
 import { PaywallModal } from "@/components/PaywallModal";
 import { AuthModal } from "@/components/AuthModal";
-import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut } from "lucide-react";
+import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut, Shield } from "lucide-react";
 import type { StageType, Message } from "@/types/stages";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -37,6 +38,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener
@@ -127,6 +129,17 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {isAdmin && (
+                <Button 
+                  onClick={() => navigate("/admin")}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Shield className="h-4 w-4" />
+                  <span className="hidden sm:inline">Админ-панель</span>
+                </Button>
+              )}
               {!isPaidUser && !isAdmin && (
                 <Button 
                   onClick={() => setIsPaywallOpen(true)}
