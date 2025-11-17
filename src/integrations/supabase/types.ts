@@ -14,6 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_metrics: {
+        Row: {
+          clicks: number
+          conversions: number
+          created_at: string
+          id: string
+          impressions: number
+          updated_at: string
+        }
+        Insert: {
+          clicks?: number
+          conversions?: number
+          created_at?: string
+          id?: string
+          impressions?: number
+          updated_at?: string
+        }
+        Update: {
+          clicks?: number
+          conversions?: number
+          created_at?: string
+          id?: string
+          impressions?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      case_content: {
+        Row: {
+          budget: number
+          case_title: string
+          client_name: string
+          created_at: string
+          id: string
+          image_1_url: string | null
+          image_2_url: string | null
+          image_3_url: string | null
+          product_description: string
+          product_price: number
+          updated_at: string
+        }
+        Insert: {
+          budget?: number
+          case_title?: string
+          client_name?: string
+          created_at?: string
+          id?: string
+          image_1_url?: string | null
+          image_2_url?: string | null
+          image_3_url?: string | null
+          product_description?: string
+          product_price?: number
+          updated_at?: string
+        }
+        Update: {
+          budget?: number
+          case_title?: string
+          client_name?: string
+          created_at?: string
+          id?: string
+          image_1_url?: string | null
+          image_2_url?: string | null
+          image_3_url?: string | null
+          product_description?: string
+          product_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dialog_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message_key: string
+          message_text: string
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_key: string
+          message_text: string
+          stage: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_key?: string
+          message_text?: string
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -53,7 +149,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "premium_user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -181,7 +277,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "premium_user"],
     },
   },
 } as const
