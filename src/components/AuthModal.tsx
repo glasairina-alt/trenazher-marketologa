@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -23,26 +24,78 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // TODO: Подключить реальную аутентификацию
-    if (isLogin) {
-      toast({
-        title: "Вход выполнен",
-        description: "Добро пожаловать обратно!",
-      });
-    } else {
-      toast({
-        title: "Регистрация успешна",
-        description: "Аккаунт создан! Теперь вы можете приобрести полный доступ.",
-      });
+  useEffect(() => {
+    if (!isOpen) {
+      setEmail("");
+      setPassword("");
+      setName("");
     }
-    
-    onSuccess();
-    onClose();
+  }, [isOpen]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно!",
+        description: "Вы успешно вошли в систему",
+      });
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Ошибка входа",
+        description: error.message || "Неверный email или пароль",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: name,
+          },
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно!",
+        description: "Регистрация прошла успешно. Вы можете войти в систему.",
+      });
+      setIsLogin(true);
+    } catch (error: any) {
+      toast({
+        title: "Ошибка регистрации",
+        description: error.message || "Не удалось создать аккаунт",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,7 +119,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           </TabsList>
 
           <TabsContent value="login" className="space-y-4 mt-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="login-email">Email</Label>
                 <Input
@@ -76,6 +129,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -88,17 +142,19 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
+                  minLength={6}
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Войти
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Вход..." : "Войти"}
               </Button>
             </form>
           </TabsContent>
 
           <TabsContent value="register" className="space-y-4 mt-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="register-name">Имя</Label>
                 <Input
