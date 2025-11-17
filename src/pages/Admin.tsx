@@ -74,10 +74,21 @@ const Admin = () => {
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      // Получаем список пользователей из auth.users через admin API
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+      // Получаем токен сессии
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No session');
+      }
 
-      if (authError) throw authError;
+      // Вызываем edge function для получения списка пользователей
+      const { data: usersData, error: usersError } = await supabase.functions.invoke('list-users', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (usersError) throw usersError;
 
       // Получаем роли пользователей
       const { data: rolesData, error: rolesError } = await supabase
@@ -87,7 +98,7 @@ const Admin = () => {
       if (rolesError) throw rolesError;
 
       // Объединяем данные
-      const usersWithRoles: UserWithRole[] = (authUsers || []).map(user => {
+      const usersWithRoles: UserWithRole[] = (usersData?.users || []).map((user: any) => {
         const roleEntry = rolesData?.find(r => r.user_id === user.id);
         return {
           id: user.id,
