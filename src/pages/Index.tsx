@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -6,8 +6,11 @@ import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
 import { PaywallModal } from "@/components/PaywallModal";
 import { AuthModal } from "@/components/AuthModal";
-import { MessageCircle, TrendingUp, FileText, Lock, User } from "lucide-react";
+import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut } from "lucide-react";
 import type { StageType, Message } from "@/types/stages";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -27,12 +30,85 @@ const Index = () => {
     },
   ]);
   
-  // TODO: Подключить проверку оплаты из вашей БД
-  // Пример: const [isPaidUser, setIsPaidUser] = useState(false);
   const [isPaidUser, setIsPaidUser] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          setTimeout(() => {
+            checkUserRole(session.user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        checkUserRole(session.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking user role:', error);
+        return;
+      }
+
+      setIsAdmin(data?.role === 'admin');
+    } catch (error) {
+      console.error('Error checking user role:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Выход выполнен",
+        description: "Вы успешно вышли из системы",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    toast({
+      title: "Добро пожаловать!",
+      description: "Вы успешно вошли в систему",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,7 +127,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              {!isPaidUser && (
+              {!isPaidUser && !isAdmin && (
                 <Button 
                   onClick={() => setIsPaywallOpen(true)}
                   variant="default"
@@ -62,15 +138,27 @@ const Index = () => {
                   <span className="hidden sm:inline">Полный доступ</span>
                 </Button>
               )}
-              <Button 
-                onClick={() => setIsAuthOpen(true)}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-              >
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">{isLoggedIn ? "Профиль" : "Вход"}</span>
-              </Button>
+              {user ? (
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Выход</span>
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => setIsAuthOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">Вход</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -173,9 +261,7 @@ const Index = () => {
       <AuthModal 
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onSuccess={() => {
-          setIsLoggedIn(true);
-        }}
+        onSuccess={handleAuthSuccess}
       />
     </div>
   );
