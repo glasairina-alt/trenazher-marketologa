@@ -30,7 +30,7 @@ const Index = () => {
       timestamp: new Date(),
     },
   ]);
-  
+
   const [isPaidUser, setIsPaidUser] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -42,26 +42,26 @@ const Index = () => {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          setTimeout(() => {
-            checkUserRole(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        setTimeout(() => {
+          checkUserRole(session.user.id);
+        }, 0);
+      } else {
+        setIsAdmin(false);
       }
-    );
+    });
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         checkUserRole(session.user.id);
       }
@@ -72,20 +72,16 @@ const Index = () => {
 
   const checkUserRole = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .maybeSingle();
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
 
       if (error) {
-        console.error('Error checking user role:', error);
+        console.error("Error checking user role:", error);
         return;
       }
 
-      setIsAdmin(data?.role === 'admin');
+      setIsAdmin(data?.role === "admin");
     } catch (error) {
-      console.error('Error checking user role:', error);
+      console.error("Error checking user role:", error);
     }
   };
 
@@ -121,53 +117,31 @@ const Index = () => {
               <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-foreground truncate">
-                  Тренажер Маркетолога
+                  Тренажер маркетолога "Твой первый клиент"
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                  Кейс: «Срочный запуск 14 февраля»
-                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Кейс: «Срочный запуск 14 февраля»</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {isAdmin && (
-                <Button 
-                  onClick={() => navigate("/admin")}
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button onClick={() => navigate("/admin")} variant="outline" size="sm" className="gap-2">
                   <Shield className="h-4 w-4" />
                   <span className="hidden sm:inline">Админ-панель</span>
                 </Button>
               )}
               {!isPaidUser && !isAdmin && (
-                <Button 
-                  onClick={() => setIsPaywallOpen(true)}
-                  variant="default"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button onClick={() => setIsPaywallOpen(true)} variant="default" size="sm" className="gap-2">
                   <Lock className="h-4 w-4" />
                   <span className="hidden sm:inline">Полный доступ</span>
                 </Button>
               )}
               {user ? (
-                <Button 
-                  onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
                   <LogOut className="h-4 w-4" />
                   <span className="hidden sm:inline">Выход</span>
                 </Button>
               ) : (
-                <Button 
-                  onClick={() => setIsAuthOpen(true)}
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button onClick={() => setIsAuthOpen(true)} variant="outline" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">Вход</span>
                 </Button>
@@ -188,10 +162,7 @@ const Index = () => {
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Рекламный кабинет</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="report" 
-              className="flex items-center gap-2"
-            >
+            <TabsTrigger value="report" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Отчет</span>
             </TabsTrigger>
@@ -235,17 +206,14 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="report" className="mt-6">
-            <AdReportTab
-              currentStage={currentStage}
-              setCurrentStage={setCurrentStage}
-            />
+            <AdReportTab currentStage={currentStage} setCurrentStage={setCurrentStage} />
           </TabsContent>
         </Tabs>
       </main>
 
       <footer className="border-t border-border bg-card mt-8 sm:mt-12">
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 text-center text-xs sm:text-sm text-muted-foreground">
-          <p>© 2023 Интерактивный тренажер маркетолога</p>
+          <p>© 2025 Интерактивный тренажер маркетолога</p>
           <p className="mt-2">
             Автор: Ирина Войтович, маркетолог-наставник{" "}
             <a
@@ -260,7 +228,7 @@ const Index = () => {
         </div>
       </footer>
 
-      <PaywallModal 
+      <PaywallModal
         isOpen={isPaywallOpen}
         onClose={() => setIsPaywallOpen(false)}
         onPurchase={() => {
@@ -271,11 +239,7 @@ const Index = () => {
         }}
       />
 
-      <AuthModal 
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        onSuccess={handleAuthSuccess}
-      />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onSuccess={handleAuthSuccess} />
     </div>
   );
 };
