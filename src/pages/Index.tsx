@@ -79,7 +79,10 @@ const Index = () => {
         return;
       }
 
-      setIsAdmin(data?.role === "admin");
+      const userRole = data?.role;
+      setIsAdmin(userRole === "admin");
+      // Админы и premium_user получают полный доступ
+      setIsPaidUser(userRole === "admin" || userRole === "premium_user");
     } catch (error) {
       console.error("Error checking user role:", error);
     }
