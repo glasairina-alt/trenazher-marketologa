@@ -29,6 +29,12 @@ interface AdMetrics {
   conversions: number;
 }
 
+interface MetricAnswer {
+  id: string;
+  metric_name: string;
+  correct_values: number[];
+}
+
 export default function AdminContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,6 +60,8 @@ export default function AdminContent() {
     clicks: 0,
     conversions: 0,
   });
+
+  const [metricAnswers, setMetricAnswers] = useState<MetricAnswer[]>([]);
 
   useEffect(() => {
     checkAdminAccess();
@@ -96,16 +104,19 @@ export default function AdminContent() {
     try {
       setLoading(true);
 
-      const [caseResult, metricsResult] = await Promise.all([
+      const [caseResult, metricsResult, answersResult] = await Promise.all([
         supabase.from("case_content").select("*").single(),
         supabase.from("ad_metrics").select("*").single(),
+        supabase.from("metric_answers").select("*").order("metric_name"),
       ]);
 
       if (caseResult.error) throw caseResult.error;
       if (metricsResult.error) throw metricsResult.error;
+      if (answersResult.error) throw answersResult.error;
 
       setCaseContent(caseResult.data);
       setAdMetrics(metricsResult.data);
+      setMetricAnswers(answersResult.data || []);
     } catch (error: any) {
       toast({
         title: "Ошибка",
@@ -182,6 +193,82 @@ export default function AdminContent() {
     }
   };
 
+  const handleSaveMetricAnswers = async () => {
+    try {
+      setSaving(true);
+
+      for (const metric of metricAnswers) {
+        const { error } = await supabase
+          .from("metric_answers")
+          .update({
+            correct_values: metric.correct_values,
+          })
+          .eq("id", metric.id);
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Сохранено",
+        description: "Правильные ответы успешно обновлены",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleMetricValueChange = (metricId: string, index: number, value: string) => {
+    setMetricAnswers((prev) =>
+      prev.map((metric) => {
+        if (metric.id === metricId) {
+          const newValues = [...metric.correct_values];
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            newValues[index] = numValue;
+          } else if (value === "") {
+            newValues.splice(index, 1);
+          }
+          return { ...metric, correct_values: newValues };
+        }
+        return metric;
+      })
+    );
+  };
+
+  const handleAddMetricValue = (metricId: string) => {
+    setMetricAnswers((prev) =>
+      prev.map((metric) => {
+        if (metric.id === metricId && metric.correct_values.length < 3) {
+          return {
+            ...metric,
+            correct_values: [...metric.correct_values, 0],
+          };
+        }
+        return metric;
+      })
+    );
+  };
+
+  const getMetricLabel = (metricName: string) => {
+    const labels: Record<string, string> = {
+      ctr: "CTR (%)",
+      cpc: "CPC (руб)",
+      cpm: "CPM (руб)",
+      cr1: "CR1 (%)",
+      cpl: "CPL (руб)",
+      cr2: "CR2 (%)",
+      avgCheck: "Средний чек (руб)",
+      romi: "ROMI (%)",
+    };
+    return labels[metricName] || metricName;
+  };
+
   if (loading || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -210,9 +297,10 @@ export default function AdminContent() {
 
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <Tabs defaultValue="case" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="case">Кейс и клиент</TabsTrigger>
             <TabsTrigger value="metrics">Метрики рекламы</TabsTrigger>
+            <TabsTrigger value="answers">Правильные ответы</TabsTrigger>
           </TabsList>
 
           <TabsContent value="case" className="space-y-6">
@@ -482,6 +570,63 @@ export default function AdminContent() {
             >
               <Save className="mr-2 h-4 w-4" />
               Сохранить метрики
+            </Button>
+          </TabsContent>
+
+          <TabsContent value="answers" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Правильные ответы для проверки</CardTitle>
+                <CardDescription>
+                  Укажите правильные значения метрик (до 3 вариантов для каждой)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {metricAnswers.map((metric) => (
+                  <div key={metric.id} className="space-y-3 p-4 border border-border rounded-lg">
+                    <Label className="text-base font-semibold">
+                      {getMetricLabel(metric.metric_name)}
+                    </Label>
+                    <div className="space-y-2">
+                      {metric.correct_values.map((value, index) => (
+                        <div key={index} className="flex gap-2 items-center">
+                          <Label className="text-sm text-muted-foreground min-w-[100px]">
+                            Вариант {index + 1}:
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={value}
+                            onChange={(e) =>
+                              handleMetricValueChange(metric.id, index, e.target.value)
+                            }
+                            className="flex-1"
+                          />
+                        </div>
+                      ))}
+                      {metric.correct_values.length < 3 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleAddMetricValue(metric.id)}
+                          className="w-full"
+                        >
+                          + Добавить вариант
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Button
+              onClick={handleSaveMetricAnswers}
+              disabled={saving}
+              className="w-full"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Сохранить правильные ответы
             </Button>
           </TabsContent>
         </Tabs>

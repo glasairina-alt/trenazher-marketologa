@@ -110,6 +110,30 @@ export type Database = {
         }
         Relationships: []
       }
+      metric_answers: {
+        Row: {
+          correct_values: number[]
+          created_at: string
+          id: string
+          metric_name: string
+          updated_at: string
+        }
+        Insert: {
+          correct_values?: number[]
+          created_at?: string
+          id?: string
+          metric_name: string
+          updated_at?: string
+        }
+        Update: {
+          correct_values?: number[]
+          created_at?: string
+          id?: string
+          metric_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
