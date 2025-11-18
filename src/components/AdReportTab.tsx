@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,16 +40,39 @@ export const AdReportTab = ({
 
   const [isCorrect, setIsCorrect] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState<Record<string, number[]>>({
+    ctr: [],
+    cpc: [],
+    cpm: [],
+    cr1: [],
+    cpl: [],
+    cr2: [],
+    avgCheck: [],
+    romi: [],
+  });
 
-  const correctAnswers = {
-    ctr: [0.37],
-    cpc: [36.68, 36.7],
-    cpm: [135.29, 135.3],
-    cr1: [5.6],
-    cpl: [652.17, 652.2, 652],
-    cr2: [86.95, 86.6],
-    avgCheck: [2765],
-    romi: [268.7, 269],
+  useEffect(() => {
+    loadCorrectAnswers();
+  }, []);
+
+  const loadCorrectAnswers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("metric_answers")
+        .select("*");
+
+      if (error) throw error;
+
+      if (data) {
+        const answersMap: Record<string, number[]> = {};
+        data.forEach((item) => {
+          answersMap[item.metric_name] = item.correct_values;
+        });
+        setCorrectAnswers(answersMap);
+      }
+    } catch (error) {
+      console.error("Error loading correct answers:", error);
+    }
   };
 
   const checkAnswers = (calculatedMetrics: {
