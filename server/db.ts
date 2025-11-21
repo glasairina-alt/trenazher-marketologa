@@ -1,11 +1,18 @@
 import { Pool } from 'pg';
 
+// Encode password to handle special characters
+const encodePassword = (password: string) => {
+  return encodeURIComponent(password);
+};
+
+const password = process.env.TIMEWEB_DB_PASSWORD || '';
+const encodedPassword = encodePassword(password);
+
+// Use connection string with properly encoded password
+const connectionString = `postgresql://${process.env.TIMEWEB_DB_USER}:${encodedPassword}@${process.env.TIMEWEB_DB_HOST}:${process.env.TIMEWEB_DB_PORT}/${process.env.TIMEWEB_DB_NAME}`;
+
 const pool = new Pool({
-  host: process.env.TIMEWEB_DB_HOST,
-  port: parseInt(process.env.TIMEWEB_DB_PORT || '5432'),
-  database: process.env.TIMEWEB_DB_NAME,
-  user: process.env.TIMEWEB_DB_USER,
-  password: process.env.TIMEWEB_DB_PASSWORD,
+  connectionString,
   ssl: false,
 });
 
