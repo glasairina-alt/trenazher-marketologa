@@ -180,20 +180,18 @@ export const AdCabinet = ({
       setCampaignLaunched(true);
     }
 
-    // Устанавливаем начальную статистику на STAGE_5_ORDERS_COMING и держим её до получения данных от клиента
-    if (
-      currentStage === "STAGE_5_ORDERS_COMING" ||
-      currentStage === "STAGE_5_REPORT" ||
-      currentStage === "STAGE_6_REPORT_WAIT"
-    ) {
+    // Устанавливаем начальную статистику на STAGE_5_ORDERS_COMING
+    if (currentStage === "STAGE_5_ORDERS_COMING") {
       setConversions(2);
       setImpressions(10361);
       setClicks(41);
       setRemainingBudget(10547);
     }
     
-    // Обновляем финальную статистику когда клиент предоставляет данные (STAGE_7_REPORT_DATA+)
+    // Обновляем финальную статистику сразу после "Наступило 15 февраля..." (STAGE_5_REPORT+)
     if (
+      currentStage === "STAGE_5_REPORT" ||
+      currentStage === "STAGE_6_REPORT_WAIT" ||
       currentStage === "STAGE_7_REPORT_DATA" ||
       currentStage === "STAGE_7_REPORT_DATA_2" ||
       currentStage === "STAGE_8_REPORT_SUBMIT" ||
