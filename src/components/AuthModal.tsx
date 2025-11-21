@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,14 +24,17 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { login, register } = useAuth();
 
   useEffect(() => {
     if (!isOpen) {
       setEmail("");
       setPassword("");
       setName("");
+      setPhone("");
     }
   }, [isOpen]);
 
@@ -40,12 +43,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      await login(email, password);
 
       toast({
         title: "Успешно!",
@@ -69,24 +67,14 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: name,
-          },
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) throw error;
+      await register(email, password, name, phone || undefined);
 
       toast({
         title: "Успешно!",
-        description: "Регистрация прошла успешно. Вы можете войти в систему.",
+        description: "Регистрация прошла успешно. Вы вошли в систему.",
       });
-      setIsLogin(true);
+      onSuccess();
+      onClose();
     } catch (error: any) {
       toast({
         title: "Ошибка регистрации",
@@ -164,6 +152,21 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  disabled={isLoading}
+                  data-testid="input-register-name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="register-phone">Телефон (необязательно)</Label>
+                <Input
+                  id="register-phone"
+                  type="tel"
+                  placeholder="+7 (999) 123-45-67"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={isLoading}
+                  data-testid="input-register-phone"
                 />
               </div>
 
@@ -176,6 +179,8 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
+                  data-testid="input-register-email"
                 />
               </div>
 
@@ -189,11 +194,13 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
+                  disabled={isLoading}
+                  data-testid="input-register-password"
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Создать аккаунт
+              <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-register-submit">
+                {isLoading ? "Создание аккаунта..." : "Создать аккаунт"}
               </Button>
             </form>
           </TabsContent>

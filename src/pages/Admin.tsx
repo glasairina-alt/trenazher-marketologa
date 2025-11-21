@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/lib/api";
 import { ArrowLeft, Plus, Settings } from "lucide-react";
 import {
   Select,
@@ -24,8 +25,10 @@ import {
 } from "@/components/ui/dialog";
 
 interface UserWithRole {
-  id: string;
+  id: number;
   email: string;
+  name: string;
+  phone: string | null;
   created_at: string;
   role: "admin" | "user" | "premium_user";
 }
@@ -35,90 +38,52 @@ type UserRole = "admin" | "user" | "premium_user";
 export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user: currentAuthUser, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [users, setUsers] = useState<UserWithRole[]>([]);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
+  const [newUserName, setNewUserName] = useState("");
   const [addingUser, setAddingUser] = useState(false);
 
+  const isAdmin = currentAuthUser?.role === "admin";
+
   useEffect(() => {
-    checkAdminAccess();
-  }, []);
+    if (!authLoading) {
+      checkAdminAccess();
+    }
+  }, [authLoading, currentAuthUser]);
 
   const checkAdminAccess = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/");
-        return;
-      }
-
-      setCurrentUser(user.id);
-
-      const { data: roleData, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (error || roleData?.role !== "admin") {
-        toast({
-          title: "Доступ запрещен",
-          description: "У вас нет прав администратора",
-          variant: "destructive",
-        });
-        navigate("/");
-        return;
-      }
-
-      setIsAdmin(true);
-      await loadUsers();
-    } catch (error) {
-      console.error("Error checking admin access:", error);
+    if (!currentAuthUser) {
       navigate("/");
+      return;
     }
+
+    if (currentAuthUser.role !== "admin") {
+      toast({
+        title: "Доступ запрещен",
+        description: "У вас нет прав администратора",
+        variant: "destructive",
+      });
+      navigate("/");
+      return;
+    }
+
+    await loadUsers();
   };
 
   const loadUsers = async () => {
     try {
       setLoading(true);
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No session');
-
-      const { data: usersData, error: usersError } = await supabase.functions.invoke('list-users', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (usersError) throw usersError;
-
-      const { data: roles, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id, role");
-
-      if (rolesError) throw rolesError;
-
-      const usersWithRoles: UserWithRole[] = (usersData?.users || []).map((user: any) => {
-        const userRole = roles?.find((r) => r.user_id === user.id);
-        return {
-          id: user.id,
-          email: user.email || "",
-          created_at: user.created_at,
-          role: (userRole?.role as UserRole) || "user",
-        };
-      });
-
-      setUsers(usersWithRoles);
+      const response = await api.get<{ users: UserWithRole[] }>('/api/users');
+      setUsers(response.users);
     } catch (error: any) {
       toast({
         title: "Ошибка",
-        description: error.message,
+        description: error.message || "Не удалось загрузить пользователей",
         variant: "destructive",
       });
     } finally {
@@ -126,7 +91,7 @@ export default function Admin() {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+  const handleRoleChange = async (userId: number, newRole: UserRole) => {
     try {
       if (newRole === "admin") {
         toast({
@@ -137,19 +102,9 @@ export default function Admin() {
         return;
       }
 
-      const { error } = await supabase
-        .from("user_roles")
-        .upsert(
-          {
-            user_id: userId,
-            role: newRole,
-          },
-          {
-            onConflict: "user_id",
-          }
-        );
-
-      if (error) throw error;
+      await api.patch<{ user: UserWithRole }>(`/api/users/${userId}/role`, {
+        role: newRole,
+      });
 
       toast({
         title: "Роль изменена",
@@ -160,17 +115,17 @@ export default function Admin() {
     } catch (error: any) {
       toast({
         title: "Ошибка",
-        description: error.message,
+        description: error.message || "Не удалось изменить роль",
         variant: "destructive",
       });
     }
   };
 
   const handleAddUser = async () => {
-    if (!newUserEmail || !newUserPassword) {
+    if (!newUserEmail || !newUserPassword || !newUserName) {
       toast({
         title: "Ошибка",
-        description: "Заполните все поля",
+        description: "Заполните все обязательные поля",
         variant: "destructive",
       });
       return;
@@ -179,37 +134,38 @@ export default function Admin() {
     try {
       setAddingUser(true);
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      await api.post('/api/auth/register', {
         email: newUserEmail,
         password: newUserPassword,
+        name: newUserName,
+        phone: null,
       });
 
-      if (authError) throw authError;
-
-      if (authData.user) {
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({
-            user_id: authData.user.id,
-            role: "premium_user",
+      if (currentAuthUser) {
+        const newUser = await api.get<{ users: UserWithRole[] }>('/api/users');
+        const createdUser = newUser.users.find(u => u.email === newUserEmail);
+        
+        if (createdUser) {
+          await api.patch(`/api/users/${createdUser.id}/role`, {
+            role: 'premium_user',
           });
-
-        if (roleError) throw roleError;
-
-        toast({
-          title: "Пользователь добавлен",
-          description: "Новый пользователь с полным доступом успешно создан",
-        });
-
-        setIsAddUserOpen(false);
-        setNewUserEmail("");
-        setNewUserPassword("");
-        loadUsers();
+        }
       }
+
+      toast({
+        title: "Пользователь добавлен",
+        description: "Новый пользователь с полным доступом успешно создан",
+      });
+
+      setIsAddUserOpen(false);
+      setNewUserEmail("");
+      setNewUserPassword("");
+      setNewUserName("");
+      loadUsers();
     } catch (error: any) {
       toast({
         title: "Ошибка",
-        description: error.message,
+        description: error.message || "Не удалось создать пользователя",
         variant: "destructive",
       });
     } finally {
@@ -217,7 +173,7 @@ export default function Admin() {
     }
   };
 
-  if (loading || !isAdmin) {
+  if (authLoading || loading || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -291,7 +247,7 @@ export default function Admin() {
                             onValueChange={(value: UserRole) =>
                               handleRoleChange(user.id, value)
                             }
-                            disabled={user.id === currentUser || user.role === "admin"}
+                            disabled={user.id === currentAuthUser?.id || user.role === "admin"}
                           >
                             <SelectTrigger className="w-[180px]">
                               <SelectValue />
@@ -325,6 +281,17 @@ export default function Admin() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
+              <Label htmlFor="name">Имя</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Имя пользователя"
+                value={newUserName}
+                onChange={(e) => setNewUserName(e.target.value)}
+                data-testid="input-admin-add-name"
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -332,6 +299,7 @@ export default function Admin() {
                 placeholder="user@example.com"
                 value={newUserEmail}
                 onChange={(e) => setNewUserEmail(e.target.value)}
+                data-testid="input-admin-add-email"
               />
             </div>
             <div className="space-y-2">
@@ -342,6 +310,7 @@ export default function Admin() {
                 placeholder="Минимум 6 символов"
                 value={newUserPassword}
                 onChange={(e) => setNewUserPassword(e.target.value)}
+                data-testid="input-admin-add-password"
               />
             </div>
           </div>
@@ -352,6 +321,7 @@ export default function Admin() {
                 setIsAddUserOpen(false);
                 setNewUserEmail("");
                 setNewUserPassword("");
+                setNewUserName("");
               }}
             >
               Отмена

@@ -21,6 +21,8 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) =
 });
 
 // Update user role (admin only)
+// ⚠️ IMPORTANT: Premium users should ONLY be created via YooKassa payment webhook
+// This endpoint is for admin management ONLY (e.g., granting free access, fixing issues)
 router.patch('/:userId/role', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const { userId } = req.params;
@@ -30,6 +32,9 @@ router.patch('/:userId/role', authenticateToken, requireAdmin, async (req: AuthR
     if (!['user', 'premium_user', 'admin'].includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
+    
+    // Log admin actions for audit trail
+    console.log(`⚠️ Admin ${req.user!.email} changing user ${userId} role to ${role}`);
 
     const result = await query(
       `UPDATE trainer_marketing.users 
@@ -51,14 +56,14 @@ router.patch('/:userId/role', authenticateToken, requireAdmin, async (req: AuthR
 });
 
 // Upgrade user to premium (used by payment webhook)
-router.post('/:userId/upgrade-to-premium', authenticateToken, async (req: AuthRequest, res) => {
+// ⚠️ SECURITY: This endpoint is ONLY for admins during development
+// In production, premium upgrades happen ONLY via YooKassa webhook
+router.post('/:userId/upgrade-to-premium', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const { userId } = req.params;
-
-    // Allow user to upgrade themselves or admin to upgrade anyone
-    if (req.user!.id !== parseInt(userId) && req.user!.role !== 'admin') {
-      return res.status(403).json({ error: 'Cannot upgrade other users' });
-    }
+    
+    // Log admin action for audit
+    console.log(`⚠️ Admin ${req.user!.email} manually upgrading user ${userId} to premium`);
 
     const result = await query(
       `UPDATE trainer_marketing.users 

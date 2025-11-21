@@ -5,7 +5,22 @@ const encodePassword = (password: string) => {
   return encodeURIComponent(password);
 };
 
-const password = process.env.TIMEWEB_DB_PASSWORD || '';
+// Validate required environment variables
+const requiredEnvVars = [
+  'TIMEWEB_DB_USER',
+  'TIMEWEB_DB_PASSWORD',
+  'TIMEWEB_DB_HOST',
+  'TIMEWEB_DB_PORT',
+  'TIMEWEB_DB_NAME'
+];
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`Required environment variable ${envVar} is not set`);
+  }
+}
+
+const password = process.env.TIMEWEB_DB_PASSWORD!;
 const encodedPassword = encodePassword(password);
 
 // Use connection string with properly encoded password
@@ -13,7 +28,24 @@ const connectionString = `postgresql://${process.env.TIMEWEB_DB_USER}:${encodedP
 
 const pool = new Pool({
   connectionString,
-  ssl: false,
+  ssl: false, // Timeweb doesn't require SSL for internal connections
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 5000, // Return an error after 5 seconds if connection could not be established
+});
+
+// Test connection on startup
+pool.query('SELECT NOW()', (err) => {
+  if (err) {
+    console.error('❌ Database connection failed:', err.message);
+    process.exit(1);
+  }
+  console.log('✅ Database connected successfully');
+});
+
+// Handle pool errors
+pool.on('error', (err) => {
+  console.error('Unexpected database error:', err);
 });
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);

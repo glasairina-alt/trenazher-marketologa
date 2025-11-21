@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Save, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,9 +39,11 @@ interface MetricAnswer {
 export default function AdminContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const isAdmin = user?.role === "admin";
 
   const [caseContent, setCaseContent] = useState<CaseContent>({
     id: "",
@@ -64,40 +67,28 @@ export default function AdminContent() {
   const [metricAnswers, setMetricAnswers] = useState<MetricAnswer[]>([]);
 
   useEffect(() => {
-    checkAdminAccess();
-  }, []);
+    if (!authLoading) {
+      checkAdminAccess();
+    }
+  }, [authLoading, user]);
 
   const checkAdminAccess = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/");
-        return;
-      }
-
-      const { data: roleData, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (error || roleData?.role !== "admin") {
-        toast({
-          title: "Доступ запрещен",
-          description: "У вас нет прав администратора",
-          variant: "destructive",
-        });
-        navigate("/");
-        return;
-      }
-
-      setIsAdmin(true);
-      await loadContent();
-    } catch (error) {
-      console.error("Error checking admin access:", error);
+    if (!user) {
       navigate("/");
+      return;
     }
+
+    if (user.role !== "admin") {
+      toast({
+        title: "Доступ запрещен",
+        description: "У вас нет прав администратора",
+        variant: "destructive",
+      });
+      navigate("/");
+      return;
+    }
+
+    await loadContent();
   };
 
   const loadContent = async () => {
@@ -269,7 +260,7 @@ export default function AdminContent() {
     return labels[metricName] || metricName;
   };
 
-  if (loading || !isAdmin) {
+  if (authLoading || loading || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

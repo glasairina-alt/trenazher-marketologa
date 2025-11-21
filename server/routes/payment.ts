@@ -5,11 +5,18 @@ import { authenticateToken, AuthRequest } from '../middleware';
 const router = express.Router();
 
 // Create payment (will integrate with YooKassa later)
+// 💳 PAYMENT INTEGRATION REQUIRED
+// This is a STUB - requires YooKassa shop_id and secret_key from user
+// Price: 790 RUB for premium access
 router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
     
-    // TODO: Integrate with YooKassa API
+    // TODO: Integrate with YooKassa API when shop credentials are provided
+    // Steps needed:
+    // 1. Get YooKassa shop_id and secret_key from user
+    // 2. Call YooKassa API to create payment
+    // 3. Return real payment URL to frontend
     // For now, return a mock payment URL
     
     const paymentData = {
@@ -29,9 +36,34 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Payment webhook from YooKassa
+// ⚠️ CRITICAL SECURITY: This endpoint MUST verify YooKassa signature before production
+// Without signature verification, anyone can call this and grant themselves premium access
 router.post('/webhook', async (req, res) => {
   try {
-    // TODO: Verify webhook signature from YooKassa
+    // Verify webhook signature from YooKassa
+    // TODO: Replace with actual YooKassa signature verification
+    const webhookSecret = process.env.YOOKASSA_WEBHOOK_SECRET;
+    
+    if (!webhookSecret) {
+      console.error('❌ YOOKASSA_WEBHOOK_SECRET not set - webhook disabled for security');
+      return res.status(503).json({ error: 'Webhook not configured' });
+    }
+    
+    // Simple secret token verification (temporary until YooKassa integration)
+    const providedSecret = req.headers['x-webhook-secret'];
+    if (providedSecret !== webhookSecret) {
+      console.warn('⚠️ Webhook called with invalid secret');
+      return res.status(403).json({ error: 'Invalid webhook secret' });
+    }
+    
+    // TODO: Replace with proper YooKassa signature verification:
+    // const signature = req.headers['x-yookassa-signature'];
+    // const hmac = crypto.createHmac('sha256', YOOKASSA_SECRET);
+    // hmac.update(JSON.stringify(req.body));
+    // const expectedSignature = hmac.digest('hex');
+    // if (signature !== expectedSignature) {
+    //   return res.status(403).json({ error: 'Invalid signature' });
+    // }
     
     const { event, object } = req.body;
     

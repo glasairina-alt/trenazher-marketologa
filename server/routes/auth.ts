@@ -1,24 +1,73 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+import rateLimit from 'express-rate-limit';
 import { query } from '../db';
 import { authenticateToken, AuthRequest } from '../middleware';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Rate limiting for auth endpoints to prevent brute-force attacks
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: { error: 'Too many authentication attempts, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 registrations per hour
+  message: { error: 'Too many registration attempts, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Ensure JWT_SECRET is set
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
 
-// Register
-router.post('/register', async (req, res) => {
-  try {
-    const { email, password, name, phone } = req.body;
+// Validation schemas
+const registerSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  phone: z.string()
+    .regex(/^\+7\d{10}$/, 'Phone must be in format +7XXXXXXXXXX')
+    .optional()
+    .nullable(),
+});
 
-    // Validate required fields
-    if (!email || !password || !name) {
+const loginSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+// Register
+router.post('/register', registerLimiter, async (req, res) => {
+  try {
+    // Validate request body
+    const validation = registerSchema.safeParse(req.body);
+    if (!validation.success) {
       return res.status(400).json({ 
-        error: 'Email, password, and name are required' 
+        error: 'Validation failed',
+        details: validation.error.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
       });
     }
+
+    const { email, password, name, phone } = validation.data;
 
     // Check if user already exists
     const existingUser = await query(
@@ -68,13 +117,21 @@ router.post('/register', async (req, res) => {
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+    // Validate request body
+    const validation = loginSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: 'Validation failed',
+        details: validation.error.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
+      });
     }
+
+    const { email, password } = validation.data;
 
     // Find user
     const result = await query(

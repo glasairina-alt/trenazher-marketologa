@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -8,9 +8,8 @@ import { PaywallModal } from "@/components/PaywallModal";
 import { AuthModal } from "@/components/AuthModal";
 import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut, Shield } from "lucide-react";
 import type { StageType, Message } from "@/types/stages";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -31,77 +30,22 @@ const Index = () => {
     },
   ]);
 
-  const [isPaidUser, setIsPaidUser] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+  const isAdmin = user?.role === "admin";
+  const isPaidUser = user?.role === "admin" || user?.role === "premium_user";
 
-      if (session?.user) {
-        setTimeout(() => {
-          checkUserRole(session.user.id);
-        }, 0);
-      } else {
-        setIsAdmin(false);
-      }
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Выход выполнен",
+      description: "Вы успешно вышли из системы",
     });
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (session?.user) {
-        checkUserRole(session.user.id);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const checkUserRole = async (userId: string) => {
-    try {
-      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
-
-      if (error) {
-        console.error("Error checking user role:", error);
-        return;
-      }
-
-      const userRole = data?.role;
-      setIsAdmin(userRole === "admin");
-      // Админы и premium_user получают полный доступ
-      setIsPaidUser(userRole === "admin" || userRole === "premium_user");
-    } catch (error) {
-      console.error("Error checking user role:", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Выход выполнен",
-        description: "Вы успешно вышли из системы",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
   };
 
   const handleAuthSuccess = () => {
