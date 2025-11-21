@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } from "docx";
+import rosesImage from "@assets/roses.png";
+import tulipsImage from "@assets/tulips.png";
+import boxCompositionImage from "@assets/box-composition.png";
 
 interface ChatInterfaceProps {
   currentStage: StageType;
@@ -33,6 +36,7 @@ export const ChatInterface = ({
   onAutoTriggerStage,
 }: ChatInterfaceProps) => {
   const flowerLabels = ["Розы", "Тюльпаны", "Композиции в коробках"];
+  const flowerImages = [rosesImage, tulipsImage, boxCompositionImage];
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAttachEnabled, setFileAttachEnabled] = useState(false);
@@ -335,10 +339,15 @@ export const ChatInterface = ({
                 )}
               >
                 {message.type === "bot-image" ? (
-                  <div className="w-48 h-32 bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100 rounded flex items-center justify-center">
-                    <div className="text-base sm:text-lg font-semibold text-foreground select-none px-3 sm:px-4 py-2 bg-background rounded-lg shadow-md text-center leading-tight">
+                  <div className="space-y-2">
+                    <img
+                      src={flowerImages[idx % flowerImages.length]}
+                      alt={flowerLabels[idx % flowerLabels.length]}
+                      className="w-48 sm:w-64 h-auto rounded-lg object-cover"
+                    />
+                    <p className="text-xs sm:text-sm text-secondary-foreground text-center font-medium">
                       {flowerLabels[idx % flowerLabels.length]}
-                    </div>
+                    </p>
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
