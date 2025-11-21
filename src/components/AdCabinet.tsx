@@ -48,6 +48,9 @@ export const AdCabinet = ({
   const { toast } = useToast();
   const [budget] = useState(15000);
   const [conversions, setConversions] = useState(0);
+  const [impressions, setImpressions] = useState(10361);
+  const [clicks, setClicks] = useState(41);
+  const [remainingBudget, setRemainingBudget] = useState(10547);
   const [campaignLaunched, setCampaignLaunched] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   
@@ -177,10 +180,20 @@ export const AdCabinet = ({
       setCampaignLaunched(true);
     }
 
-    // Устанавливаем конверсии в зависимости от этапа
-    if (currentStage === "STAGE_5_ORDERS_COMING") {
+    // Устанавливаем начальную статистику на STAGE_5_ORDERS_COMING и держим её до получения данных от клиента
+    if (
+      currentStage === "STAGE_5_ORDERS_COMING" ||
+      currentStage === "STAGE_5_REPORT" ||
+      currentStage === "STAGE_6_REPORT_WAIT"
+    ) {
       setConversions(2);
-    } else if (
+      setImpressions(10361);
+      setClicks(41);
+      setRemainingBudget(10547);
+    }
+    
+    // Обновляем финальную статистику когда клиент предоставляет данные (STAGE_7_REPORT_DATA+)
+    if (
       currentStage === "STAGE_7_REPORT_DATA" ||
       currentStage === "STAGE_7_REPORT_DATA_2" ||
       currentStage === "STAGE_8_REPORT_SUBMIT" ||
@@ -190,6 +203,9 @@ export const AdCabinet = ({
       currentStage === "FINAL"
     ) {
       setConversions(23);
+      setImpressions(110867);
+      setClicks(410);
+      setRemainingBudget(0);
     }
   }, [currentStage]);
 
@@ -1071,18 +1087,17 @@ export const AdCabinet = ({
                   <div className="p-3 bg-[#F0F2F5] rounded-lg">
                     <p className="text-xs sm:text-sm text-[#818C99] mb-1">Остаток бюджета</p>
                     <p className="text-xl sm:text-2xl font-semibold">
-                      {currentStage === "STAGE_5_ORDERS_COMING" ? "10 547" : 
-                       (budget - 4453).toLocaleString("ru-RU")} ₽
+                      {remainingBudget.toLocaleString("ru-RU")} ₽
                     </p>
                   </div>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     <div className="space-y-1">
                       <p className="text-xs sm:text-sm text-[#818C99]">Показы</p>
-                      <p className="text-base sm:text-xl font-semibold">10 361</p>
+                      <p className="text-base sm:text-xl font-semibold">{impressions.toLocaleString("ru-RU")}</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-xs sm:text-sm text-[#818C99]">Клики</p>
-                      <p className="text-base sm:text-xl font-semibold">41</p>
+                      <p className="text-base sm:text-xl font-semibold">{clicks.toLocaleString("ru-RU")}</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-xs sm:text-sm text-[#818C99]">Конверсии</p>
