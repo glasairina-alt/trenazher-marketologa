@@ -63,7 +63,7 @@ const Index = () => {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-foreground truncate">
+                <h1 className="text-lg sm:text-2xl font-bold text-foreground whitespace-normal break-words leading-tight">
                   Тренажер маркетолога "Твой первый клиент"
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">Кейс: «Срочный запуск 14 февраля»</p>
