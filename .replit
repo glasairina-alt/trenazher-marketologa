@@ -37,3 +37,12 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+TIMEWEB_DB_HOST = "185.84.162.66"
+TIMEWEB_DB_PORT = "5432"
+TIMEWEB_DB_NAME = "default_db"
+TIMEWEB_DB_USER = "gen_user"
+TIMEWEB_DB_SCHEMA = "trainer_marketing"
