@@ -66,7 +66,7 @@ const Index = () => {
                 <h1 className="text-lg sm:text-2xl font-bold text-foreground whitespace-normal break-words leading-tight">
                   Тренажер маркетолога "Твой первый клиент"
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Кейс: «Срочный запуск 14 февраля»</p>
+                <p className="text-xs sm:text-sm text-muted-foreground/80 mt-2 truncate font-medium">Кейс: «Срочный запуск 14 февраля»</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
