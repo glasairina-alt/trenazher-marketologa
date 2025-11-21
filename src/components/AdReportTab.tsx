@@ -40,70 +40,9 @@ export const AdReportTab = ({
 
   const [isCorrect, setIsCorrect] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState<Record<string, number[]>>({
-    ctr: [],
-    cpc: [],
-    cpm: [],
-    cr1: [],
-    cpl: [],
-    cr2: [],
-    avgCheck: [],
-    romi: [],
-  });
+  const [isChecking, setIsChecking] = useState(false);
 
-  useEffect(() => {
-    loadCorrectAnswers();
-  }, []);
-
-  const loadCorrectAnswers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("metric_answers")
-        .select("*");
-
-      if (error) throw error;
-
-      if (data) {
-        const answersMap: Record<string, number[]> = {};
-        data.forEach((item) => {
-          answersMap[item.metric_name] = item.correct_values;
-        });
-        setCorrectAnswers(answersMap);
-      }
-    } catch (error) {
-      console.error("Error loading correct answers:", error);
-    }
-  };
-
-  const checkAnswers = (calculatedMetrics: {
-    ctr: string;
-    cpc: string;
-    cpm: string;
-    cr1: string;
-    cpl: string;
-    cr2: string;
-    avgCheck: string;
-    romi: string;
-  }) => {
-    const isValueCorrect = (value: string, correctValues: number[]) => {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue)) return false;
-      return correctValues.some(correct => Math.abs(numValue - correct) < 0.01);
-    };
-
-    return (
-      isValueCorrect(calculatedMetrics.ctr, correctAnswers.ctr) &&
-      isValueCorrect(calculatedMetrics.cpc, correctAnswers.cpc) &&
-      isValueCorrect(calculatedMetrics.cpm, correctAnswers.cpm) &&
-      isValueCorrect(calculatedMetrics.cr1, correctAnswers.cr1) &&
-      isValueCorrect(calculatedMetrics.cpl, correctAnswers.cpl) &&
-      isValueCorrect(calculatedMetrics.cr2, correctAnswers.cr2) &&
-      isValueCorrect(calculatedMetrics.avgCheck, correctAnswers.avgCheck) &&
-      isValueCorrect(calculatedMetrics.romi, correctAnswers.romi)
-    );
-  };
-
-  const handleCheckAnswers = () => {
+  const handleCheckAnswers = async () => {
     if (!calculated.ctr || !calculated.cpc || !calculated.cpm || !calculated.cr1 || 
         !calculated.cpl || !calculated.cr2 || !calculated.avgCheck || !calculated.romi) {
       toast({
@@ -114,31 +53,51 @@ export const AdReportTab = ({
       return;
     }
 
-    const correct = checkAnswers(calculated);
-    setIsCorrect(correct);
-    
-    if (correct) {
-      setShowError(false);
-      toast({
-        title: "Отлично! 🎉",
-        description: "Все показатели рассчитаны правильно!",
+    setIsChecking(true);
+
+    try {
+      // Call Edge Function to check answers securely
+      const { data, error } = await supabase.functions.invoke('check-metrics', {
+        body: { calculatedMetrics: calculated }
       });
+
+      if (error) throw error;
+
+      const correct = data.isCorrect;
+      setIsCorrect(correct);
       
-      // Подсказка о следующем шаге
-      setTimeout(() => {
+      if (correct) {
+        setShowError(false);
         toast({
-          title: "Следующий шаг",
-          description: "Теперь нажмите кнопку 'Отправить отчет клиенту' и сообщите Анне в чате, что отчет готов!",
-          duration: 8000,
+          title: "Отлично! 🎉",
+          description: "Все показатели рассчитаны правильно!",
         });
-      }, 1500);
-    } else {
-      setShowError(true);
+        
+        // Подсказка о следующем шаге
+        setTimeout(() => {
+          toast({
+            title: "Следующий шаг",
+            description: "Теперь нажмите кнопку 'Отправить отчет клиенту' и сообщите Анне в чате, что отчет готов!",
+            duration: 8000,
+          });
+        }, 1500);
+      } else {
+        setShowError(true);
+        toast({
+          title: "Проверьте расчеты",
+          description: "Некоторые показатели рассчитаны неверно. Проверьте формулы.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error checking answers:", error);
       toast({
-        title: "Проверьте расчеты",
-        description: "Некоторые показатели рассчитаны неверно. Проверьте формулы.",
+        title: "Ошибка",
+        description: "Не удалось проверить ответы. Попробуйте еще раз.",
         variant: "destructive",
       });
+    } finally {
+      setIsChecking(false);
     }
   };
 
@@ -279,8 +238,12 @@ export const AdReportTab = ({
           <div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
               <h3 className="text-base sm:text-lg font-semibold">Рассчитанные показатели</h3>
-              <Button onClick={handleCheckAnswers} className="w-full sm:w-auto text-sm">
-                Проверить расчеты
+              <Button 
+                onClick={handleCheckAnswers} 
+                className="w-full sm:w-auto text-sm"
+                disabled={isChecking}
+              >
+                {isChecking ? "Проверяем..." : "Проверить расчеты"}
               </Button>
             </div>
             
