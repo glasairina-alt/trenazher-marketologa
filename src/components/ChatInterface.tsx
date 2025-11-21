@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Paperclip } from "lucide-react";
+import { Send, Paperclip, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
@@ -209,6 +209,22 @@ export const ChatInterface = ({
     }
   };
 
+  const downloadImage = (imageUrl: string, filename: string) => {
+    fetch(imageUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      })
+      .catch(err => console.error('Ошибка при скачивании:', err));
+  };
+
   const downloadDialogs = async () => {
     // Фильтруем только диалоги клиент-ученик (без системных сообщений и подсказок)
     const clientDialogs = messages.filter(
@@ -348,6 +364,19 @@ export const ChatInterface = ({
                     <p className="text-xs sm:text-sm text-secondary-foreground text-center font-medium">
                       {flowerLabels[idx % flowerLabels.length]}
                     </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => downloadImage(
+                        flowerImages[idx % flowerImages.length],
+                        `${flowerLabels[idx % flowerLabels.length]}.png`
+                      )}
+                      className="w-full"
+                      data-testid={`button-download-${idx}`}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Скачать фото
+                    </Button>
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
