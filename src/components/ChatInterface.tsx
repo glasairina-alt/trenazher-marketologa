@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { VoiceMessage } from "@/components/VoiceMessage";
 import rosesImage from "@assets/roses.png";
 import tulipsImage from "@assets/tulips.png";
 import boxCompositionImage from "@assets/box-composition.png";
@@ -388,22 +389,10 @@ export const ChatInterface = ({
                     </Button>
                   </div>
                 ) : message.type === "bot-audio" && message.audioUrl ? (
-                  <div className="space-y-2">
-                    <audio 
-                      controls 
-                      className="w-full max-w-sm"
-                      data-testid="audio-player-anna"
-                    >
-                      <source src={message.audioUrl} type="audio/mpeg" />
-                      Ваш браузер не поддерживает аудио элемент.
-                    </audio>
-                    <p className="mt-1 text-xs opacity-70">
-                      {message.timestamp.toLocaleTimeString("ru-RU", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
+                  <VoiceMessage 
+                    audioUrl={message.audioUrl} 
+                    timestamp={message.timestamp}
+                  />
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
                     src={message.imageUrl}
