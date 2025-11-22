@@ -22,8 +22,9 @@ export type StageType =
 
 export interface Message {
   id: number;
-  type: "user" | "bot" | "system" | "system-alert" | "bot-image" | "user-image";
+  type: "user" | "bot" | "system" | "system-alert" | "bot-image" | "user-image" | "bot-audio";
   text: string;
   imageUrl?: string;
+  audioUrl?: string;
   timestamp: Date;
 }

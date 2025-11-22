@@ -4,7 +4,7 @@ interface StageHandlerParams {
   currentStage: StageType;
   userInput: string;
   setCurrentStage: (stage: StageType) => void;
-  addMessage: (text: string, type: Message["type"], imageUrl?: string) => void;
+  addMessage: (text: string, type: Message["type"], imageUrl?: string, audioUrl?: string) => void;
   setFileAttachEnabled: (enabled: boolean) => void;
   setIsCabinetLocked: (locked: boolean) => void;
   showTyping: () => Promise<void>;

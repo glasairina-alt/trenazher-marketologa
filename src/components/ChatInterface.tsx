@@ -11,6 +11,7 @@ import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } fro
 import rosesImage from "@assets/roses.png";
 import tulipsImage from "@assets/tulips.png";
 import boxCompositionImage from "@assets/box-composition.png";
+import annaVoiceAudio from "@assets/Anna.voice_start_1763770737747.mp3";
 
 interface ChatInterfaceProps {
   currentStage: StageType;
@@ -92,12 +93,13 @@ export const ChatInterface = ({
     }
   }, [currentStage, isActive]);
 
-  const addMessage = (text: string, type: Message["type"], imageUrl?: string) => {
+  const addMessage = (text: string, type: Message["type"], imageUrl?: string, audioUrl?: string) => {
     const newMessage: Message = {
       id: Date.now() + Math.random(),
       type,
       text,
       imageUrl,
+      audioUrl,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, newMessage]);
@@ -127,6 +129,12 @@ export const ChatInterface = ({
         "system"
       );
       await sleep(1000);
+      
+      // Голосовое сообщение сразу после системного
+      addMessage("", "bot-audio", undefined, annaVoiceAudio);
+      
+      // Через 10 секунд - текстовое сообщение от Анны
+      await sleep(10000);
       addMessage(
         "Здравствуйте! Мне посоветовали вас. У нас скоро 14 февраля, надо срочно запустить рекламу — праздник же! 💐 Бюджет… ну, тысяч 15 максимум. Жду от вас креативы и запуск завтра! Ах да — сайта нет, только социальная сеть ВК, но я ей давно не занималась.",
         "bot"
@@ -334,6 +342,7 @@ export const ChatInterface = ({
                     message.type === "user" && "bg-gradient-to-br from-green-500 to-emerald-600",
                     (message.type === "bot" ||
                       message.type === "bot-image" ||
+                      message.type === "bot-audio" ||
                       message.type === "user-image") &&
                       "bg-gradient-to-br from-purple-500 to-pink-500"
                   )}
@@ -347,7 +356,7 @@ export const ChatInterface = ({
                   "rounded-lg px-3 py-2 sm:px-4 max-w-[85%] sm:max-w-[80%] text-sm sm:text-base",
                   message.type === "user" &&
                     "bg-chat-user text-white rounded-br-sm",
-                  (message.type === "bot" || message.type === "bot-image") &&
+                  (message.type === "bot" || message.type === "bot-image" || message.type === "bot-audio") &&
                     "bg-secondary text-secondary-foreground rounded-bl-sm",
                   (message.type === "system" || message.type === "system-alert") &&
                     "bg-chat-system/10 text-foreground border border-chat-system/20 max-w-full text-left",
@@ -377,6 +386,23 @@ export const ChatInterface = ({
                       <Download className="w-4 h-4 mr-2" />
                       Скачать фото
                     </Button>
+                  </div>
+                ) : message.type === "bot-audio" && message.audioUrl ? (
+                  <div className="space-y-2">
+                    <audio 
+                      controls 
+                      className="w-full max-w-sm"
+                      data-testid="audio-player-anna"
+                    >
+                      <source src={message.audioUrl} type="audio/mpeg" />
+                      Ваш браузер не поддерживает аудио элемент.
+                    </audio>
+                    <p className="mt-1 text-xs opacity-70">
+                      {message.timestamp.toLocaleTimeString("ru-RU", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
                   </div>
                 ) : message.type === "user-image" && message.imageUrl ? (
                   <img
