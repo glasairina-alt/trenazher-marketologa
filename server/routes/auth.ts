@@ -25,9 +25,8 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   phone: z.string()
-    .regex(/^\+7\d{10}$/, 'Phone must be in format +7XXXXXXXXXX')
-    .optional()
-    .nullable(),
+    .min(1, 'Phone is required')
+    .regex(/^\+7\s?\(?\d{3}\)?\s?\d{3}(-|\s)?\d{2}(-|\s)?\d{2}$/, 'Phone must be in Russian format (e.g., +7 (999) 123-45-67)'),
 });
 
 const loginSchema = z.object({
@@ -70,7 +69,7 @@ router.post('/register', registerLimiter, async (req, res) => {
       `INSERT INTO trainer_marketing.users (email, password, name, phone, role) 
        VALUES ($1, $2, $3, $4, $5) 
        RETURNING id, email, name, phone, role, created_at`,
-      [email, hashedPassword, name, phone || null, 'user']
+      [email, hashedPassword, name, phone, 'user']
     );
 
     const user = result.rows[0];

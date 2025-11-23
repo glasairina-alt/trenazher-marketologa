@@ -74,7 +74,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
     setIsLoading(true);
 
     try {
-      await register(email, password, name, phone || undefined);
+      await register(email, password, name, phone);
 
       toast({
         title: "Успешно!",
@@ -165,13 +165,14 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="register-phone">Телефон (необязательно)</Label>
+                <Label htmlFor="register-phone">Телефон</Label>
                 <Input
                   id="register-phone"
                   type="tel"
                   placeholder="+7 (999) 123-45-67"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  required
                   disabled={isLoading}
                   data-testid="input-register-phone"
                 />

@@ -17,7 +17,7 @@ interface AuthContextType {
   isAuthModalOpen: boolean;
   authModalMode: 'login' | 'register';
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, phone?: string) => Promise<void>;
+  register: (email: string, password: string, name: string, phone: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   openAuthModal: (mode: 'login' | 'register') => void;
@@ -56,12 +56,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(response.user);
   };
 
-  const register = async (email: string, password: string, name: string, phone?: string) => {
+  const register = async (email: string, password: string, name: string, phone: string) => {
     const response = await api.post<{ token: string; user: User }>('/api/auth/register', {
       email,
       password,
       name,
-      phone: phone || null,
+      phone,
     });
 
     localStorage.setItem('auth_token', response.token);
