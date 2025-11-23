@@ -61,6 +61,10 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// SECURITY: Trust proxy for rate limiting (required for X-Forwarded-For header)
+// Enable this when behind a reverse proxy (like Replit's infrastructure)
+app.set('trust proxy', 1);
+
 // SECURITY: Capture raw body for webhook HMAC verification BEFORE parsing JSON
 // YooKassa signs the raw body, so we must verify against the exact bytes
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));

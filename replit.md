@@ -108,9 +108,9 @@ type MessageType =
 - **Обычный пользователь:** user@test.com / user123
 
 #### Переменные окружения (secrets)
-- `DATABASE_URL` - подключение к Timeweb PostgreSQL
+- `TIMEWEB_DB_*` - подключение к Timeweb PostgreSQL (HOST, PORT, USER, PASSWORD, NAME, SCHEMA)
 - `JWT_SECRET` - секретный ключ для JWT (обязательно!)
-- `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE` - параметры БД
+- **УДАЛЕНЫ:** старые `DATABASE_URL`, `PGHOST` и т.д. (конфликтовали с Timeweb credentials)
 
 ### Последние изменения (23 ноября 2025)
 
@@ -141,6 +141,15 @@ type MessageType =
 - Пользователь: gen_user
 - PostgreSQL 18.0 работает корректно
 - Схема trainer_marketing с таблицей users
+
+#### ✅ Исправлена проблема с пустой БД (23.11.2025)
+- **Проблема:** Пользователь получал "User already exists", но SQL запросы показывали что таблица не существует
+- **Корень проблемы:** SQL tool использовал старые DATABASE_URL credentials (пустая БД), а приложение работало с TIMEWEB_DB_* (Timeweb PostgreSQL)
+- **Решение:**
+  - Удалены конфликтующие secrets: DATABASE_URL, PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
+  - Создан скрипт `server/seed-users.ts` для тестовых пользователей (запуск: `npx tsx server/seed-users.ts`)
+  - Исправлено предупреждение trust proxy (добавлен `app.set('trust proxy', 1)` в server/index.ts)
+- **Результат:** Все тестовые аккаунты (admin, premium, user) созданы и работают корректно
 
 ### Запланированные функции
 
