@@ -5,10 +5,8 @@ import {
   BarChart3,
   CheckCircle2,
   AlertCircle,
-  Play,
   Zap,
   Lock,
-  Unlock,
   ArrowRight,
   Target,
   Users,
@@ -18,127 +16,25 @@ import {
   School,
   ChevronDown,
   ChevronUp,
-  Heart,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
 const LOGO_URL = "https://static.tildacdn.com/tild3339-6163-4562-b862-373037323038/___.png";
 
-// Helper Components
-const NavLink = ({ href, label }: { href: string; label: string }) => (
-  <a href={href} className="hover:text-[#C5F82A] transition-colors">
-    {label}
-  </a>
-);
-
-const StatBox = ({ 
-  value, 
-  label, 
-  accentColor 
-}: { 
-  value: string; 
-  label: string; 
-  accentColor: string;
-}) => (
-  <div className="bg-[#16181D] p-4 rounded-xl border border-white/5">
-    <div className={`text-2xl font-bold ${accentColor} mb-1`}>{value}</div>
-    <div className="text-xs text-slate-500 uppercase tracking-wide">{label}</div>
-  </div>
-);
-
-const Bar = ({ 
-  height, 
-  color, 
-  tooltip, 
-  final = false 
-}: { 
-  height: string; 
-  color: string; 
-  tooltip: string; 
-  final?: boolean;
-}) => (
-  <div className="flex-1 flex flex-col justify-end group relative">
-    <div 
-      className={`${color} rounded-t-md transition-all group-hover:opacity-80 ${final ? 'shadow-[0_0_15px_rgba(197,248,42,0.4)]' : ''}`}
-      style={{ height }}
-    ></div>
-    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-      {tooltip}
-    </div>
-  </div>
-);
-
-const BentoCard = ({ 
-  icon, 
-  title, 
-  desc 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  desc: string;
-}) => (
-  <div className="bg-[#16181D] p-6 rounded-2xl border border-white/10 hover:border-[#C5F82A]/30 transition-all group">
-    <div className="mb-4 transform group-hover:scale-110 transition-transform">
-      {icon}
-    </div>
-    <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-    <p className="text-sm text-slate-400 leading-relaxed">{desc}</p>
-  </div>
-);
-
-const StepItem = ({ 
-  number, 
-  title, 
-  desc 
-}: { 
-  number: string; 
-  title: string; 
-  desc: string;
-}) => (
-  <div className="flex gap-6 relative">
-    <div className="w-10 h-10 rounded-full bg-[#C5F82A] text-black font-bold flex items-center justify-center text-sm flex-shrink-0 relative z-10">
-      {number}
-    </div>
-    <div className="flex-1 pb-2">
-      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-slate-400">{desc}</p>
-    </div>
-  </div>
-);
-
-const FAQItem = ({ 
-  question, 
-  answer 
-}: { 
-  question: string; 
-  answer: string;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  return (
-    <div className="bg-[#16181D] border border-white/10 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left p-6 flex justify-between items-center hover:bg-white/5 transition-colors"
-      >
-        <span className="text-lg font-semibold text-white pr-4">{question}</span>
-        {isOpen ? <ChevronUp className="text-[#C5F82A] flex-shrink-0" /> : <ChevronDown className="text-slate-400 flex-shrink-0" />}
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-6 text-slate-400 leading-relaxed border-t border-white/5 pt-4">
-          {answer}
-        </div>
-      )}
-    </div>
-  );
-};
-
 export default function Landing() {
-  const { user, openAuthModal } = useAuth();
+  const { openAuthModal } = useAuth();
+
+  const handleStartFree = () => {
+    openAuthModal('register');
+  };
+
+  const handleLogin = () => {
+    openAuthModal('login');
+  };
 
   return (
     <div className="min-h-screen bg-[#0B0C10] text-slate-200 font-sans selection:bg-[#C5F82A] selection:text-black overflow-x-hidden">
+      
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-[#0B0C10]/80 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
@@ -147,14 +43,10 @@ export default function Landing() {
               src={LOGO_URL}
               alt="Логотип Твой первый клиент"
               className="h-10 md:h-12 object-contain"
-              onError={(e) => { 
-                const target = e.target as HTMLImageElement;
-                target.onerror = null; 
-                target.src = "https://placehold.co/100x40/0B0C10/C5F82A?text=LOGO"; 
-              }}
+              onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/100x40/0B0C10/C5F82A?text=LOGO"; }}
             />
           </div>
-
+          
           <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
             <NavLink href="#главная" label="Главная" />
             <NavLink href="#тариф" label="Тариф" />
@@ -162,22 +54,13 @@ export default function Landing() {
             <NavLink href="#faq" label="FAQ" />
           </div>
 
-          {user ? (
-            <Link to="/trainer">
-              <Button className="hidden md:block">
-                К тренажеру
-              </Button>
-            </Link>
-          ) : (
-            <Button 
-              className="hidden md:block"
-              variant="outline"
-              onClick={() => openAuthModal('login')}
-              data-testid="button-login"
-            >
-              Войти
-            </Button>
-          )}
+          <button 
+            onClick={handleLogin}
+            className="hidden md:block bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-full text-sm font-medium transition-all"
+            data-testid="button-login"
+          >
+            Войти
+          </button>
         </div>
       </nav>
 
@@ -188,47 +71,27 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
             <span className="w-2 h-2 rounded-full bg-[#C5F82A] animate-pulse"></span>
-            <span className="text-xs md:text-sm font-medium text-slate-300 tracking-wide uppercase">
-              Симулятор реальной работы
-            </span>
+            <span className="text-xs md:text-sm font-medium text-slate-300 tracking-wide uppercase">Симулятор реальной работы</span>
           </div>
-
+          
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8">
             Твой первый клиент — <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C5F82A] to-emerald-400">
-              без страха и хаоса
-            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C5F82A] to-emerald-400">без страха и хаоса</span>
           </h1>
-
+          
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Практический тренажёр для маркетологов-новичков: попробуй вести переговоры, получать правки, 
-            запускать рекламу и делать отчёт — как в реальных проектах, но в безопасной среде.
+            Практический тренажёр для маркетологов-новичков: попробуй вести переговоры, получать правки, запускать рекламу и делать отчёт — как в реальных проектах, но в безопасной среде.
           </p>
-
+          
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-            {user ? (
-              <Link to="/trainer">
-                <Button 
-                  size="lg"
-                  className="w-full md:w-auto bg-[#C5F82A] hover:bg-[#b2e615] text-black px-8 py-6 text-lg shadow-[0_0_20px_rgba(197,248,42,0.3)]"
-                  data-testid="button-start-free"
-                >
-                  Начать бесплатно
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-            ) : (
-              <Button 
-                size="lg"
-                className="w-full md:w-auto bg-[#C5F82A] hover:bg-[#b2e615] text-black px-8 py-6 text-lg shadow-[0_0_20px_rgba(197,248,42,0.3)]"
-                onClick={() => openAuthModal('register')}
-                data-testid="button-start-free"
-              >
-                Начать бесплатно
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            )}
-            
+            <button 
+              onClick={handleStartFree}
+              className="w-full md:w-auto bg-[#C5F82A] hover:bg-[#b2e615] text-black px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.3)]"
+              data-testid="button-start-free"
+            >
+              Начать бесплатно
+              <ArrowRight className="w-5 h-5" />
+            </button>
             <div className="flex items-center gap-4 px-6 py-4 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#C5F82A]" />
@@ -260,27 +123,25 @@ export default function Landing() {
                   Конечно! Давайте обсудим детали и KPI.
                 </div>
               </div>
-
+              
               {/* Mock Stats */}
               <div className="col-span-2 space-y-4">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-white">Результаты кампании</h3>
-                  <div className="h-8 w-24 bg-[#C5F82A] rounded-full flex items-center justify-center text-black text-xs font-bold shadow-md">
-                    Запуск
-                  </div>
+                  <div className="h-8 w-24 bg-[#C5F82A] rounded-full flex items-center justify-center text-black text-xs font-bold shadow-md">Запуск</div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <StatBox value="2.4%" label="CTR (Кликбельность)" accentColor="text-[#C5F82A]" />
                   <StatBox value="750 ₽" label="Цена лида (CPL)" accentColor="text-red-400" />
                   <StatBox value="200/250" label="KPI лидов" accentColor="text-blue-400" />
                 </div>
-
+                
                 <div className="mt-6">
                   <div className="text-slate-500 text-sm mb-2">Динамика конверсий</div>
                   <div className="flex gap-4 items-end h-32 pb-2 border-b border-white/10">
-                    <Bar height="40%" color="bg-indigo-500/20" tooltip="День 1: 0.8%" />
-                    <Bar height="60%" color="bg-indigo-500/40" tooltip="День 2: 1.2%" />
-                    <Bar height="85%" color="bg-[#C5F82A]" tooltip="День 3: 2.4%" final={true} />
+                    <Bar height="h-[40%]" color="bg-indigo-500/20" tooltip="День 1: 0.8%" />
+                    <Bar height="h-[60%]" color="bg-indigo-500/40" tooltip="День 2: 1.2%" />
+                    <Bar height="h-[85%]" color="bg-[#C5F82A]" tooltip="День 3: 2.4%" final={true} />
                   </div>
                   <div className="flex justify-between text-[10px] text-slate-500 uppercase tracking-widest pt-2">
                     <span>Тест A</span>
@@ -294,57 +155,49 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* For Whom Section */}
+      {/* For Whom Section (Bento Grid) */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">
-              Аудитория
-            </span>
+            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Аудитория</span>
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Кому это подходит?</h2>
-            <p className="text-slate-400 text-lg">
-              Если ты закончил <span className="text-[#C5F82A] font-bold">теоретический курс</span>, 
-              но боишься брать первого клиента — начни здесь.
-            </p>
+            <p className="text-slate-400 text-lg">Если ты закончил <span className="text-[#C5F82A] font-bold">теоретический курс</span>, но боишься брать первого клиента — начни здесь.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <BentoCard
-              icon={<Users className="text-blue-400 w-8 h-8" />}
+              icon={<Users className="text-blue-400" />}
               title="Новичкам без практики"
               desc="Знаешь теорию, но никогда не запускал рекламу за реальные деньги."
             />
             <BentoCard
-              icon={<MessageCircle className="text-purple-400 w-8 h-8" />}
+              icon={<MessageCircle className="text-purple-400" />}
               title="Боишься переговоров"
               desc="Не знаешь, как отвечать на неудобные вопросы и оценивать свою работу."
             />
             <BentoCard
-              icon={<Zap className="text-orange-400 w-8 h-8" />}
+              icon={<Zap className="text-orange-400" />}
               title="Путаница в кабинетах"
               desc="Интерфейсы пугают? Научимся нажимать правильные кнопки без паники."
             />
             <BentoCard
-              icon={<Target className="text-[#C5F82A] w-8 h-8" />}
-              title="Нужен реальный кейс"
+              icon={<Target className="text-[#C5F82A]" />}
               desc="Вместо абстрактных учебных задач — симуляция живого проекта."
+              title="Нужен реальный кейс"
             />
           </div>
         </div>
       </section>
 
-      {/* What's Inside Section */}
+      {/* What's Inside (Process) */}
       <section className="py-20 px-4 bg-[#0F1116] relative overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">
-                Что внутри
-              </span>
+              <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Что внутри</span>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Полный маршрут маркетолога</h2>
               <p className="text-slate-400 text-lg mb-12">
-                От первого неуверенного «алло» до отправки финального отчёта. 
-                Пройди этот путь виртуально, чтобы в реальности чувствовать себя профи.
+                От первого неуверенного «алло» до отправки финального отчёта. Пройди этот путь виртуально, чтобы в реальности чувствовать себя профи.
               </p>
 
               <div className="space-y-8 relative">
@@ -357,178 +210,207 @@ export default function Landing() {
                 <StepItem number="5" title="Отчёт и результаты" desc="Учимся объяснять цифры простым языком." />
               </div>
             </div>
-
+            
+            {/* Interactive Element */}
             <div className="relative">
               <div className="bg-[#1A1D24] border border-white/10 rounded-3xl p-8 relative z-10 aspect-square flex flex-col justify-between overflow-hidden group hover:shadow-[0_0_30px_rgba(197,248,42,0.1)] transition-shadow">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5F82A] blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
-
+                
                 <div>
                   <div className="inline-flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full text-xs text-slate-300 mb-4 border border-white/5">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                     Входящее сообщение
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">Диалог с заказчиком</h3>
-                  <p className="text-slate-400 text-sm">
-                    Клиент недоволен цветом кнопки на баннере. Твои действия?
-                  </p>
+                  <p className="text-slate-400 text-sm">Клиент недоволен цветом кнопки на баннере. Твои действия?</p>
                 </div>
 
                 <div className="mt-8 space-y-3">
                   <button className="w-full text-left p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#C5F82A]/50 transition-all text-sm text-slate-200">
-                    <span className="block text-xs text-slate-500 mb-1">Вариант А</span>
-                    Переделать сразу по требованию
+                    <span className="block text-xs text-slate-500 mb-1">Вариант А (Профессиональный)</span>
+                    Объяснить, что этот цвет конвертит лучше по статистике, и предложить A/B-тест.
                   </button>
                   <button className="w-full text-left p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#C5F82A]/50 transition-all text-sm text-slate-200">
-                    <span className="block text-xs text-slate-500 mb-1">Вариант Б</span>
-                    Уточнить, почему цвет не подходит
+                    <span className="block text-xs text-slate-500 mb-1">Вариант Б (Ошибка)</span>
+                    Молча всё переделать, как он хочет, теряя контроль над стратегией.
                   </button>
                 </div>
               </div>
+              
+              <div className="absolute -bottom-6 -right-6 w-full h-full border border-white/5 rounded-3xl z-0 bg-[#0B0C10] transform translate-x-3 translate-y-3"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">
-              FAQ
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Частые вопросы</h2>
+      {/* Roadmap Section */}
+      <RoadmapSection />
+
+      {/* Interface Preview Section */}
+      <InterfacePreviewSection />
+      
+      {/* Results & Why it works */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12">
+          <div>
+            <div className="mb-8 text-left">
+              <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Результат</span>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-8">Почему это работает?</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <WhyCard
+                title="Реалистичная ситуация"
+                desc="Ты не просто читаешь теорию — ты проживаешь задачу. Переписка, дедлайны, правки."
+              />
+              <WhyCard
+                title="Безопасная среда"
+                desc="Все ошибки остаются в симуляторе. Ты можешь пробовать разные подходы, не боясь потерять деньги или репутацию."
+              />
+              <WhyCard
+                title="Мгновенная обратная связь"
+                desc="Алгоритм оценивает твои решения. Ты видишь последствия своих выборов, как в реальной работе."
+              />
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <FAQItem 
-              question="Это настоящий рекламный кабинет?"
-              answer="Нет, это симулятор. Вы не тратите реальные деньги, но интерфейс максимально приближен к настоящему рекламному кабинету. Все действия безопасны."
-            />
-            <FAQItem 
-              question="Сколько времени занимает прохождение?"
-              answer="В среднем 1-2 часа. Вы можете делать паузы и возвращаться к тренажёру в любое время."
-            />
-            <FAQItem 
-              question="Нужны ли предварительные знания?"
-              answer="Да, базовое понимание таргетированной рекламы желательно. Тренажёр подходит тем, кто изучил теорию, но боится практики."
-            />
-            <FAQItem 
-              question="Могу ли я пройти тренажёр несколько раз?"
-              answer="Конечно! После покупки премиум-доступа вы можете проходить тренажёр сколько угодно раз."
-            />
+          <div>
+            <div className="mb-8 text-left">
+              <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Что ты получишь</span>
+            </div>
+            <div className="space-y-6">
+              <ResultItem text="Перестанешь паниковать при запуске первой кампании." />
+              <ResultItem text="Научишься объяснять KPI клиенту, даже если они не идеальны." />
+              <ResultItem text="Поймёшь, как работать с правками, не теряя нервы." />
+              <ResultItem text="Сможешь подбирать настройки и бюджеты с уверенностью." />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
       <section id="тариф" className="py-20 px-4 bg-[#0F1116]">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">
-            Тариф
-          </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Простая и честная цена</h2>
-          <p className="text-slate-400 text-lg mb-12">
-            Попробуйте бесплатно или получите полный доступ к премиум функциям.
-          </p>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12 text-center">
+            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Ценообразование</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Выбери свой формат</h2>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Попробуй бесплатно или открой полный доступ за символическую сумму.
+            </p>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
             {/* Free Plan */}
-            <div className="bg-[#16181D] border border-white/10 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Бесплатно</h3>
-              <div className="text-4xl font-bold text-white mb-6">
-                0 ₽
+            <div className="bg-[#16181D] rounded-3xl p-8 border border-white/5 hover:border-white/10 transition-all flex flex-col">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Бесплатно</h3>
+                <p className="text-slate-500 text-sm h-10">Познакомиться с форматом и попробовать свои силы.</p>
               </div>
-              <ul className="space-y-3 mb-8 text-left">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Первый диалог с клиентом</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Базовые функции тренажера</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Lock className="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-500">Полный кейс заблокирован</span>
-                </li>
+              <div className="mb-8">
+                <span className="text-4xl font-bold text-white">0 ₽</span>
+              </div>
+              
+              <ul className="space-y-4 mb-8 flex-grow">
+                <PricingItem text="Первая встреча с клиентом" active={true} />
+                <PricingItem text="ТЗ, задачи, первые правки" active={true} />
+                <PricingItem text="Настройка рекламы" active={false} />
+                <PricingItem text="Работа с возражениями" active={false} />
+                <PricingItem text="Финальный отчёт" active={false} />
               </ul>
-              {user ? (
-                <Link to="/trainer">
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    data-testid="button-try-free"
-                  >
-                    Попробовать
-                  </Button>
-                </Link>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => openAuthModal('register')}
-                  data-testid="button-try-free"
-                >
-                  Попробовать
-                </Button>
-              )}
+
+              <button 
+                onClick={handleStartFree}
+                className="w-full py-4 rounded-xl border border-white/20 text-white hover:bg-white/5 transition-all font-medium min-h-[60px]"
+                data-testid="button-try-demo"
+              >
+                Попробовать демо
+              </button>
             </div>
 
-            {/* Premium Plan */}
-            <div className="bg-gradient-to-br from-[#C5F82A]/20 to-[#16181D] border-2 border-[#C5F82A] rounded-2xl p-8 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C5F82A] text-black px-4 py-1 rounded-full text-xs font-bold">
-                Рекомендуем
+            {/* Paid Plan */}
+            <div className="bg-[#1A1D24] rounded-3xl p-8 border border-[#C5F82A] relative overflow-hidden shadow-[0_0_30px_-10px_rgba(197,248,42,0.2)] flex flex-col">
+              <div className="absolute top-0 right-0 bg-[#C5F82A] text-black text-xs font-bold px-4 py-1 rounded-bl-xl">
+                РЕКОМЕНДУЕМ
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Премиум</h3>
-              <div className="text-4xl font-bold text-white mb-1">
-                790 ₽
+              
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Полная практика</h3>
+                <p className="text-slate-400 text-sm h-10">Пройди весь цикл и перестань чувствовать себя новичком.</p>
               </div>
-              <div className="text-sm text-slate-400 mb-6 line-through">2 900 ₽</div>
-              <ul className="space-y-3 mb-8 text-left">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Полный кейс от начала до конца</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Симулятор рекламного кабинета</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Экспорт диалогов в .docx</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#C5F82A] flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Безлимитные повторные прохождения</span>
-                </li>
+              <div className="mb-8">
+                <span className="text-4xl font-bold text-white">790 ₽</span>
+                <span className="text-slate-500 line-through ml-3 text-sm">2 900 ₽</span>
+                <p className="text-xs text-[#C5F82A] mt-2 font-medium">
+                  Полный доступ к сервису будет предоставлен сразу после оплаты.
+                </p>
+              </div>
+              
+              <ul className="space-y-4 mb-8 flex-grow">
+                <PricingItem text="Все этапы из бесплатного" active={true} highlight={true} />
+                <PricingItem text="Настройка и запуск рекламы" active={true} highlight={true} />
+                <PricingItem text="Работа с возражениями" active={true} highlight={true} />
+                <PricingItem text="Отчёт, выводы, финал" active={true} highlight={true} />
+                <PricingItem text="Скачивание и оценка диалогов с клиентом" active={true} highlight={true} icon={Download} />
               </ul>
+
               <Link to="/payment">
-                <Button 
-                  className="w-full bg-[#C5F82A] hover:bg-[#b2e615] text-black"
-                  data-testid="button-buy-premium"
-                >
-                  Получить доступ
-                </Button>
+                <button className="w-full py-4 rounded-xl bg-[#C5F82A] hover:bg-[#b2e615] text-black transition-all font-bold shadow-lg shadow-[#C5F82A]/20 min-h-[60px]" data-testid="button-unlock-premium">
+                  Открыть доступ за 790 ₽
+                </button>
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 border-t border-white/10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-sm text-slate-500">
-              © 2025 Твой первый клиент. Все права защищены.
-            </div>
-            <div className="flex items-center gap-6 text-sm">
-              <Link to="/oferta" className="text-slate-400 hover:text-[#C5F82A] transition-colors">
-                Договор-оферта
-              </Link>
-              <a href="https://t.me/irinavoitovich" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C5F82A] transition-colors">
-                Связаться с автором
+      {/* Author Section */}
+      <AuthorSection />
+
+      {/* Testimonials Section */}
+      <TestimonialSection />
+
+      {/* FAQ Section */}
+      <FAQSection />
+
+      {/* Final CTA */}
+      <footer className="py-32 px-4 text-center relative overflow-hidden bg-[#0F1116]">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#C5F82A] opacity-[0.05] blur-[100px] rounded-full pointer-events-none"></div>
+
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+            Сделай первый шаг <br/>в профессию
+          </h2>
+          <p className="text-slate-400 text-lg mb-10">
+            Хватит учиться — пора действовать.
+          </p>
+          <button 
+            onClick={handleStartFree}
+            className="bg-[#C5F82A] hover:bg-[#b2e615] text-black px-12 py-5 rounded-2xl font-bold text-xl transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(197,248,42,0.3)]"
+            data-testid="button-start-footer"
+          >
+            Начать бесплатно
+          </button>
+          
+          <div className="mt-12 flex flex-col items-center">
+            <img
+              src={LOGO_URL}
+              alt="Логотип Твой первый клиент"
+              className="h-10 object-contain opacity-50 mb-4"
+              onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/120x40/0B0C10/C5F82A?text=LOGO"; }}
+            />
+            <p className="text-xs text-slate-600">
+              © 2025 Все права защищены.
+              <a href="https://voitovichirina.ru/politika" target="_blank" rel="noopener noreferrer" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline">
+                Политика обработки персональных данных
               </a>
+              <Link to="/oferta" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline">
+                Договор оферты
+              </Link>
+            </p>
+            
+            <div className="text-[10px] text-slate-600 mt-2 space-y-0.5">
+              <p>Войтович Ирина Вениаминовна, ИНН 645318153031</p>
+              <p>тел +79910205051, trafik-im@yandex.ru</p>
             </div>
           </div>
         </div>
@@ -536,3 +418,376 @@ export default function Landing() {
     </div>
   );
 }
+
+// --- Helper Components ---
+
+const NavLink = ({ href, label }: { href: string; label: string }) => (
+  <a href={href} className="hover:text-[#C5F82A] transition-colors">
+    {label}
+  </a>
+);
+
+const StatBox = ({ value, label, accentColor }: { value: string; label: string; accentColor: string }) => (
+  <div className="bg-[#1A1D24] p-3 rounded-xl border border-white/5">
+    <p className={`text-2xl font-bold ${accentColor} mb-1`}>{value}</p>
+    <p className="text-xs text-slate-500 uppercase tracking-widest">{label}</p>
+  </div>
+);
+
+const Bar = ({ height, color, tooltip, final }: { height: string; color: string; tooltip: string; final?: boolean }) => (
+  <div className={`w-full ${color} ${height} rounded-t hover:opacity-100 transition-all relative group shadow-lg ${final ? 'shadow-[#C5F82A]/40' : 'shadow-none'}`}>
+    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+      {tooltip}
+    </div>
+  </div>
+);
+
+const InterfacePreviewSection = () => (
+  <section className="py-20 px-4 bg-[#0F1116] relative">
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-12 text-left">
+        <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Превью интерфейса</span>
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">3 в 1: Чат, Запуск, Отчёт</h2>
+        <p className="text-slate-400 text-lg max-w-3xl">
+          Полностью имитируем рабочую среду: от первого сообщения до аналитики.
+        </p>
+      </div>
+      
+      <div className="bg-[#16181D] border border-[#C5F82A]/30 rounded-3xl shadow-[0_0_50px_rgba(197,248,42,0.1)] p-4 md:p-8">
+        <div className="flex space-x-2 border-b border-white/10 mb-6 pb-2 overflow-x-auto">
+          <Tab title="Чат с клиентом" icon={MessageCircle} active={true} />
+          <Tab title="Рекламный кабинет" icon={Zap} active={false} />
+          <Tab title="Отчет" icon={BarChart3} active={false} />
+        </div>
+        
+        <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-[#121418] rounded-xl border border-white/5">
+          <ChatBubble type="received" text="Привет! Введите /start чтобы начать кейс." time="21:41" />
+          <ChatBubble type="sent" text="/start" time="21:55" /> 
+          <ChatContextBubble text="Кейс: Клиент «Анна» (магазин цветов) присылает вам сообщение 12 февраля. Задача: подготовить запуск ко Дню всех влюбленных." time="21:55" />
+        </div>
+
+        <div className="border-t border-white/10 pt-4 flex items-center gap-3 opacity-60 pointer-events-none">
+          <input 
+            type="text"
+            placeholder="Ввод отключен в режиме предварительного просмотра."
+            disabled={true}
+            className="flex-1 p-3 rounded-xl bg-[#0B0C10] border border-white/10 text-slate-400 outline-none cursor-not-allowed"
+          />
+          <button disabled={true} className="p-3 bg-[#C5F82A] rounded-xl text-black transition-colors cursor-not-allowed">
+            <Send size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const Tab = ({ title, icon: Icon, active }: { title: string; icon: any; active: boolean }) => (
+  <div className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+    active ? 'bg-[#C5F82A]/20 text-[#C5F82A] border border-[#C5F82A]/50' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+  }`}>
+    <Icon size={16} />
+    {title}
+  </div>
+);
+
+const ChatBubble = ({ type, text, time }: { type: 'sent' | 'received'; text: string; time: string }) => (
+  <div className={`flex ${type === 'sent' ? 'justify-end' : 'justify-start'}`}>
+    <div className={`max-w-[70%] p-3 rounded-xl text-sm leading-relaxed ${
+      type === 'sent' 
+        ? 'bg-[#C5F82A]/15 text-[#C5F82A] rounded-br-none ml-auto'
+        : 'bg-white/10 text-slate-300 rounded-tl-none mr-auto'
+    }`}>
+      {text}
+      <span className={`block text-[10px] mt-1 ${type === 'sent' ? 'text-[#C5F82A]/80' : 'text-slate-500'} text-right`}>{time}</span>
+    </div>
+  </div>
+);
+
+const ChatContextBubble = ({ text, time }: { text: string; time?: string }) => (
+  <div className="flex justify-center w-full my-4">
+    <div className="p-3 rounded-xl bg-blue-900/40 border border-blue-500/50 text-slate-300 text-xs max-w-sm text-center shadow-inner">
+      {text}
+      {time && <span className="block text-[10px] mt-1 text-slate-400 text-center">{time}</span>}
+    </div>
+  </div>
+);
+
+const TestimonialSection = () => (
+  <section id="отзывы" className="py-20 px-4 bg-[#0F1116]">
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-12 text-left">
+        <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Доказательство</span>
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Прошли тренажер, чтобы снять реальный страх работы с клиентом</h2>
+        <p className="text-slate-400 text-lg max-w-3xl">
+          Отзывы тех, кто с нашей помощью перешел от теории к реальному заработку.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6">
+        <TestimonialCard
+          quote="Тренажер дал уверенность, которой не хватало после курсов. Я наконец-то понял, как работать с клиентами и делать маркетинговый отчет."
+          author="Анатолий К."
+          role="Трафик-менеджер (фриланс)"
+          imagePlaceholder="https://placehold.co/80x80/2D3748/C5F82A?text=АК"
+        />
+        <TestimonialCard
+          quote="Самое ценное — это разбор переговоров. Я научилась аргументировать свою позицию и перестала бояться задавать 'неудобные' вопросы клиенту."
+          author="Марина С."
+          role="Маркетолог-аналитик"
+          imagePlaceholder="https://placehold.co/80x80/2D3748/C5F82A?text=МС"
+        />
+        <TestimonialCard
+          quote="Отличная имитация рекламного кабинета. Ошибки, которые я совершила в тренажере, сэкономили бы мне десятки тысяч реальных рублей. Спасибо!"
+          author="Ольга А."
+          role="Начинающий маркетолог"
+          imagePlaceholder="https://placehold.co/80x80/2D3748/C5F82A?text=ОА"
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const TestimonialCard = ({ quote, author, role, imagePlaceholder }: { quote: string; author: string; role: string; imagePlaceholder: string }) => (
+  <div className="bg-[#1A1D24] p-6 rounded-2xl border border-white/10 flex flex-col justify-between hover:border-[#C5F82A]/30 transition-all transform hover:scale-[1.02]">
+    <blockquote className="text-slate-300 italic mb-6 relative">
+      <span className="text-4xl absolute -top-4 -left-3 text-[#C5F82A] opacity-30">«</span>
+      {quote}
+      <span className="text-4xl absolute -bottom-8 right-0 text-[#C5F82A] opacity-30">»</span>
+    </blockquote>
+    <div className="flex items-center gap-4 pt-4 border-t border-white/5 mt-6">
+      <img
+        src={imagePlaceholder}
+        alt={author}
+        className="w-12 h-12 rounded-full object-cover border-2 border-[#C5F82A]/50"
+        onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/48x48/2D3748/C5F82A?text=..."; }}
+      />
+      <div>
+        <p className="text-white font-bold">{author}</p>
+        <p className="text-slate-500 text-sm">{role}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const FAQSection = () => (
+  <section id="faq" className="py-20 px-4">
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-12 text-left">
+        <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Вопросы и ответы</span>
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Часто задаваемые вопросы</h2>
+        <p className="text-slate-400 text-lg max-w-3xl">
+          Если вы не нашли ответ на свой вопрос, можете задать его автору в Telegram.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <FAQItem
+          question="Какой кейс я буду проходить в тренажере?"
+          answer="Вы будете работать с реальным, но адаптированным, кейсом запуска рекламы для цветочного магазина к 14 февраля (День всех влюбленных). Кейс включает переговоры о запуске рекламы и бюджете, создание креативов, работу с правками, запуск кампании в симуляторе и финальный маркетинговый отчёт в период ажиотажного спроса. В платной версии доступны все этапы, включая запуск в симуляторе."
+        />
+        <FAQItem
+          question="Нужны ли реальные рекламные кабинеты или бюджет?"
+          answer="Нет. Все этапы, связанные с запуском и бюджетом, происходят внутри нашего симулятора. Это безопасная среда, где можно ошибаться без финансовых последствий. Вы не потратите ни одного реального рубля."
+        />
+        <FAQItem
+          question="Насколько тренажер соответствует реальности?"
+          answer="Сценарии, диалоги и возражения клиентов написаны на основе реального опыта десятков маркетинговых проектов. Мы максимально точно воссоздали структуру задач, общение с заказчиком и работу с правками."
+        />
+        <FAQItem
+          question="Является ли это заменой полноценному курсу?"
+          answer="Нет. Тренажер — это не курс, а практика. Он идеально дополняет теоретические знания, но не заменяет их. Он переводит ваши знания в уверенный практический навык."
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-[#1A1D24] rounded-xl border border-white/5 overflow-hidden transition-all duration-300 hover:border-[#C5F82A]/30">
+      <button
+        className="w-full text-left p-5 flex justify-between items-center hover:bg-white/10 transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-lg font-bold text-white pr-4">{question}</span>
+        {isOpen ? <ChevronUp className="w-5 h-5 text-[#C5F82A] flex-shrink-0" /> : <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />}
+      </button>
+      <div
+        className={`px-5 text-slate-400 transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-5' : 'max-h-0 opacity-0'}`}
+      >
+        <p className="leading-relaxed border-t border-white/5 pt-4">{answer}</p>
+      </div>
+    </div>
+  );
+};
+
+const RoadmapSection = () => (
+  <section className="py-20 px-4">
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-12 text-left">
+        <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">План развития</span>
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Маршрут от теории к Pro</h2>
+        <p className="text-slate-400 text-lg max-w-3xl">
+          Тренажёр — это ключевой этап между получением сертификата и реальной работой.
+          Построй свою карьеру осознанно и уверенно.
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-stretch gap-6">
+        <RoadmapItem
+          title="Шаг 1. Теория (Курсы)"
+          desc="Изучение основ: термины, инструменты, платформы. Получение базовых знаний и сертификата."
+          color="bg-indigo-500"
+          icon={<AlertCircle size={24} />}
+        />
+        <div className="flex items-center justify-center md:py-16 text-slate-500">
+          <ArrowRight size={32} className="rotate-90 md:rotate-0" />
+        </div>
+        <RoadmapItem
+          title="Шаг 2. Практика (Тренажёр)"
+          desc="Моделирование реальных ситуаций: переговоры, слив бюджета, правки клиента. Перевод знаний в навык."
+          color="bg-[#C5F82A]"
+          icon={<Zap size={24} className="text-black" />}
+          active={true}
+        />
+        <div className="flex items-center justify-center md:py-16 text-slate-500">
+          <ArrowRight size={32} className="rotate-90 md:rotate-0" />
+        </div>
+        <RoadmapItem
+          title="Шаг 3. Реальный клиент"
+          desc="Уверенное начало работы. Сбор портфолио, повышение чека и масштабирование проектов."
+          color="bg-emerald-500"
+          icon={<BarChart3 size={24} />}
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const RoadmapItem = ({ title, desc, color, icon, active }: { title: string; desc: string; color: string; icon: React.ReactNode; active?: boolean }) => (
+  <div className={`p-6 rounded-2xl border border-white/10 flex-1 relative ${active ? 'bg-[#1A1D24] shadow-[0_0_20px_rgba(197,248,42,0.2)]' : 'bg-[#16181D]'} transition-all duration-300 hover:-translate-y-1`}>
+    <div className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center mb-4`}>
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+    <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+    {active && (
+      <div className="absolute -top-3 -right-3 bg-[#C5F82A] text-black text-xs font-bold px-3 py-1 rounded-full uppercase">
+        ТЫ ЗДЕСЬ
+      </div>
+    )}
+  </div>
+);
+
+const AuthorSection = () => (
+  <section className="py-20 px-4">
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-8 text-left">
+        <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">АВТОР ТРЕНАЖЕРА</span>
+      </div>
+      
+      <div className="bg-[#1A1D24] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl">
+        <div className="grid md:grid-cols-3 gap-8 items-center">
+          <div className="md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
+            <img
+              src="https://static.tildacdn.com/tild6166-3230-4237-b038-653365653561/noroot.png"
+              alt="Ирина Войтович, маркетинг-наставник"
+              className="w-40 h-40 object-cover object-top rounded-full border-4 border-[#C5F82A] mb-4 shadow-lg"
+              onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/160x160/1A1D24/C5F82A?text=IRINA"; }}
+            />
+            <h3 className="text-3xl font-bold text-white">Ирина Войтович</h3>
+            <p className="text-[#C5F82A] font-medium mb-4">Маркетинг-наставник</p>
+            
+            <a
+              href="https://t.me/vrachpro"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#C5F82A] text-black px-6 py-3 rounded-full font-bold text-sm transition-all hover:opacity-90 mt-4 shadow-md transform hover:scale-105"
+            >
+              <Send size={18} />
+              Канал «Маркетинг среднего возраста»
+            </a>
+          </div>
+          <div className="md:col-span-2 text-left pt-6 md:pt-0">
+            <p className="text-slate-200 text-lg leading-relaxed mb-6">
+              Моя миссия — быть рядом с теми, кто стоит на пороге новой профессии и боится шагнуть. Я помогаю увидеть, что всё не так страшно, что ошибки — часть пути,
+              и что в маркетинге можно не выживать, а развиваться — спокойно, с опорой и смыслом.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <AuthorDetailCard
+                icon={<BarChart3 size={24} className="text-[#C5F82A]" />}
+                title="Опыт в маркетинге"
+                desc="7 лет в маркетинге, продажах и аналитике. Продвигаю B2C и B2B."
+              />
+              <AuthorDetailCard
+                icon={<School size={24} className="text-purple-400" />}
+                title="Обучение"
+                desc="Обучаю маркетингу в Skypro (Skyeng). Автор модуля по веб-аналитике."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const AuthorDetailCard = ({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) => (
+  <div className="p-4 rounded-xl bg-[#16181D] border border-white/5 hover:border-white/10 transition-all">
+    <div className="flex items-center gap-3 mb-2">
+      {icon}
+      <h4 className="text-lg font-bold text-white">{title}</h4>
+    </div>
+    <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+  </div>
+);
+
+const BentoCard = ({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) => (
+  <div className="bg-[#16181D] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:-translate-y-1 duration-300 group h-full">
+    <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+    <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+  </div>
+);
+
+const StepItem = ({ number, title, desc }: { number: string; title: string; desc: string }) => (
+  <div className="relative pl-12 group">
+    <div className="absolute left-0 top-1 w-10 h-10 bg-[#1A1D24] border border-white/10 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:border-[#C5F82A] group-hover:text-[#C5F82A] transition-colors z-10 shadow-lg">
+      {number}
+    </div>
+    <h4 className="text-xl font-bold text-white mb-1">{title}</h4>
+    <p className="text-slate-400 text-sm">{desc}</p>
+  </div>
+);
+
+const PricingItem = ({ text, active, highlight, icon: IconComponent }: { text: string; active: boolean; highlight?: boolean; icon?: any }) => (
+  <li className={`flex items-start gap-3 text-sm ${active ? (highlight ? 'text-white' : 'text-slate-200') : 'text-slate-600'}`}>
+    {active ? (
+      <div className={`rounded-full p-0.5 mt-0.5 flex-shrink-0 ${highlight ? 'bg-[#C5F82A] text-black' : 'bg-slate-700 text-slate-300'}`}>
+        {IconComponent ? <IconComponent size={12} /> : <CheckCircle2 size={12} />}
+      </div>
+    ) : (
+      <Lock size={12} className="mt-0.5 flex-shrink-0 text-slate-600" />
+    )}
+    <span>{text}</span>
+  </li>
+);
+
+const WhyCard = ({ title, desc }: { title: string; desc: string }) => (
+  <div className="p-6 bg-gradient-to-r from-[#16181D] to-[#121418] rounded-xl border border-white/5 shadow-md hover:border-white/10 transition-all">
+    <h4 className="text-xl font-bold text-[#C5F82A] mb-2">{title}</h4>
+    <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+  </div>
+);
+
+const ResultItem = ({ text }: { text: string }) => (
+  <div className="flex items-start gap-3">
+    <ShieldCheck className="w-5 h-5 flex-shrink-0 text-[#C5F82A] mt-1" />
+    <p className="text-lg text-white leading-relaxed">{text}</p>
+  </div>
+);
