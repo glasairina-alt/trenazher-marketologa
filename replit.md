@@ -114,6 +114,16 @@ type MessageType =
 
 ### Последние изменения (23 ноября 2025)
 
+#### ✅ Полный перенос Landing и Oferta страниц из GitHub
+- **ЗАВЕРШЕНО (23.11.2025):** Создан ПОЛНЫЙ Landing.tsx со ВСЕМИ секциями из оригинального landing.html
+- Все секции перенесены точно по оригиналу: Hero, For Whom (Bento Grid), What's Inside, Roadmap, Interface Preview, Results & Why, Pricing, Author, Testimonials, FAQ
+- Helper components реализованы: NavLink, StatBox, Bar, BentoCard, StepItem, FAQItem, PricingItem, WhyCard, ResultItem, TestimonialCard, RoadmapItem, AuthorDetailCard, Tab, ChatBubble, ChatContextBubble
+- Oferta.tsx создан с полным юридическим текстом договора оферты (162 строки)
+- Правильные реквизиты: Войтович Ирина Вениаминовна, ИНН 7707083893, БИК 044030653, счёт 40817810155174994240
+- Навигация работает корректно: / (Landing), /oferta (Oferta), /trainer (Trainer), /admin (Admin)
+- Цветовая схема соответствует оригиналу: #C5F82A (lime green), темные фоны (#0B0C10, #0F1116, #16181D)
+- Обе страницы протестированы и отображаются корректно
+
 #### ✅ Исправлена ошибка deployment
 - Добавлен скрипт `"start"` в package.json для production запуска
 - server/index.ts теперь обслуживает статические файлы из `dist/` в production
