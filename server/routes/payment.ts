@@ -1,6 +1,8 @@
 import express from 'express';
+import crypto from 'crypto';
 import { query } from '../db';
-import { authenticateToken, AuthRequest } from '../middleware';
+import { authenticateToken, webhookLimiter, AuthRequest } from '../middleware';
+import { securityLogger } from '../utils/logger';
 
 const router = express.Router();
 
@@ -36,12 +38,9 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Payment webhook from YooKassa
-// ⚠️ CRITICAL SECURITY: This endpoint MUST verify YooKassa signature before production
-// Without signature verification, anyone can call this and grant themselves premium access
-router.post('/webhook', async (req, res) => {
+// ✅ SECURED: HMAC signature verification + rate limiting
+router.post('/webhook', webhookLimiter, async (req, res) => {
   try {
-    // Verify webhook signature from YooKassa
-    // TODO: Replace with actual YooKassa signature verification
     const webhookSecret = process.env.YOOKASSA_WEBHOOK_SECRET;
     
     if (!webhookSecret) {
@@ -49,44 +48,120 @@ router.post('/webhook', async (req, res) => {
       return res.status(503).json({ error: 'Webhook not configured' });
     }
     
-    // Simple secret token verification (temporary until YooKassa integration)
-    const providedSecret = req.headers['x-webhook-secret'];
-    if (providedSecret !== webhookSecret) {
-      console.warn('⚠️ Webhook called with invalid secret');
-      return res.status(403).json({ error: 'Invalid webhook secret' });
+    // SECURITY: req.body is a Buffer (raw body) thanks to express.raw middleware
+    // This is CRITICAL for HMAC verification - we must verify the exact bytes YooKassa signed
+    const rawBody = req.body as Buffer;
+    
+    if (!rawBody || rawBody.length === 0) {
+      return res.status(400).json({ error: 'Empty request body' });
     }
     
-    // TODO: Replace with proper YooKassa signature verification:
-    // const signature = req.headers['x-yookassa-signature'];
-    // const hmac = crypto.createHmac('sha256', YOOKASSA_SECRET);
-    // hmac.update(JSON.stringify(req.body));
-    // const expectedSignature = hmac.digest('hex');
-    // if (signature !== expectedSignature) {
-    //   return res.status(403).json({ error: 'Invalid signature' });
-    // }
+    // SECURITY: Verify HMAC signature from YooKassa
+    const signature = req.headers['x-yookassa-signature'] as string;
     
-    const { event, object } = req.body;
+    if (!signature) {
+      securityLogger.logWebhookSignatureInvalid(req.ip, undefined);
+      return res.status(403).json({ error: 'Missing signature' });
+    }
+    
+    // SECURITY: Normalize and validate signature (must be hex string)
+    const normalizedSignature = signature.trim().toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(normalizedSignature)) {
+      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
+      return res.status(403).json({ error: 'Invalid signature format' });
+    }
+    
+    // SECURITY: Calculate HMAC over RAW BODY (not parsed JSON)
+    // This is the only way to correctly verify YooKassa signatures
+    const hmac = crypto.createHmac('sha256', webhookSecret);
+    hmac.update(rawBody);
+    const expectedSignature = hmac.digest('hex');
+    
+    // SECURITY: Constant-time comparison to prevent timing attacks
+    // Both signatures are now normalized to same length/format
+    let signaturesMatch = false;
+    try {
+      signaturesMatch = crypto.timingSafeEqual(
+        Buffer.from(normalizedSignature, 'hex'),
+        Buffer.from(expectedSignature, 'hex')
+      );
+    } catch (error) {
+      // Length mismatch or encoding error - signature is invalid
+      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
+      return res.status(403).json({ error: 'Invalid signature' });
+    }
+    
+    if (!signaturesMatch) {
+      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
+      return res.status(403).json({ error: 'Invalid signature' });
+    }
+    
+    // SECURITY: Signature verified! Now parse JSON for processing
+    let parsedBody: any;
+    try {
+      parsedBody = JSON.parse(rawBody.toString('utf8'));
+    } catch (error) {
+      return res.status(400).json({ error: 'Invalid JSON' });
+    }
+    
+    const { event, object } = parsedBody;
+    
+    // SECURITY: Log verified webhook for monitoring
+    securityLogger.logWebhookVerified(object?.id, 0, object?.amount?.value, req.ip);
     
     // When payment is successful
     if (event === 'payment.succeeded' && object?.status === 'succeeded') {
       const userId = object.metadata?.userId;
+      const paymentId = object.id;
+      const amount = object.amount?.value;
       
-      if (userId) {
-        // Upgrade user to premium
-        await query(
-          `UPDATE trainer_marketing.users 
-           SET role = 'premium_user' 
-           WHERE id = $1`,
-          [userId]
-        );
-        
-        console.log(`✅ User ${userId} upgraded to premium after payment`);
+      if (!userId) {
+        console.error('❌ Payment succeeded but no userId in metadata');
+        return res.status(400).json({ error: 'Missing userId in metadata' });
       }
+      
+      // Verify amount (790 RUB for premium)
+      if (parseFloat(amount) !== 790) {
+        console.error(`❌ Payment amount mismatch: expected 790, got ${amount}`);
+        return res.status(400).json({ error: 'Invalid payment amount' });
+      }
+      
+      // Check if payment was already processed (idempotency)
+      const existingPayment = await query(
+        `SELECT id FROM trainer_marketing.users WHERE id = $1 AND role = 'premium_user'`,
+        [userId]
+      );
+      
+      if (existingPayment.rows.length > 0) {
+        console.log(`⚠️ User ${userId} already premium - duplicate webhook ignored`);
+        return res.status(200).json({ received: true, message: 'Already processed' });
+      }
+      
+      // Upgrade user to premium
+      const result = await query(
+        `UPDATE trainer_marketing.users 
+         SET role = 'premium_user' 
+         WHERE id = $1
+         RETURNING id, email, role`,
+        [userId]
+      );
+      
+      if (result.rows.length === 0) {
+        console.error(`❌ User ${userId} not found in database`);
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      const user = result.rows[0];
+      
+      // SECURITY: Log successful premium upgrade for audit trail
+      securityLogger.logPaymentUpgrade(user.id, user.email, paymentId);
+      
+      console.log(`✅ User ${userId} (${user.email}) upgraded to premium after payment ${paymentId}`);
     }
     
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
+    console.error('❌ Webhook error:', error);
     res.status(500).json({ error: 'Webhook processing failed' });
   }
 });

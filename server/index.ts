@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { query } from './db';
+import { apiLimiter } from './middleware';
 import authRoutes from './routes/auth';
 import usersRoutes from './routes/users';
 import paymentRoutes from './routes/payment';
@@ -14,10 +16,61 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const PORT = parseInt(process.env.PORT || (isProduction ? '5000' : '3001'), 10);
 
-// Middleware
-app.use(cors());
+// ============================================
+// SECURITY MIDDLEWARE
+// ============================================
+
+// SECURITY: Helmet - Set security HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      // SECURITY: Only allow unsafe-inline in development for Vite HMR
+      scriptSrc: isProduction ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+      styleSrc: isProduction ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: {
+    action: 'deny' // Prevent clickjacking
+  },
+  noSniff: true, // Prevent MIME type sniffing
+  xssFilter: true, // Enable XSS filter
+  referrerPolicy: {
+    policy: 'strict-origin-when-cross-origin'
+  }
+}));
+
+// SECURITY: CORS configuration (restrict origins in production)
+const corsOptions = {
+  origin: isProduction 
+    ? process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:5000'
+    : true, // Allow all origins in development
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+// SECURITY: Capture raw body for webhook HMAC verification BEFORE parsing JSON
+// YooKassa signs the raw body, so we must verify against the exact bytes
+app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+
+// Parse JSON for all other routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// SECURITY: Apply rate limiting to ALL API endpoints (DDoS protection)
+app.use('/api/', apiLimiter);
 
 // API Routes
 app.use('/api/auth', authRoutes);

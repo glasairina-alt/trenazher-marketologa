@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import { securityLogger } from './utils/logger';
 
 // Ensure JWT_SECRET is set - no fallback for security
 if (!process.env.JWT_SECRET) {
@@ -46,7 +48,74 @@ export const requireAdmin = (
   next: NextFunction
 ) => {
   if (req.user?.role !== 'admin') {
+    securityLogger.logUnauthorizedAccess(req.user?.id, req.user?.email, 'admin_endpoint', req.ip);
     return res.status(403).json({ error: 'Admin access required' });
   }
   next();
 };
+
+// ============================================
+// RATE LIMITING - Protection against DDoS and Spam
+// ============================================
+
+// Global API rate limiter (applies to all API endpoints)
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per 15 minutes per IP
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false, // Disable `X-RateLimit-*` headers
+  skipSuccessfulRequests: false,
+  handler: (req, res) => {
+    securityLogger.logRateLimitExceeded('api_global', req.ip);
+    res.status(429).json({
+      error: 'Too many requests',
+      message: 'Please try again later'
+    });
+  }
+});
+
+// Strict rate limiter for authentication endpoints
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per 15 minutes
+  skipSuccessfulRequests: false,
+  message: 'Too many authentication attempts, please try again later',
+  handler: (req, res) => {
+    securityLogger.logRateLimitExceeded('auth_login', req.ip);
+    res.status(429).json({
+      error: 'Too many login attempts',
+      message: 'Your account has been temporarily locked. Please try again in 15 minutes.',
+    });
+  }
+});
+
+// Strict rate limiter for registration
+export const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // 3 accounts per hour per IP
+  skipSuccessfulRequests: false,
+  message: 'Too many accounts created from this IP',
+  handler: (req, res) => {
+    securityLogger.logRateLimitExceeded('auth_register', req.ip);
+    res.status(429).json({
+      error: 'Too many registrations',
+      message: 'Please try again in 1 hour',
+    });
+  }
+});
+
+// Very strict limiter for payment webhook (prevents spam)
+export const webhookLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // 10 webhooks per minute per IP
+  skipSuccessfulRequests: false,
+  message: 'Too many webhook requests',
+  handler: (req, res) => {
+    securityLogger.logRateLimitExceeded('webhook', req.ip);
+    res.status(429).json({
+      error: 'Too many webhook requests',
+      message: 'Potential spam detected',
+    });
+  }
+});

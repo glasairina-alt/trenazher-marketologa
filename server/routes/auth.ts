@@ -2,28 +2,11 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import rateLimit from 'express-rate-limit';
 import { query } from '../db';
-import { authenticateToken, AuthRequest } from '../middleware';
+import { authenticateToken, authLimiter, registerLimiter, AuthRequest } from '../middleware';
+import { securityLogger } from '../utils/logger';
 
 const router = express.Router();
-
-// Rate limiting for auth endpoints to prevent brute-force attacks
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
-  message: { error: 'Too many authentication attempts, please try again later' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // Limit each IP to 3 registrations per hour
-  message: { error: 'Too many registration attempts, please try again later' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // Ensure JWT_SECRET is set
 if (!process.env.JWT_SECRET) {
@@ -96,8 +79,11 @@ router.post('/register', registerLimiter, async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' } // SECURITY: Reduced from 7d to 24h
     );
+
+    // SECURITY: Log successful registration
+    securityLogger.logRegistration(user.id, user.email, req.ip);
 
     res.status(201).json({
       token,
@@ -140,6 +126,7 @@ router.post('/login', authLimiter, async (req, res) => {
     );
 
     if (result.rows.length === 0) {
+      securityLogger.logAuthFailure(email, 'user_not_found', req.ip);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -149,6 +136,7 @@ router.post('/login', authLimiter, async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
+      securityLogger.logAuthFailure(email, 'invalid_password', req.ip);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -156,8 +144,11 @@ router.post('/login', authLimiter, async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' } // SECURITY: Reduced from 7d to 24h
     );
+
+    // SECURITY: Log successful login
+    securityLogger.logAuthSuccess(user.id, user.email, req.ip);
 
     res.json({
       token,
