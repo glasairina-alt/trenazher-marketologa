@@ -118,8 +118,9 @@ type MessageType =
 - Добавлен скрипт `"start"` в package.json для production запуска
 - server/index.ts теперь обслуживает статические файлы из `dist/` в production
 - Порт 5000 для production, 3001 для development
-- SPA fallback корректно работает (не перехватывает API маршруты)
-- Production build проверен и готов к deployment
+- SPA fallback использует middleware подход (совместим с Express 5 и path-to-regexp v8+)
+- Исправлен устаревший синтаксис wildcard route `app.get('*')` на `app.use()` middleware
+- Production build проверен и протестирован - готов к deployment
 
 #### ✅ Подтверждено подключение к Timeweb PostgreSQL
 - База данных: default_db на 185.84.162.66:5432

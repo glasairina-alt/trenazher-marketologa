@@ -36,10 +36,18 @@ if (isProduction) {
   app.use(express.static(distPath));
   
   // SPA fallback: serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
+    // Skip API routes
     if (req.path.startsWith('/api')) {
       return next();
     }
+    
+    // Skip static files (they were already handled by express.static)
+    if (req.path.match(/\.\w+$/)) {
+      return next();
+    }
+    
+    // Serve index.html for all other routes (SPA routing)
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
