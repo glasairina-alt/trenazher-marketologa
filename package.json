@@ -9,6 +9,7 @@
     "init-db": "tsx server/init-db.ts",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "start": "NODE_ENV=production tsx server/index.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
