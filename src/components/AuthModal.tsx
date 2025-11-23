@@ -17,10 +17,11 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialMode?: 'login' | 'register';
 }
 
-export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
-  const [isLogin, setIsLogin] = useState(true);
+export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }: AuthModalProps) => {
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -28,6 +29,12 @@ export const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { login, register } = useAuth();
+
+  useEffect(() => {
+    if (isOpen && initialMode) {
+      setIsLogin(initialMode === 'login');
+    }
+  }, [isOpen, initialMode]);
 
   useEffect(() => {
     if (!isOpen) {

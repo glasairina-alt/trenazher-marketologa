@@ -14,10 +14,14 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
+  isAuthModalOpen: boolean;
+  authModalMode: 'login' | 'register';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, phone?: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  openAuthModal: (mode: 'login' | 'register') => void;
+  closeAuthModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,6 +42,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
   const login = async (email: string, password: string) => {
     const response = await api.post<{ token: string; user: User }>('/api/auth/login', {
@@ -106,14 +112,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
+  const openAuthModal = (mode: 'login' | 'register') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
   const value: AuthContextType = {
     user,
     token,
     loading,
+    isAuthModalOpen,
+    authModalMode,
     login,
     register,
     logout,
     checkAuth,
+    openAuthModal,
+    closeAuthModal,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
