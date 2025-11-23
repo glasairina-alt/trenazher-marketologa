@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { query } from './db';
 import authRoutes from './routes/auth';
 import usersRoutes from './routes/users';
 import paymentRoutes from './routes/payment';
