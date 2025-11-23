@@ -120,6 +120,7 @@ type MessageType =
   - ✅ "Результат - Почему это работает": все 3 WhyCard и 4 ResultItem с оригинальными текстами
   - ✅ Pricing секция: layout (max-w-4xl, text-left), заголовок "Выбери свой старт", описания тарифов
   - ✅ FAQ секция: добавлен пропущенный вопрос "Если мне что-то непонятно, я могу получить помощь?" (всего 5 вопросов)
+  - ✅ Oferta нумерация: исправлена иерархическая структура (раздел 2 → пункты 2.1, 2.2, 2.3 и т.д.)
 - Helper components реализованы: NavLink, StatBox, Bar, BentoCard, StepItem, FAQItem, PricingItem, WhyCard, ResultItem, TestimonialCard, RoadmapItem, AuthorDetailCard, Tab, ChatBubble, ChatContextBubble
 - Oferta.tsx создан с полным юридическим текстом договора оферты (162 строки)
 - Правильные реквизиты: Войтович Ирина Вениаминовна, ИНН 7707083893, БИК 044030653, счёт 40817810155174994240
