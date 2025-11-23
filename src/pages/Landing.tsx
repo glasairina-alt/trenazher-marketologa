@@ -126,24 +126,24 @@ export default function Landing() {
               
               {/* Mock Stats */}
               <div className="col-span-2 space-y-4">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-white">Результаты кампании</h3>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4 sm:mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-white">Результаты кампании</h3>
                   <div className="h-8 w-24 bg-[#C5F82A] rounded-full flex items-center justify-center text-black text-xs font-bold shadow-md">Запуск</div>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <StatBox value="2.4%" label="CTR (Кликбельность)" accentColor="text-[#C5F82A]" />
                   <StatBox value="750 ₽" label="Цена лида (CPL)" accentColor="text-red-400" />
                   <StatBox value="200/250" label="KPI лидов" accentColor="text-blue-400" />
                 </div>
                 
-                <div className="mt-6">
-                  <div className="text-slate-500 text-sm mb-2">Динамика конверсий</div>
-                  <div className="flex gap-4 items-end h-32 pb-2 border-b border-white/10">
+                <div className="mt-4 sm:mt-6">
+                  <div className="text-slate-500 text-xs sm:text-sm mb-2">Динамика конверсий</div>
+                  <div className="flex gap-3 sm:gap-4 items-end h-24 sm:h-32 pb-2 border-b border-white/10">
                     <Bar height="h-[40%]" color="bg-indigo-500/20" tooltip="День 1: 0.8%" />
                     <Bar height="h-[60%]" color="bg-indigo-500/40" tooltip="День 2: 1.2%" />
                     <Bar height="h-[85%]" color="bg-[#C5F82A]" tooltip="День 3: 2.4%" final={true} />
                   </div>
-                  <div className="flex justify-between text-[10px] text-slate-500 uppercase tracking-widest pt-2">
+                  <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wider sm:tracking-widest pt-2">
                     <span>Тест A</span>
                     <span>Тест B</span>
                     <span className="text-[#C5F82A]">Оптимальный</span>
