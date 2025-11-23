@@ -259,29 +259,27 @@ export default function Landing() {
             <h2 className="text-3xl font-bold text-white mb-8">Почему это работает?</h2>
             <div className="grid grid-cols-1 gap-4">
               <WhyCard
-                title="Реалистичная ситуация"
-                desc="Ты не просто читаешь теорию — ты проживаешь задачу. Переписка, дедлайны, правки."
+                title="Не курс, а полевая практика"
+                desc="Ты действуешь, а не смотришь видео. Мозг запоминает лучше, когда руки делают."
               />
               <WhyCard
-                title="Безопасная среда"
-                desc="Все ошибки остаются в симуляторе. Ты можешь пробовать разные подходы, не боясь потерять деньги или репутацию."
+                title="Ошибаться — безопасно"
+                desc="Типичные промахи новичков проходишь в тренажере без риска и последствий."
               />
               <WhyCard
-                title="Мгновенная обратная связь"
-                desc="Алгоритм оценивает твои решения. Ты видишь последствия своих выборов, как в реальной работе."
+                title="Максимально близко к реальности"
+                desc="Сценарий создан на базе десятков реальных проектов. От поведения клиента до структуры задач повторяет живую работу."
               />
             </div>
           </div>
 
-          <div>
-            <div className="mb-8 text-left">
-              <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Что ты получишь</span>
-            </div>
+          <div className="bg-gradient-to-br from-[#16181D] to-[#0B0C10] rounded-3xl p-8 border border-white/5 flex flex-col justify-center">
+            <h3 className="text-2xl font-bold text-white mb-6">После тренажёра ты:</h3>
             <div className="space-y-6">
-              <ResultItem text="Перестанешь паниковать при запуске первой кампании." />
-              <ResultItem text="Научишься объяснять KPI клиенту, даже если они не идеальны." />
-              <ResultItem text="Поймёшь, как работать с правками, не теряя нервы." />
-              <ResultItem text="Сможешь подбирать настройки и бюджеты с уверенностью." />
+              <ResultItem text="Понимаешь, что делать с первым клиентом и не впадаешь в ступор." />
+              <ResultItem text="Уверенно ведёшь диалог и аргументируешь свои решения." />
+              <ResultItem text="Умеешь запускать рекламу и составлять понятные отчёты." />
+              <ResultItem text="Больше не считаешь себя «зеленым» новичком." />
             </div>
           </div>
         </div>
@@ -289,13 +287,11 @@ export default function Landing() {
 
       {/* Pricing Section */}
       <section id="тариф" className="py-20 px-4 bg-[#0F1116]">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-12 text-center">
-            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">Ценообразование</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Выбери свой формат</h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Попробуй бесплатно или открой полный доступ за символическую сумму.
-            </p>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-left mb-16">
+            <span className="text-[#C5F82A] font-mono text-sm tracking-wider uppercase mb-2 block">ТАРИФ</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Выбери свой старт</h2>
+            <p className="text-slate-400">Попробуй демо-режим или разблокируй полный сценарий работы с клиентом.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -597,6 +593,10 @@ const FAQSection = () => (
         <FAQItem
           question="Является ли это заменой полноценному курсу?"
           answer="Нет. Тренажер — это не курс, а практика. Он идеально дополняет теоретические знания, но не заменяет их. Он переводит ваши знания в уверенный практический навык."
+        />
+        <FAQItem
+          question="Если мне что-то непонятно, я могу получить помощь?"
+          answer="Вы проходите тренажер самостоятельно. Если вы захотите разобрать ваши действия, углубиться в темы или получить менторскую поддержку, вы можете приобрести консультацию или наставничество у автора проекта отдельно."
         />
       </div>
     </div>
