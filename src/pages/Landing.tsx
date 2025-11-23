@@ -16,6 +16,8 @@ import {
   School,
   ChevronDown,
   ChevronUp,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,6 +25,7 @@ const LOGO_URL = "https://static.tildacdn.com/tild3339-6163-4562-b862-3730373230
 
 export default function Landing() {
   const { openAuthModal } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleStartFree = () => {
     openAuthModal('register');
@@ -30,6 +33,10 @@ export default function Landing() {
 
   const handleLogin = () => {
     openAuthModal('login');
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -47,6 +54,7 @@ export default function Landing() {
             />
           </div>
           
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
             <NavLink href="#главная" label="Главная" />
             <NavLink href="#тариф" label="Тариф" />
@@ -61,6 +69,77 @@ export default function Landing() {
           >
             Войти
           </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-all"
+            data-testid="button-mobile-menu"
+            aria-label="Открыть меню"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div 
+            className="md:hidden fixed inset-0 top-[73px] bg-black/50 backdrop-blur-sm z-40"
+            onClick={closeMobileMenu}
+          />
+        )}
+
+        {/* Mobile Menu Panel */}
+        <div className={`md:hidden fixed top-[73px] right-0 w-64 h-[calc(100vh-73px)] bg-[#16181D] border-l border-white/10 transform transition-transform duration-300 ease-in-out z-50 ${
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}>
+          <div className="flex flex-col p-6 space-y-6">
+            <a
+              href="#главная"
+              onClick={closeMobileMenu}
+              className="text-slate-300 hover:text-[#C5F82A] font-medium text-lg transition-colors"
+              data-testid="mobile-link-home"
+            >
+              Главная
+            </a>
+            <a
+              href="#тариф"
+              onClick={closeMobileMenu}
+              className="text-slate-300 hover:text-[#C5F82A] font-medium text-lg transition-colors"
+              data-testid="mobile-link-pricing"
+            >
+              Тариф
+            </a>
+            <a
+              href="#отзывы"
+              onClick={closeMobileMenu}
+              className="text-slate-300 hover:text-[#C5F82A] font-medium text-lg transition-colors"
+              data-testid="mobile-link-testimonials"
+            >
+              Отзывы
+            </a>
+            <a
+              href="#faq"
+              onClick={closeMobileMenu}
+              className="text-slate-300 hover:text-[#C5F82A] font-medium text-lg transition-colors"
+              data-testid="mobile-link-faq"
+            >
+              FAQ
+            </a>
+            
+            <div className="pt-4 border-t border-white/10">
+              <button
+                onClick={() => {
+                  closeMobileMenu();
+                  handleLogin();
+                }}
+                className="w-full bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full text-sm font-medium transition-all"
+                data-testid="mobile-button-login"
+              >
+                Войти
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
