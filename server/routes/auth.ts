@@ -17,21 +17,21 @@ const SALT_ROUNDS = 10;
 
 // Validation schemas
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
+  email: z.string().email('Неверный формат email'),
   password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
-  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+    .min(8, 'Пароль должен быть минимум 8 символов')
+    .regex(/[A-Z]/, 'Пароль должен содержать хотя бы одну заглавную букву')
+    .regex(/[a-z]/, 'Пароль должен содержать хотя бы одну строчную букву')
+    .regex(/[0-9]/, 'Пароль должен содержать хотя бы одну цифру'),
+  name: z.string().min(2, 'Имя должно быть минимум 2 символа').max(100),
   phone: z.string()
-    .min(1, 'Phone is required')
-    .regex(/^\+7\s?\(?\d{3}\)?\s?\d{3}(-|\s)?\d{2}(-|\s)?\d{2}$/, 'Phone must be in Russian format (e.g., +7 (999) 123-45-67)'),
+    .min(1, 'Телефон обязателен')
+    .regex(/^\+7\s?\(?\d{3}\)?\s?\d{3}(-|\s)?\d{2}(-|\s)?\d{2}$/, 'Телефон должен быть в российском формате (например, +7 (999) 123-45-67)'),
 });
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email('Неверный формат email'),
+  password: z.string().min(1, 'Пароль обязателен'),
 });
 
 // Register
@@ -41,7 +41,7 @@ router.post('/register', registerLimiter, async (req, res) => {
     const validation = registerSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ 
-        error: 'Validation failed',
+        error: 'Ошибка валидации данных',
         details: validation.error.errors.map(e => ({
           field: e.path.join('.'),
           message: e.message
@@ -58,7 +58,7 @@ router.post('/register', registerLimiter, async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'Пользователь с таким email уже зарегистрирован' });
     }
 
     // Hash password
@@ -97,7 +97,7 @@ router.post('/register', registerLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed' });
+    res.status(500).json({ error: 'Ошибка регистрации. Попробуйте позже.' });
   }
 });
 
@@ -108,7 +108,7 @@ router.post('/login', authLimiter, async (req, res) => {
     const validation = loginSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ 
-        error: 'Validation failed',
+        error: 'Ошибка валидации данных',
         details: validation.error.errors.map(e => ({
           field: e.path.join('.'),
           message: e.message
@@ -126,7 +126,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
     if (result.rows.length === 0) {
       securityLogger.logAuthFailure(email, 'user_not_found', req.ip);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Неверный email или пароль' });
     }
 
     const user = result.rows[0];
@@ -136,7 +136,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
     if (!validPassword) {
       securityLogger.logAuthFailure(email, 'invalid_password', req.ip);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Неверный email или пароль' });
     }
 
     // Generate JWT token
@@ -162,7 +162,7 @@ router.post('/login', authLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Ошибка входа. Попробуйте позже.' });
   }
 });
 
