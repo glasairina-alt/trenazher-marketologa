@@ -53,12 +53,14 @@ This project is an interactive training simulator designed to teach marketers ho
 - **Database:** Timeweb PostgreSQL (host, port, user, password, database name, schema configured via environment variables).
 - **Payment Gateway:** YooKassa (planned integration, API routes are prepared).
 - **Analytics:** Yandex Metrika (ID 105483627) — **Fixed 24.11.2025**:
-  - CRITICAL FIX: Added missing `ym(105483627, "init", {...})` call in index.html
-  - Previously only loader was present, but no initialization - counter never started
-  - Created `useYandexMetrika` hook for SPA route tracking (not initialization)
-  - Integrated with React Router for automatic route change tracking
-  - Enabled features: webvisor, clickmap, e-commerce tracking, accurateTrackBounce
-  - Debug mode verified working: `?_ym_debug=2` shows PageView events in console
+  - **SECURE CSP IMPLEMENTATION**: Updated `server/index.ts` Helmet CSP with SHA256-hash:
+    - `scriptSrc`: SHA256 hash (`'sha256-D24gds+28gNZeXalw+cH8aCsJU18aekMqJXRp6epRy4='`) + `https://mc.yandex.ru`
+    - `styleSrc`: `'self'` only (no inline styles, uses `.ym-pixel` CSS class)
+    - `connectSrc`: `'self'` + `https://mc.yandex.ru` (for telemetry)
+    - **Security**: NO `'unsafe-inline'` in production — full XSS protection maintained
+  - Metrika script in `index.html` `<head>` with `ssr:true`, webvisor, clickmap, ecommerce, accurateTrackBounce, trackLinks
+  - `<noscript>` pixel in `<body>` styled via CSS class (not inline) for CSP compliance
+  - **IMPORTANT**: Any edits to inline Metrika script require recomputing SHA256 hash for CSP
 - **UI Library:** Shadcn/UI.
 - **CSS Framework:** Tailwind CSS.
 - **Image Hosting:** All images for the simulator (e.g., `roses.png`, `tulips.png`, `box-composition.png`) are stored locally within `attached_assets/`.

@@ -25,11 +25,18 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      // SECURITY: Only allow unsafe-inline in development for Vite HMR
-      scriptSrc: isProduction ? ["'self'"] : ["'self'", "'unsafe-inline'"],
-      styleSrc: isProduction ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+      // SECURITY: Allow Yandex Metrika via SHA256 hash + external tag.js (safer than 'unsafe-inline')
+      scriptSrc: isProduction 
+        ? ["'self'", "'sha256-D24gds+28gNZeXalw+cH8aCsJU18aekMqJXRp6epRy4='", "https://mc.yandex.ru"] 
+        : ["'self'", "'unsafe-inline'"],
+      styleSrc: isProduction 
+        ? ["'self'"] // No inline styles in production (moved to CSS class)
+        : ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
+      // SECURITY: Allow Yandex Metrika API connections
+      connectSrc: isProduction 
+        ? ["'self'", "https://mc.yandex.ru"] 
+        : ["'self'"],
       fontSrc: ["'self'", "data:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],

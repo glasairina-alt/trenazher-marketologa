@@ -6,6 +6,12 @@
 All colors MUST be HSL.
 */
 
+/* Yandex Metrika noscript pixel - hidden off-screen */
+.ym-pixel {
+  position: absolute;
+  left: -9999px;
+}
+
 @layer base {
   :root {
     --background: 210 20% 98%;
