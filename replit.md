@@ -52,7 +52,12 @@ This project is an interactive training simulator designed to teach marketers ho
 ## External Dependencies
 - **Database:** Timeweb PostgreSQL (host, port, user, password, database name, schema configured via environment variables).
 - **Payment Gateway:** YooKassa (planned integration, API routes are prepared).
-- **Analytics:** Yandex Metrika (ID 105483627) integrated with webvisor, clickmap, and e-commerce tracking.
+- **Analytics:** Yandex Metrika (ID 105483627) — **Fixed 24.11.2025**:
+  - Removed incorrect `ssr:true` parameter that blocked tracking in SPA mode
+  - Created `useYandexMetrika` hook for proper initialization after React mount
+  - Integrated with React Router for automatic route change tracking
+  - Enabled features: webvisor, clickmap, e-commerce tracking, accurateTrackBounce
+  - Console logs confirm successful initialization and hit tracking
 - **UI Library:** Shadcn/UI.
 - **CSS Framework:** Tailwind CSS.
 - **Image Hosting:** All images for the simulator (e.g., `roses.png`, `tulips.png`, `box-composition.png`) are stored locally within `attached_assets/`.
