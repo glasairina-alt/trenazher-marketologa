@@ -46,14 +46,19 @@ export default function Landing() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-[#0B0C10]/80 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-          <div className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
+          <a 
+            href="https://voitovichirina.ru/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xl font-bold tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <img
               src={LOGO_URL}
               alt="Логотип Твой первый клиент"
               className="h-10 md:h-12 object-contain"
               onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/100x40/0B0C10/C5F82A?text=LOGO"; }}
             />
-          </div>
+          </a>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
@@ -468,12 +473,19 @@ export default function Landing() {
           </button>
           
           <div className="mt-12 flex flex-col items-center">
-            <img
-              src={LOGO_URL}
-              alt="Логотип Твой первый клиент"
-              className="h-10 object-contain opacity-50 mb-4"
-              onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/120x40/0B0C10/C5F82A?text=LOGO"; }}
-            />
+            <a 
+              href="https://voitovichirina.ru/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block hover:opacity-70 transition-opacity"
+            >
+              <img
+                src={LOGO_URL}
+                alt="Логотип Твой первый клиент"
+                className="h-10 object-contain opacity-50 mb-4"
+                onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/120x40/0B0C10/C5F82A?text=LOGO"; }}
+              />
+            </a>
             <p className="text-xs text-slate-600">
               © 2025 Все права защищены.
               <a href="https://voitovichirina.ru/politika" target="_blank" rel="noopener noreferrer" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline">
