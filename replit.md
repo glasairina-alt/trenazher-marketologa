@@ -17,12 +17,18 @@ This project is an interactive training simulator designed to teach marketers ho
 - **Key Components:**
     - `ChatInterface.tsx`: Manages client-user interactions, supporting text, images, and audio messages.
     - `AdCabinet.tsx`: Displays advertising campaign settings and real-time statistics.
+    - `CookieBanner.tsx`: Cookie consent banner with localStorage persistence, shown on all pages.
 - **State Management:** TanStack Query for data fetching and caching.
 - **Messaging Types:** Supports various message types including `user`, `bot`, `bot-image`, `bot-audio`, `user-image`, `system`, and `system-alert`.
 - **Mobile Adaptation:** Fully responsive design ensures usability across all devices.
 - **Freemium UX:** "Start for free" and "Try demo" buttons lead directly to the trainer without registration. Paywall modal appears only for paid sections.
 - **SEO:** Includes OG image, updated meta tags, favicon, and clickable logos.
-- **Legal Compliance:** Integrated required legal disclaimers, privacy policy links, and data processing consent checkboxes.
+- **Legal Compliance:** 
+    - Required legal disclaimers, privacy policy links, and data processing consent checkboxes
+    - INN 645318153031 displayed on Oferta page and trainer footer
+    - Non-clickable email on Oferta page (trafik-im@yandex.ru)
+    - Mandatory unchecked privacy consent checkbox in registration form
+    - Cookie consent banner (fixed bottom, localStorage persistence, link to privacy policy)
 
 ### Backend
 - **Framework:** Express.js.
