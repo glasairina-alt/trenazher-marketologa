@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { CookieBanner } from "@/components/CookieBanner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useYandexMetrika } from "@/hooks/useYandexMetrika";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Oferta from "./pages/Oferta";
@@ -20,6 +21,10 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const { isAuthModalOpen, authModalMode, closeAuthModal } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Инициализация и отслеживание Яндекс.Метрики
+  useYandexMetrika(location.pathname);
   
   const handleAuthSuccess = () => {
     navigate('/trainer');
