@@ -14,46 +14,10 @@ declare global {
 const YANDEX_METRIKA_ID = 105483627;
 
 /**
- * Хук для инициализации Яндекс.Метрики в SPA приложении
- * Правильно работает с React Router и отслеживает переходы
+ * Хук для отслеживания переходов в SPA приложении
+ * Инициализация происходит в index.html
  */
 export const useYandexMetrika = (pathname: string) => {
-  // Инициализация счётчика при первой загрузке
-  useEffect(() => {
-    // Проверяем, что функция ym загружена
-    if (typeof window.ym === 'function') {
-      try {
-        // Инициализируем счётчик БЕЗ ssr:true
-        window.ym(YANDEX_METRIKA_ID, 'init', {
-          clickmap: true,
-          trackLinks: true,
-          accurateTrackBounce: true,
-          webvisor: true,
-          ecommerce: 'dataLayer',
-        });
-        console.log('✅ Яндекс.Метрика инициализирована');
-      } catch (error) {
-        console.error('❌ Ошибка инициализации Яндекс.Метрики:', error);
-      }
-    } else {
-      // Если скрипт ещё не загрузился, пробуем через 100мс
-      const timer = setTimeout(() => {
-        if (typeof window.ym === 'function') {
-          window.ym(YANDEX_METRIKA_ID, 'init', {
-            clickmap: true,
-            trackLinks: true,
-            accurateTrackBounce: true,
-            webvisor: true,
-            ecommerce: 'dataLayer',
-          });
-          console.log('✅ Яндекс.Метрика инициализирована (отложенная)');
-        }
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, []); // Выполняется только один раз при монтировании
-
   // Отслеживание переходов между страницами
   useEffect(() => {
     if (typeof window.ym === 'function') {
