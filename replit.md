@@ -1,199 +1,52 @@
 # Тренажер маркетолога "Твой первый клиент"
 
-## Описание проекта
-Интерактивный тренажер для обучения маркетологов запуску таргетированной рекламы на примере реального кейса магазина цветов "ФлорАнна".
+## Overview
+This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
-## Текущее состояние проекта
-**Дата обновления:** 22 ноября 2025
+## User Preferences
+- **Communication Style:** I prefer clear and concise explanations.
+- **Workflow:** I want iterative development with immediate feedback on changes.
+- **Interaction:** Ask before making major architectural changes or introducing new dependencies.
+- **Codebase Changes:** Do not alter the core logic for calculating ad campaign metrics; these should remain consistent as per the simulation's design.
 
-### Завершенные функции
+## System Architecture
 
-#### ✅ Миграция на Replit + Timeweb PostgreSQL
-- База данных перенесена с Supabase на Timeweb PostgreSQL
-- Реализована безопасная JWT авторизация (обязательная валидация JWT_SECRET)
-- Трёхуровневая система пользователей: admin, premium_user, user
+### Frontend
+- **Framework:** React with TypeScript and Vite.
+- **UI Components:** Utilizes Shadcn/UI and Tailwind CSS for a responsive and modern interface.
+- **Key Components:**
+    - `ChatInterface.tsx`: Manages client-user interactions, supporting text, images, and audio messages.
+    - `AdCabinet.tsx`: Displays advertising campaign settings and real-time statistics.
+- **State Management:** TanStack Query for data fetching and caching.
+- **Messaging Types:** Supports various message types including `user`, `bot`, `bot-image`, `bot-audio`, `user-image`, `system`, and `system-alert`.
+- **Mobile Adaptation:** Fully responsive design ensures usability across all devices.
+- **Freemium UX:** "Start for free" and "Try demo" buttons lead directly to the trainer without registration. Paywall modal appears only for paid sections.
+- **SEO:** Includes OG image, updated meta tags, favicon, and clickable logos.
+- **Legal Compliance:** Integrated required legal disclaimers, privacy policy links, and data processing consent checkboxes.
 
-#### ✅ Мобильная адаптация
-- Название тренажера "Твой первый клиент" полностью видно на всех экранах
-- Адаптивная навигация и интерфейс чата
+### Backend
+- **Framework:** Express.js.
+- **Database:** Timeweb PostgreSQL, managed with Drizzle ORM for migrations.
+- **Authentication:** Secure JWT authorization with mandatory `JWT_SECRET` validation, supporting `admin`, `premium_user`, and `user` roles. `bcrypt` is used for password hashing.
+- **API Endpoints:**
+    - `/api/auth/*`: Handles user registration, login, and token validation.
+    - `/api/payment/*`: Ready for payment gateway integration (e.g., YooKassa).
+- **Security:** JWT tokens and middleware protect routes.
 
-#### ✅ Статистика рекламного кабинета
-- Корректное обновление метрик после сообщения "Наступило 15 февраля" (STAGE_5_REPORT)
-- Финальные значения: 0₽ бюджет, 110 867 показов, 410 кликов, 23 конверсии
+### Design and Styling
+- **Color Scheme:** Primary accent color is `#C5F82A` (lime green) against dark backgrounds (`#0B0C10`, `#0F1116`, `#16181D`).
+- **Templates:** Landing page (`Landing.tsx`) and legal offer page (`Oferta.tsx`) are exact copies of original designs, including specific texts, layouts, and components (e.g., `WhyCard`, `ResultItem`, `PricingItem`, `FAQItem`).
 
-#### ✅ Реальные фотографии букетов
-- Заменены placeholder-изображения на настоящие фотографии:
-  - roses.png (Розы)
-  - tulips.png (Тюльпаны)
-  - box-composition.png (Композиции в коробках)
-- Все фото хранятся в `attached_assets/`
+### Development Workflow
+- **Development Server:** `npm run dev` concurrently runs Vite (frontend on port 5000) and Express (backend on port 3001).
+- **Database Synchronization:** `npm run db:push --force` for schema updates.
+- **Assets:** Media files (images, audio) are stored in `attached_assets/` and imported via `@assets` alias.
+- **Production Deployment:** `server/index.ts` serves static files from `dist/` on port 5000, with SPA fallback.
 
-#### ✅ Скачивание фотографий
-- Под каждой фотографией кнопка "Скачать фото"
-- Автоматические названия файлов ("Розы.png", "Тюльпаны.png", "Композиции в коробках.png")
-- Функция `downloadImage()` для корректного сохранения
-
-#### ✅ Голосовое сообщение от клиента
-- **НОВОЕ (22.11.2025):** Добавлено голосовое сообщение от клиента Анны в начале кейса
-- Аудио-плеер встроен в чат (тип сообщения "bot-audio")
-- Последовательность при `/start`:
-  1. Системное сообщение "Кейс: Клиент 'Анна'..."
-  2. Голосовое сообщение (аудио-плеер)
-  3. Через 10 секунд → текстовое сообщение от Анны
-- Файл: `attached_assets/Anna.voice_start_1763770737747.mp3`
-
-#### ✅ Экспорт диалогов
-- Скачивание диалогов клиент-ученик в формате .docx
-- Доступно после завершения тренажера
-
-### Архитектура
-
-#### Frontend (React + TypeScript + Vite)
-- **Компоненты:**
-  - `ChatInterface.tsx` - чат с клиентом, поддержка текста, изображений, аудио
-  - `AdCabinet.tsx` - рекламный кабинет с настройками и статистикой
-  - UI на базе Shadcn/UI + Tailwind CSS
-
-- **Утилиты:**
-  - `stageHandlers.ts` - логика этапов тренажера
-  - `queryClient.ts` - настройка TanStack Query
-
-- **Типы:**
-  - `stages.ts` - определение типов сообщений (user, bot, system, bot-image, bot-audio, etc.)
-
-#### Backend (Express + PostgreSQL)
-- **База данных:**
-  - Timeweb PostgreSQL
-  - Drizzle ORM для миграций
-  - Таблицы: users, payments
-
-- **API маршруты:**
-  - `/api/auth/*` - регистрация, вход, проверка токена
-  - `/api/payment/*` - обработка платежей (готово к интеграции YooKassa)
-
-- **Безопасность:**
-  - JWT токены с обязательной валидацией
-  - Middleware для защиты маршрутов
-  - bcrypt для хеширования паролей
-
-#### Assets
-- **Изображения:** `attached_assets/` (roses.png, tulips.png, box-composition.png)
-- **Аудио:** `attached_assets/Anna.voice_start_1763770737747.mp3`
-- **Импорт через alias:** `@assets/...` (настроен в vite.config.ts)
-
-### Технические детали
-
-#### Типы сообщений в чате
-```typescript
-type MessageType = 
-  | "user"           // Сообщение ученика
-  | "bot"            // Текст от клиента Анны
-  | "bot-image"      // Фотографии букетов
-  | "bot-audio"      // Голосовое сообщение (НОВОЕ)
-  | "user-image"     // Креатив от ученика
-  | "system"         // Системные подсказки
-  | "system-alert"   // Важные задачи
-```
-
-#### Workflow
-- **Команда:** `npm run dev`
-- **Порт:** 5000 (frontend), 3001 (backend)
-- **Режим:** concurrently запускает Vite + Express
-
-### Учетные данные
-
-#### Тестовые аккаунты
-- **Админ:** admin@test.com / admin123
-- **Премиум пользователь:** premium@test.com / premium123
-- **Обычный пользователь:** user@test.com / user123
-
-#### Переменные окружения (secrets)
-- `TIMEWEB_DB_*` - подключение к Timeweb PostgreSQL (HOST, PORT, USER, PASSWORD, NAME, SCHEMA)
-- `JWT_SECRET` - секретный ключ для JWT (обязательно!)
-- **УДАЛЕНЫ:** старые `DATABASE_URL`, `PGHOST` и т.д. (конфликтовали с Timeweb credentials)
-
-### Последние изменения (24 ноября 2025)
-
-#### ✅ Freemium UX и SEO оптимизация (24.11.2025)
-- **Freemium flow:** Кнопки "Начать бесплатно" и "Попробовать демо" теперь ведут сразу в /trainer без регистрации
-- **Landing.tsx обновлен:** Использует useNavigate для навигации напрямую в тренажер
-- **PaywallModal:** Показывается только когда незарегистрированный пользователь доходит до платных секций (Demographics, Interests, Ad Creative в AdCabinet)
-- **OG-изображение добавлено:** Превью для соцсетей (og-image.png в public/) - скриншот интерфейса с результатами кампании (CTR 2.4%, CPL 750₽, KPI 200/250)
-- **Мета-теги обновлены:** og:image и twitter:image теперь указывают на https://trafik-im.ru/og-image.png
-- **Фавикон установлен:** favicon.ico (1.2 KB) в public/, ссылки в index.html
-- **Логотипы кликабельны:** Оба логотипа (шапка и футер) теперь ссылаются на https://voitovichirina.ru/ (открывается в новой вкладке)
-- **Яндекс Метрика установлена:** Счетчик ID 105483627 с webvisor, clickmap, ecommerce tracking, скрипт в <head>, noscript в начале <body>
-
-#### ✅ Полный перенос Landing и Oferta страниц из GitHub (ТОЧНОЕ КОПИРОВАНИЕ) (23.11.2025)
-- **ЗАВЕРШЕНО (23.11.2025):** Создан ПОЛНЫЙ Landing.tsx со ВСЕМИ секциями из оригинального landing.html
-- **ИСПРАВЛЕНО (23.11.2025):** Все тексты перенесены ТОЧНО по оригиналу без изменений:
-  - ✅ "Результат - Почему это работает": все 3 WhyCard и 4 ResultItem с оригинальными текстами
-  - ✅ Pricing секция: layout (max-w-4xl, text-left), заголовок "Выбери свой старт", описания тарифов
-  - ✅ FAQ секция: добавлен пропущенный вопрос "Если мне что-то непонятно, я могу получить помощь?" (всего 5 вопросов)
-  - ✅ Oferta нумерация: исправлена иерархическая структура (раздел 2 → пункты 2.1, 2.2, 2.3 и т.д.)
-- Helper components реализованы: NavLink, StatBox, Bar, BentoCard, StepItem, FAQItem, PricingItem, WhyCard, ResultItem, TestimonialCard, RoadmapItem, AuthorDetailCard, Tab, ChatBubble, ChatContextBubble
-- Oferta.tsx создан с полным юридическим текстом договора оферты (162 строки)
-- Правильные реквизиты: Войтович Ирина Вениаминовна, ИНН 7707083893, БИК 044030653, счёт 40817810155174994240
-- Навигация работает корректно: / (Landing), /oferta (Oferta), /trainer (Trainer), /admin (Admin)
-- Цветовая схема соответствует оригиналу: #C5F82A (lime green), темные фоны (#0B0C10, #0F1116, #16181D)
-- Обе страницы протестированы и отображаются корректно
-
-#### ✅ Исправлена ошибка deployment
-- Добавлен скрипт `"start"` в package.json для production запуска
-- server/index.ts теперь обслуживает статические файлы из `dist/` в production
-- Порт 5000 для production, 3001 для development
-- SPA fallback использует middleware подход (совместим с Express 5 и path-to-regexp v8+)
-- Исправлен устаревший синтаксис wildcard route `app.get('*')` на `app.use()` middleware
-- Production build проверен и протестирован - готов к deployment
-
-#### ✅ Подтверждено подключение к Timeweb PostgreSQL
-- База данных: default_db на 185.84.162.66:5432
-- Пользователь: gen_user
-- PostgreSQL 18.0 работает корректно
-- Схема trainer_marketing с таблицей users
-
-#### ✅ Исправлена проблема с пустой БД (23.11.2025)
-- **Проблема:** Пользователь получал "User already exists", но SQL запросы показывали что таблица не существует
-- **Корень проблемы:** SQL tool использовал старые DATABASE_URL credentials (пустая БД), а приложение работало с TIMEWEB_DB_* (Timeweb PostgreSQL)
-- **Решение:**
-  - Удалены конфликтующие secrets: DATABASE_URL, PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
-  - Создан скрипт `server/seed-users.ts` для тестовых пользователей (запуск: `npx tsx server/seed-users.ts`)
-  - Исправлено предупреждение trust proxy (добавлен `app.set('trust proxy', 1)` в server/index.ts)
-- **Результат:** Все тестовые аккаунты (admin, premium, user) созданы и работают корректно
-
-### Запланированные функции
-
-#### 🔜 Интеграция YooKassa
-- Прием платежей 790₽ за премиум доступ
-- Ожидание от пользователя: `shop_id` и `secret_key`
-- API маршруты готовы в `server/routes/payment.ts`
-
-### Структура этапов тренажера
-
-1. **INITIAL** → Команда `/start`
-2. **STAGE_1_INITIAL_REPLY** → Первый ответ клиенту
-3. **STAGE_1_WAIT_FOR_REPLY** → Получение фото букетов
-4. **STAGE_2_CREATIVE_1** → Загрузка первого креатива
-5. **STAGE_2_CREATIVE_2** → Исправление креатива
-6. **STAGE_3_LAUNCH** → Запуск рекламы
-7. **STAGE_4_PANIC** → Клиент паникует (нет заказов)
-8. **STAGE_5_REPORT** → Приходит статистика (15 февраля)
-9. **STAGE_6-8** → Подготовка и отправка отчета
-10. **STAGE_9-10** → Объяснение метрик и настроек
-11. **FINAL** → Завершение, скачивание диалогов
-
-### Важные правила разработки
-
-- **Не изменять** типы ID колонок в БД (serial/varchar)
-- **Всегда использовать** `npm run db:push --force` для синхронизации схемы
-- **Проверять** JWT_SECRET перед запуском (обязательно!)
-- **Не хранить** учебные метрики в БД (только во frontend)
-- **Использовать** @assets alias для импорта медиа-файлов
-
-### Автор
-Ирина Войтович, маркетолог-наставник
-Контакт: @irinavoitovich
-
----
-
-**Последние изменения:** Добавлено голосовое сообщение от клиента Анны с аудио-плеером в чате (22.11.2025)
+## External Dependencies
+- **Database:** Timeweb PostgreSQL (host, port, user, password, database name, schema configured via environment variables).
+- **Payment Gateway:** YooKassa (planned integration, API routes are prepared).
+- **Analytics:** Yandex Metrika (ID 105483627) integrated with webvisor, clickmap, and e-commerce tracking.
+- **UI Library:** Shadcn/UI.
+- **CSS Framework:** Tailwind CSS.
+- **Image Hosting:** All images for the simulator (e.g., `roses.png`, `tulips.png`, `box-composition.png`) are stored locally within `attached_assets/`.

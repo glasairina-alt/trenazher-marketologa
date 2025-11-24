@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,6 +27,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { login, register } = useAuth();
@@ -42,6 +44,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
       setPassword("");
       setName("");
       setPhone("");
+      setPrivacyConsent(false);
     }
   }, [isOpen]);
 
@@ -71,6 +74,16 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!privacyConsent) {
+      toast({
+        title: "Требуется согласие",
+        description: "Необходимо дать согласие на обработку персональных данных",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -207,7 +220,32 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-register-submit">
+              <div className="flex items-start space-x-2 pt-2">
+                <Checkbox 
+                  id="privacy-consent" 
+                  checked={privacyConsent}
+                  onCheckedChange={(checked) => setPrivacyConsent(checked as boolean)}
+                  disabled={isLoading}
+                  data-testid="checkbox-privacy-consent"
+                />
+                <label
+                  htmlFor="privacy-consent"
+                  className="text-sm text-muted-foreground leading-tight cursor-pointer"
+                >
+                  Даю согласие на{" "}
+                  <a
+                    href="https://voitovichirina.ru/politika"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    обработку персональных данных
+                  </a>
+                </label>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isLoading || !privacyConsent} data-testid="button-register-submit">
                 {isLoading ? "Создание аккаунта..." : "Создать аккаунт"}
               </Button>
             </form>

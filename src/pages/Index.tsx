@@ -159,9 +159,11 @@ const Index = () => {
       </main>
 
       <footer className="border-t border-border bg-card mt-8 sm:mt-12">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 text-center text-xs sm:text-sm text-muted-foreground">
-          <p>© 2025 Интерактивный тренажер маркетолога</p>
-          <p className="mt-2">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 text-center">
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            © 2025 Интерактивный тренажер маркетолога
+          </p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2">
             Автор: Ирина Войтович, маркетолог-наставник{" "}
             <a
               href="https://t.me/irinavoitovich"
@@ -172,6 +174,26 @@ const Index = () => {
               @irinavoitovich
             </a>
           </p>
+          <div className="mt-3 text-xs text-muted-foreground/80 space-y-1">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+              <a
+                href="https://voitovichirina.ru/politika"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
+              >
+                Политика обработки персональных данных
+              </a>
+              <span className="hidden sm:inline">•</span>
+              <a
+                href="/oferta"
+                className="hover:text-primary transition-colors"
+              >
+                Договор оферты
+              </a>
+            </div>
+            <p className="mt-1">ИНН 645318153031</p>
+          </div>
         </div>
       </footer>
 

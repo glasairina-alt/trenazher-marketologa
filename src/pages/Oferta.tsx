@@ -138,9 +138,9 @@ export default function Oferta() {
           {/* 9. Реквизиты администрации */}
           <h2 className="text-2xl font-bold text-white pt-4 border-t border-white/10">9. Реквизиты администрации</h2>
           <div className="bg-[#1A1D24] p-6 rounded-xl border border-white/10 text-sm space-y-2">
-            <p><span className="font-bold text-[#C5F82A]">Администрация:</span> Войтович Ирина Вениаминовна</p>
+            <p><span className="font-bold text-[#C5F82A]">Администрация:</span> Войтович Ирина Вениаминовна, ИНН 645318153031</p>
             <p>Адрес: г. Санкт-Петербург, ул. Ивана Куликова, д. 4 стр 1 кв 287</p>
-            <p>Телефон: <span className="font-medium">+79910205051</span>, Электронная почта: <a href="mailto:trafik-im@yandex.ru" className="text-blue-400 hover:text-[#C5F82A] underline">trafik-im@yandex.ru</a></p>
+            <p>Телефон: <span className="font-medium">+79910205051</span>, Электронная почта: <span className="font-medium">trafik-im@yandex.ru</span></p>
             
             <h4 className="font-bold text-white pt-3">Банковские реквизиты:</h4>
             <ul className="list-none space-y-1">
