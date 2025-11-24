@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   MessageCircle,
   BarChart3,
@@ -25,10 +25,11 @@ const LOGO_URL = "https://static.tildacdn.com/tild3339-6163-4562-b862-3730373230
 
 export default function Landing() {
   const { openAuthModal } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleStartFree = () => {
-    openAuthModal('register');
+    navigate('/trainer');
   };
 
   const handleLogin = () => {
