@@ -120,6 +120,9 @@ type MessageType =
 - **PaywallModal:** Показывается только когда незарегистрированный пользователь доходит до платных секций (Demographics, Interests, Ad Creative в AdCabinet)
 - **OG-изображение добавлено:** Превью для соцсетей (og-image.png в public/) - скриншот интерфейса с результатами кампании (CTR 2.4%, CPL 750₽, KPI 200/250)
 - **Мета-теги обновлены:** og:image и twitter:image теперь указывают на https://trafik-im.ru/og-image.png
+- **Фавикон установлен:** favicon.ico (1.2 KB) в public/, ссылки в index.html
+- **Логотипы кликабельны:** Оба логотипа (шапка и футер) теперь ссылаются на https://voitovichirina.ru/ (открывается в новой вкладке)
+- **Яндекс Метрика установлена:** Счетчик ID 105483627 с webvisor, clickmap, ecommerce tracking, скрипт в <head>, noscript в начале <body>
 
 #### ✅ Полный перенос Landing и Oferta страниц из GitHub (ТОЧНОЕ КОПИРОВАНИЕ) (23.11.2025)
 - **ЗАВЕРШЕНО (23.11.2025):** Создан ПОЛНЫЙ Landing.tsx со ВСЕМИ секциями из оригинального landing.html
