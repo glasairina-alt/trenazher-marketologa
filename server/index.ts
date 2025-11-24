@@ -21,22 +21,15 @@ const PORT = parseInt(process.env.PORT || (isProduction ? '5000' : '3001'), 10);
 // ============================================
 
 // SECURITY: Helmet - Set security HTTP headers
+// TEMPORARY: Simplified CSP to allow Yandex Metrika in all environments
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      // SECURITY: Allow Yandex Metrika via SHA256 hash + external tag.js (safer than 'unsafe-inline')
-      scriptSrc: isProduction 
-        ? ["'self'", "'sha256-D24gds+28gNZeXalw+cH8aCsJU18aekMqJXRp6epRy4='", "https://mc.yandex.ru"] 
-        : ["'self'", "'unsafe-inline'"],
-      styleSrc: isProduction 
-        ? ["'self'"] // No inline styles in production (moved to CSS class)
-        : ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://mc.yandex.ru"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      // SECURITY: Allow Yandex Metrika API connections
-      connectSrc: isProduction 
-        ? ["'self'", "https://mc.yandex.ru"] 
-        : ["'self'"],
+      connectSrc: ["'self'", "https://mc.yandex.ru"],
       fontSrc: ["'self'", "data:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
