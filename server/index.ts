@@ -21,21 +21,9 @@ const PORT = parseInt(process.env.PORT || (isProduction ? '5000' : '3001'), 10);
 // ============================================
 
 // SECURITY: Helmet - Set security HTTP headers
-// TEMPORARY: Simplified CSP to allow Yandex Metrika in all environments
+// TEMPORARY: CSP DISABLED to debug Yandex Metrika blocking issue
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://mc.yandex.ru"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://mc.yandex.ru"],
-      fontSrc: ["'self'", "data:"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  },
+  contentSecurityPolicy: false, // DISABLED: Yandex Metrika being blocked by CSP on production
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
