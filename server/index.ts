@@ -37,9 +37,10 @@ app.use(helmet({
     includeSubDomains: true,
     preload: true
   },
-  frameguard: {
-    action: 'deny' // Prevent clickjacking
-  },
+  // YANDEX METRIKA FIX: frameguard disabled to allow "Click on button" goal configuration
+  // Metrika opens site in iframe to let admin select elements for tracking
+  // X-Frame-Options: DENY would block this functionality completely
+  frameguard: false,
   noSniff: true, // Prevent MIME type sniffing
   xssFilter: true, // Enable XSS filter
   referrerPolicy: {
