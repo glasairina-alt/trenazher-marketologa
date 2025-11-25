@@ -78,14 +78,14 @@ export const apiLimiter = rateLimit({
 // Strict rate limiter for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per 15 minutes
+  max: 10, // 10 attempts per 15 minutes
   skipSuccessfulRequests: false,
-  message: 'Too many authentication attempts, please try again later',
+  message: 'Слишком много попыток входа',
   handler: (req, res) => {
     securityLogger.logRateLimitExceeded('auth_login', req.ip);
     res.status(429).json({
-      error: 'Too many login attempts',
-      message: 'Your account has been temporarily locked. Please try again in 15 minutes.',
+      error: 'Слишком много попыток входа',
+      message: 'Ваш аккаунт временно заблокирован. Попробуйте снова через 15 минут.',
     });
   }
 });
@@ -93,14 +93,14 @@ export const authLimiter = rateLimit({
 // Strict rate limiter for registration
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // 3 accounts per hour per IP
+  max: 20, // 20 accounts per hour per IP (allows admin to create multiple users)
   skipSuccessfulRequests: false,
-  message: 'Too many accounts created from this IP',
+  message: 'Слишком много регистраций с этого IP-адреса',
   handler: (req, res) => {
     securityLogger.logRateLimitExceeded('auth_register', req.ip);
     res.status(429).json({
-      error: 'Too many registrations',
-      message: 'Please try again in 1 hour',
+      error: 'Слишком много регистраций',
+      message: 'Попробуйте снова через 1 час',
     });
   }
 });
