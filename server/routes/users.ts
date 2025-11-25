@@ -159,4 +159,48 @@ router.post('/:userId/upgrade-to-premium', authenticateToken, requireAdmin, asyn
   }
 });
 
+// Delete user (admin only)
+// SECURITY: Only deletes admin-created users (created_by_admin = true)
+router.delete('/:userId', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Get user info before deletion for logging
+    const userInfo = await query(
+      'SELECT email, created_by_admin FROM trainer_marketing.users WHERE id = $1',
+      [userId]
+    );
+
+    if (userInfo.rows.length === 0) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+
+    // SECURITY: Prevent deletion of self-registered users
+    if (!userInfo.rows[0].created_by_admin) {
+      return res.status(403).json({ 
+        error: 'Нельзя удалить пользователя, зарегистрировавшегося самостоятельно' 
+      });
+    }
+
+    // Prevent admin from deleting themselves
+    if (parseInt(userId) === req.user!.id) {
+      return res.status(403).json({ error: 'Нельзя удалить собственный аккаунт' });
+    }
+
+    // Delete user
+    await query(
+      'DELETE FROM trainer_marketing.users WHERE id = $1',
+      [userId]
+    );
+
+    // Log admin action for audit trail
+    console.log(`🗑️ Admin ${req.user!.email} deleted user ${userInfo.rows[0].email}`);
+
+    res.json({ success: true, message: 'Пользователь успешно удален' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ error: 'Не удалось удалить пользователя' });
+  }
+});
+
 export default router;

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
-import { ArrowLeft, Plus, Settings } from "lucide-react";
+import { ArrowLeft, Plus, Settings, Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -23,6 +23,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface UserWithRole {
   id: number;
@@ -46,6 +56,10 @@ export default function Admin() {
   const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const [addingUser, setAddingUser] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [deleteUserEmail, setDeleteUserEmail] = useState<string>("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingUser, setDeletingUser] = useState(false);
 
   const isAdmin = currentAuthUser?.role === "admin";
 
@@ -164,6 +178,52 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteClick = (userId: number, userEmail: string) => {
+    setDeleteUserId(userId);
+    setDeleteUserEmail(userEmail);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteUserId) return;
+
+    try {
+      setDeletingUser(true);
+
+      await api.delete(`/api/users/${deleteUserId}`);
+
+      toast({
+        title: "Пользователь удален",
+        description: "Пользователь успешно удален из системы",
+      });
+
+      setIsDeleteDialogOpen(false);
+      setDeleteUserId(null);
+      setDeleteUserEmail("");
+    } catch (error: any) {
+      // Handle 404 specifically (user already deleted in another session)
+      if (error.message?.includes('не найден') || error.message?.includes('not found')) {
+        toast({
+          title: "Пользователь уже удален",
+          description: "Этот пользователь был удален в другой сессии",
+        });
+        setIsDeleteDialogOpen(false);
+        setDeleteUserId(null);
+        setDeleteUserEmail("");
+      } else {
+        toast({
+          title: "Ошибка",
+          description: error.message || "Не удалось удалить пользователя",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setDeletingUser(false);
+      // Always refresh the list to handle concurrent deletions
+      loadUsers();
+    }
+  };
+
   if (authLoading || loading || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -223,6 +283,7 @@ export default function Admin() {
                       <th className="text-left py-3 px-4">Email</th>
                       <th className="text-left py-3 px-4">Дата регистрации</th>
                       <th className="text-left py-3 px-4">Роль</th>
+                      <th className="text-left py-3 px-4">Действия</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -240,7 +301,7 @@ export default function Admin() {
                             }
                             disabled={user.id === currentAuthUser?.id || user.role === "admin"}
                           >
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-[180px]" data-testid={`select-role-${user.id}`}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -251,6 +312,18 @@ export default function Admin() {
                               </SelectItem>
                             </SelectContent>
                           </Select>
+                        </td>
+                        <td className="py-3 px-4">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteClick(user.id, user.email)}
+                            disabled={user.id === currentAuthUser?.id}
+                            data-testid={`button-delete-user-${user.id}`}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -323,6 +396,37 @@ export default function Admin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить пользователя?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить пользователя <strong>{deleteUserEmail}</strong>?
+              Это действие нельзя отменить. Все данные пользователя будут безвозвратно удалены.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setDeleteUserId(null);
+                setDeleteUserEmail("");
+              }}
+              data-testid="button-cancel-delete"
+            >
+              Отмена
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={deletingUser}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              {deletingUser ? "Удаление..." : "Удалить"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
