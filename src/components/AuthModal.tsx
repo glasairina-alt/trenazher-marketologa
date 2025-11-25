@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { reachGoal, MetrikaGoals } from "@/lib/metrika";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -55,6 +56,8 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
     try {
       await login(email, password);
 
+      reachGoal(MetrikaGoals.LOGIN_SUCCESS);
+      
       toast({
         title: "Успешно!",
         description: "Вы успешно вошли в систему",
@@ -89,6 +92,8 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
     try {
       await register(email, password, name, phone);
 
+      reachGoal(MetrikaGoals.REGISTER_SUCCESS);
+      
       toast({
         title: "Успешно!",
         description: "Регистрация прошла успешно. Вы вошли в систему.",

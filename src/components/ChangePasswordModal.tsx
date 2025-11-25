@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
+import { reachGoal, MetrikaGoals } from "@/lib/metrika";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -61,6 +62,8 @@ export const ChangePasswordModal = ({ isOpen, onClose, onSuccess }: ChangePasswo
         newPassword: data.newPassword,
       });
 
+      reachGoal(MetrikaGoals.PASSWORD_CHANGE_SUCCESS);
+      
       form.reset();
       onClose();
       onSuccess?.();

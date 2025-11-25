@@ -48,6 +48,11 @@ app.use(helmet({
   }
 }));
 
+// NOTE: Replit infrastructure adds X-Frame-Options: SAMEORIGIN at reverse proxy level
+// This cannot be overridden from Express. For Yandex Metrika "Click on button" goals,
+// use JavaScript API (reachGoal) instead of element selector mode.
+// See src/lib/metrika.ts for implementation.
+
 // SECURITY: CORS configuration (restrict origins in production)
 const corsOptions = {
   origin: isProduction 

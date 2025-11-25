@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { reachGoal, MetrikaGoals } from '@/lib/metrika';
 
 const LOGO_URL = "https://static.tildacdn.com/tild3339-6163-4562-b862-373037323038/___.png";
 
@@ -29,10 +30,12 @@ export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleStartFree = () => {
+    reachGoal(MetrikaGoals.BUTTON_START_FREE);
     navigate('/trainer');
   };
 
   const handleLogin = () => {
+    reachGoal(MetrikaGoals.BUTTON_LOGIN);
     openAuthModal('login');
   };
 
@@ -433,7 +436,7 @@ export default function Landing() {
                 <PricingItem text="Скачивание и оценка диалогов с клиентом" active={true} highlight={true} icon={Download} />
               </ul>
 
-              <Link to="/payment">
+              <Link to="/payment" onClick={() => reachGoal(MetrikaGoals.BUTTON_UNLOCK_PREMIUM)}>
                 <button className="w-full py-4 rounded-xl bg-[#C5F82A] hover:bg-[#b2e615] text-black transition-all font-bold shadow-lg shadow-[#C5F82A]/20 min-h-[60px]" data-testid="button-unlock-premium">
                   Открыть доступ за 790 ₽
                 </button>

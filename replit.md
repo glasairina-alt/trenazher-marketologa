@@ -78,14 +78,18 @@ This project is an interactive training simulator designed to teach marketers ho
 - **Payment Gateway:** YooKassa (planned integration, API routes are prepared).
 - **Analytics:** Yandex Metrika (ID 105483627) — **Fixed 25.11.2025**:
   - **CSP DISABLED** in `server/index.ts` (Replit infrastructure overrides CSP headers)
-  - **FRAMEGUARD DISABLED** — allows Metrika to open site in iframe for "Click on button" goal configuration
-  - **COOP/CORP CONFIGURED** for Metrika goal configuration interface:
-    - `crossOriginOpenerPolicy: "same-origin-allow-popups"` (allows Metrika popups for goal setup)
-    - `crossOriginResourcePolicy: "cross-origin"` (allows analytics scripts to load)
-    - `referrerPolicy: "strict-origin-when-cross-origin"` (proper referrer for analytics)
+  - **LIMITATION:** Replit infrastructure adds `X-Frame-Options: SAMEORIGIN` at reverse proxy level — cannot be overridden
+  - **SOLUTION:** Use JavaScript API for goals instead of "Element selector" mode
   - Metrika script in `index.html` `<head>` with `ssr:true`, webvisor, clickmap, ecommerce, accurateTrackBounce, trackLinks
   - `<noscript>` pixel in `<body>` styled via `.ym-pixel` CSS class
-  - **Goal configuration interface** now works in Metrika dashboard (including "Клик по кнопке" element selector)
+  - **Goals tracking via JavaScript API** (`src/lib/metrika.ts`):
+    - `button_start_free` — click "Начать бесплатно"
+    - `button_login` — click "Войти"
+    - `button_unlock_premium` — click "Открыть доступ за 790₽"
+    - `login_success` — successful login
+    - `register_success` — successful registration
+    - `password_change_success` — successful password change
+  - **Setup in Metrika:** Create goals with type "JavaScript-событие" and matching identifiers
 - **UI Library:** Shadcn/UI.
 - **CSS Framework:** Tailwind CSS.
 - **Image Hosting:** All images for the simulator (e.g., `roses.png`, `tulips.png`, `box-composition.png`) are stored locally within `attached_assets/`.
