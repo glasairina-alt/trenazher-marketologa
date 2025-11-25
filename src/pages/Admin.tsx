@@ -134,23 +134,14 @@ export default function Admin() {
     try {
       setAddingUser(true);
 
-      await api.post('/api/auth/register', {
+      // Create user via admin endpoint (sets created_by_admin = true)
+      await api.post('/api/users', {
         email: newUserEmail,
         password: newUserPassword,
         name: newUserName,
         phone: null,
+        role: 'premium_user',
       });
-
-      if (currentAuthUser) {
-        const newUser = await api.get<{ users: UserWithRole[] }>('/api/users');
-        const createdUser = newUser.users.find(u => u.email === newUserEmail);
-        
-        if (createdUser) {
-          await api.patch(`/api/users/${createdUser.id}/role`, {
-            role: 'premium_user',
-          });
-        }
-      }
 
       toast({
         title: "Пользователь добавлен",
