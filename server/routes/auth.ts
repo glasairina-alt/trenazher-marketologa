@@ -73,9 +73,10 @@ router.post('/register', registerLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     // Insert new user
+    // SECURITY: Explicitly set created_by_admin = false to prevent admin panel visibility
     const result = await query(
-      `INSERT INTO trainer_marketing.users (email, password, name, phone, role) 
-       VALUES ($1, $2, $3, $4, $5) 
+      `INSERT INTO trainer_marketing.users (email, password, name, phone, role, created_by_admin) 
+       VALUES ($1, $2, $3, $4, $5, false) 
        RETURNING id, email, name, phone, role, created_at`,
       [email, hashedPassword, name, phone, 'user']
     );

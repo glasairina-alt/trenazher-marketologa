@@ -4,6 +4,13 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
+- **25.11.2025:** Admin user management security improvements:
+  - **SECURITY:** Admin panel now only shows users created by admin (not self-registered users)
+  - Added `created_by_admin` flag to database (protects user privacy from admin account compromise)
+  - New `POST /api/users` endpoint for admin-only user creation
+  - `GET /api/users` now filters `WHERE created_by_admin = true`
+  - Self-registered users via `/api/auth/register` remain invisible in admin panel
+  
 - **25.11.2025:** Password change functionality added:
   - New `PATCH /api/auth/password` endpoint with bcrypt verification and rate limiting (5 attempts/15 min)
   - `ChangePasswordModal` component with 3-field form (current, new, confirm passwords)
