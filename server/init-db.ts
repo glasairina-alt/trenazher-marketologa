@@ -22,12 +22,31 @@ async function initDatabase() {
         name VARCHAR(255) NOT NULL,
         phone VARCHAR(50),
         role VARCHAR(50) NOT NULL DEFAULT 'user',
+        created_by_admin BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
     
     console.log('✅ Table users created');
+    
+    // Add created_by_admin column if it doesn't exist (migration for existing tables)
+    await client.query(`
+      DO $$ 
+      BEGIN 
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_schema = 'trainer_marketing' 
+          AND table_name = 'users' 
+          AND column_name = 'created_by_admin'
+        ) THEN
+          ALTER TABLE trainer_marketing.users 
+          ADD COLUMN created_by_admin BOOLEAN DEFAULT FALSE;
+        END IF;
+      END $$;
+    `);
+    
+    console.log('✅ Migration: created_by_admin column added');
     
     // Create index on email for faster lookups
     await client.query(`
