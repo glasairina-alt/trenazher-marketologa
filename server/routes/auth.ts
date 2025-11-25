@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { query } from '../db';
-import { authenticateToken, authLimiter, registerLimiter, AuthRequest } from '../middleware';
+import { authenticateToken, authLimiter, registerLimiter, passwordChangeLimiter, AuthRequest } from '../middleware';
 import { securityLogger } from '../utils/logger';
 
 const router = express.Router();
@@ -35,6 +35,11 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email('Неверный формат email'),
   password: z.string().min(1, 'Пароль обязателен'),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Текущий пароль обязателен'),
+  newPassword: z.string().min(6, 'Новый пароль должен быть минимум 6 символов'),
 });
 
 // Register
@@ -191,6 +196,69 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
 // Logout (client-side token removal, this is just a placeholder)
 router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
+});
+
+// Change password
+router.patch('/password', authenticateToken, passwordChangeLimiter, async (req: AuthRequest, res) => {
+  try {
+    // Validate request body
+    const validation = changePasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: 'Ошибка валидации данных',
+        details: validation.error.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
+      });
+    }
+
+    const { currentPassword, newPassword } = validation.data;
+    const userId = req.user!.id;
+
+    // Fetch user with current password hash
+    const userResult = await query(
+      'SELECT id, email, password, role FROM trainer_marketing.users WHERE id = $1',
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      securityLogger.logPasswordChangeFailed(userId, 'User not found', req.ip);
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      securityLogger.logPasswordChangeFailed(userId, 'Incorrect current password', req.ip);
+      return res.status(400).json({ error: 'Неверный текущий пароль' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update password in database
+    await query(
+      'UPDATE trainer_marketing.users SET password = $1 WHERE id = $2',
+      [hashedPassword, userId]
+    );
+
+    // Log successful password change
+    securityLogger.logPasswordChangeSuccess(userId, user.email, req.ip);
+
+    res.json({ 
+      message: 'Пароль успешно изменен',
+      success: true 
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    if (req.user?.id) {
+      securityLogger.logPasswordChangeFailed(req.user.id, error instanceof Error ? error.message : 'Unknown error', req.ip);
+    }
+    res.status(500).json({ error: 'Ошибка при смене пароля. Попробуйте позже.' });
+  }
 });
 
 export default router;

@@ -119,3 +119,18 @@ export const webhookLimiter = rateLimit({
     });
   }
 });
+
+// Strict limiter for password change (prevents brute force)
+export const passwordChangeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per 15 minutes per IP
+  skipSuccessfulRequests: false,
+  message: 'Слишком много попыток смены пароля',
+  handler: (req, res) => {
+    securityLogger.logRateLimitExceeded('password_change', req.ip);
+    res.status(429).json({
+      error: 'Слишком много попыток смены пароля',
+      message: 'Попробуйте снова через 15 минут',
+    });
+  }
+});

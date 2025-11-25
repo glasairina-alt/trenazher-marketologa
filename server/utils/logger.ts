@@ -14,6 +14,8 @@ export enum SecurityEventType {
   ADMIN_ACTION = 'ADMIN_ACTION',
   UNAUTHORIZED_ACCESS = 'UNAUTHORIZED_ACCESS',
   REGISTRATION = 'REGISTRATION',
+  PASSWORD_CHANGE_SUCCESS = 'PASSWORD_CHANGE_SUCCESS',
+  PASSWORD_CHANGE_FAILED = 'PASSWORD_CHANGE_FAILED',
 }
 
 interface SecurityEvent {
@@ -146,6 +148,29 @@ class SecurityLogger {
       email,
       ip,
       details: { action: 'user_registration' }
+    });
+  }
+
+  logPasswordChangeSuccess(userId: number, email: string, ip?: string) {
+    this.log({
+      timestamp: new Date().toISOString(),
+      type: SecurityEventType.PASSWORD_CHANGE_SUCCESS,
+      severity: 'info',
+      userId,
+      email,
+      ip,
+      details: { action: 'password_changed' }
+    });
+  }
+
+  logPasswordChangeFailed(userId: number, reason: string, ip?: string) {
+    this.log({
+      timestamp: new Date().toISOString(),
+      type: SecurityEventType.PASSWORD_CHANGE_FAILED,
+      severity: 'warning',
+      userId,
+      ip,
+      details: { reason }
     });
   }
 }

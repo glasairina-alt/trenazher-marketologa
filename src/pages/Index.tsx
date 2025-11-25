@@ -6,7 +6,8 @@ import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
 import { PaywallModal } from "@/components/PaywallModal";
 import { AuthModal } from "@/components/AuthModal";
-import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut, Shield } from "lucide-react";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
+import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut, Shield, Key } from "lucide-react";
 import type { StageType, Message } from "@/types/stages";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +33,7 @@ const Index = () => {
 
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   
   const { user, logout } = useAuth();
   const { toast } = useToast();
@@ -83,10 +85,16 @@ const Index = () => {
                 </Button>
               )}
               {user ? (
-                <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Выход</span>
-                </Button>
+                <>
+                  <Button onClick={() => setIsChangePasswordOpen(true)} variant="outline" size="sm" className="gap-2" data-testid="button-open-change-password">
+                    <Key className="h-4 w-4" />
+                    <span className="hidden sm:inline">Сменить пароль</span>
+                  </Button>
+                  <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:inline">Выход</span>
+                  </Button>
+                </>
               ) : (
                 <Button onClick={() => setIsAuthOpen(true)} variant="outline" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
@@ -211,6 +219,17 @@ const Index = () => {
       />
 
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onSuccess={handleAuthSuccess} />
+      
+      <ChangePasswordModal 
+        isOpen={isChangePasswordOpen} 
+        onClose={() => setIsChangePasswordOpen(false)}
+        onSuccess={() => {
+          toast({
+            title: "Пароль успешно изменен",
+            description: "Теперь вы можете использовать новый пароль для входа",
+          });
+        }}
+      />
     </div>
   );
 };
