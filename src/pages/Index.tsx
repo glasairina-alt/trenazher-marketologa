@@ -181,6 +181,7 @@ const Index = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primary transition-colors"
+                data-testid="link-privacy-policy-footer"
               >
                 Политика обработки персональных данных
               </a>
@@ -188,6 +189,7 @@ const Index = () => {
               <a
                 href="/oferta"
                 className="hover:text-primary transition-colors"
+                data-testid="link-oferta-footer"
               >
                 Договор оферты
               </a>

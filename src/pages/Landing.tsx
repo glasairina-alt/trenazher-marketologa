@@ -488,10 +488,10 @@ export default function Landing() {
             </a>
             <p className="text-xs text-slate-600">
               © 2025 Все права защищены.
-              <a href="https://voitovichirina.ru/politika" target="_blank" rel="noopener noreferrer" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline">
+              <a href="https://voitovichirina.ru/politika" target="_blank" rel="noopener noreferrer" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline" data-testid="link-privacy-policy-landing">
                 Политика обработки персональных данных
               </a>
-              <Link to="/oferta" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline">
+              <Link to="/oferta" className="ml-4 text-slate-500 hover:text-[#C5F82A] transition-colors underline" data-testid="link-oferta-landing">
                 Договор оферты
               </Link>
             </p>

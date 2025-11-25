@@ -58,6 +58,7 @@ export const PaywallModal = ({ isOpen, onClose, onPurchase }: PaywallModalProps)
             onClick={onPurchase}
             className="w-full h-12 text-base font-semibold"
             size="lg"
+            data-testid="button-purchase-premium"
           >
             Получить полный доступ
           </Button>
@@ -65,6 +66,7 @@ export const PaywallModal = ({ isOpen, onClose, onPurchase }: PaywallModalProps)
             onClick={onClose}
             variant="ghost"
             className="w-full"
+            data-testid="button-close-paywall"
           >
             Пока не готов
           </Button>

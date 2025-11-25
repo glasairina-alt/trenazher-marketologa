@@ -1062,6 +1062,7 @@ export const AdCabinet = ({
                   onClick={handleLaunch}
                   disabled={campaignLaunched}
                   className="bg-[#4680C2] hover:bg-[#3d6fa8] text-white px-4 sm:px-8 w-full sm:w-auto text-sm sm:text-base"
+                  data-testid="button-launch-campaign"
                 >
                   {campaignLaunched ? "Кампания запущена" : "Запустить кампанию"}
                 </Button>

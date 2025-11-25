@@ -155,7 +155,7 @@ export const AuthModal = ({ isOpen, onClose, onSuccess, initialMode = 'login' }:
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-login-submit">
                 {isLoading ? "Вход..." : "Войти"}
               </Button>
             </form>
