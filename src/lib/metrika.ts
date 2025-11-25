@@ -18,6 +18,7 @@
  * - button_unlock_premium: Клик на кнопку покупки
  * - payment_success: Успешная оплата
  * - password_change_success: Успешная смена пароля
+ * - button_telegram_channel: Переход в Телеграм канал
  */
 
 // Yandex Metrika Counter ID
@@ -77,6 +78,9 @@ export const MetrikaGoals = {
   
   // Пользовательские действия
   PASSWORD_CHANGE_SUCCESS: 'password_change_success',
+  
+  // Внешние ссылки
+  BUTTON_TELEGRAM_CHANNEL: 'button_telegram_channel',
   
   // Тренажёр
   TRAINER_STARTED: 'trainer_started',

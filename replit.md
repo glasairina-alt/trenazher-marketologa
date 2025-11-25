@@ -86,6 +86,7 @@ This project is an interactive training simulator designed to teach marketers ho
     - `button_start_free` — click "Начать бесплатно"
     - `button_login` — click "Войти"
     - `button_unlock_premium` — click "Открыть доступ за 790₽"
+    - `button_telegram_channel` — click Telegram channel button
     - `login_success` — successful login
     - `register_success` — successful registration
     - `password_change_success` — successful password change

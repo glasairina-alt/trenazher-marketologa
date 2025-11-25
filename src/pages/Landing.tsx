@@ -797,10 +797,12 @@ const AuthorSection = () => (
             <p className="text-[#C5F82A] font-medium mb-4">Маркетинг-наставник</p>
             
             <a
-              href="https://t.me/vrachpro"
+              href="https://t.me/+X7c94gFH618wODIy"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => reachGoal(MetrikaGoals.BUTTON_TELEGRAM_CHANNEL)}
               className="flex items-center gap-2 bg-[#C5F82A] text-black px-6 py-3 rounded-full font-bold text-sm transition-all hover:opacity-90 mt-4 shadow-md transform hover:scale-105"
+              data-testid="button-telegram-channel"
             >
               <Send size={18} />
               Канал «Маркетинг среднего возраста»
