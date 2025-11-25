@@ -1,15 +1,30 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
 import { query } from '../db';
 import { authenticateToken, requireAdmin, AuthRequest } from '../middleware';
+import { z } from 'zod';
 
 const router = express.Router();
 
-// Get all users (admin only)
+const SALT_ROUNDS = 10;
+
+// Validation schema for admin user creation
+const adminCreateUserSchema = z.object({
+  email: z.string().email('Некорректный email адрес'),
+  password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
+  name: z.string().min(1, 'Имя обязательно'),
+  phone: z.string().nullable().optional(),
+  role: z.enum(['user', 'premium_user']).default('premium_user'),
+});
+
+// Get all users created by admin (admin only)
+// SECURITY: Only shows users created via admin panel, NOT users who registered themselves
 router.get('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const result = await query(
       `SELECT id, email, name, phone, role, created_at 
        FROM trainer_marketing.users 
+       WHERE created_by_admin = true
        ORDER BY created_at DESC`
     );
 
@@ -17,6 +32,66 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) =
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ error: 'Failed to get users' });
+  }
+});
+
+// Create new user via admin panel (admin only)
+// SECURITY: Sets created_by_admin = true to mark admin-created users
+router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    // Validate request body
+    const validation = adminCreateUserSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: 'Ошибка валидации данных',
+        details: validation.error.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
+      });
+    }
+
+    const { email, password, name, phone, role } = validation.data;
+
+    // Check if user already exists
+    const existingUser = await query(
+      'SELECT id FROM trainer_marketing.users WHERE email = $1',
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Insert new user with created_by_admin = true
+    const result = await query(
+      `INSERT INTO trainer_marketing.users (email, password, name, phone, role, created_by_admin) 
+       VALUES ($1, $2, $3, $4, $5, true) 
+       RETURNING id, email, name, phone, role, created_at`,
+      [email, hashedPassword, name, phone || null, role]
+    );
+
+    const user = result.rows[0];
+
+    // Log admin action for audit trail
+    console.log(`✅ Admin ${req.user!.email} created user ${user.email} with role ${role}`);
+
+    res.status(201).json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+        role: user.role,
+        created_at: user.created_at,
+      },
+    });
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ error: 'Не удалось создать пользователя' });
   }
 });
 
