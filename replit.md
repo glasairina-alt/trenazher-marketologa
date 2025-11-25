@@ -4,6 +4,14 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
+- **25.11.2025:** Admin user deletion functionality added:
+  - New `DELETE /api/users/:userId` endpoint with security safeguards
+  - **SECURITY:** Only admin-created users can be deleted (created_by_admin = true)
+  - **SECURITY:** Admin cannot delete their own account
+  - UI: Trash icon button in user table with AlertDialog confirmation
+  - Handles concurrent deletion gracefully (refreshes list in finally block)
+  - data-testid attributes: `button-delete-user-{id}`, `button-confirm-delete`
+
 - **25.11.2025:** Admin user management security improvements:
   - **SECURITY:** Admin panel now only shows users created by admin (not self-registered users)
   - Added `created_by_admin` flag to database (protects user privacy from admin account compromise)
