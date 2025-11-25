@@ -3,6 +3,14 @@
 ## Overview
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
+## Recent Changes
+- **25.11.2025:** Password change functionality added:
+  - New `PATCH /api/auth/password` endpoint with bcrypt verification and rate limiting (5 attempts/15 min)
+  - `ChangePasswordModal` component with 3-field form (current, new, confirm passwords)
+  - "Сменить пароль" button in trainer header (authenticated users only)
+  - Security logging for PASSWORD_CHANGE_SUCCESS/FAILED events
+  - `data-testid="button-open-change-password"` for Metrika goal tracking
+
 ## User Preferences
 - **Communication Style:** I prefer clear and concise explanations.
 - **Workflow:** I want iterative development with immediate feedback on changes.
@@ -35,9 +43,10 @@ This project is an interactive training simulator designed to teach marketers ho
 - **Database:** Timeweb PostgreSQL, managed with Drizzle ORM for migrations.
 - **Authentication:** Secure JWT authorization with mandatory `JWT_SECRET` validation, supporting `admin`, `premium_user`, and `user` roles. `bcrypt` is used for password hashing.
 - **API Endpoints:**
-    - `/api/auth/*`: Handles user registration, login, and token validation.
+    - `/api/auth/*`: Handles user registration, login, token validation, and password changes.
+      - `PATCH /api/auth/password`: Secure password change with current password verification, rate limiting (5 attempts/15 min), and security logging.
     - `/api/payment/*`: Ready for payment gateway integration (e.g., YooKassa).
-- **Security:** JWT tokens and middleware protect routes.
+- **Security:** JWT tokens and middleware protect routes. Rate limiting prevents brute-force attacks. Security events logged via `securityLogger`.
 
 ### Design and Styling
 - **Color Scheme:** Primary accent color is `#C5F82A` (lime green) against dark backgrounds (`#0B0C10`, `#0F1116`, `#16181D`).
