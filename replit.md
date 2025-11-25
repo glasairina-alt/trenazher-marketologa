@@ -52,14 +52,15 @@ This project is an interactive training simulator designed to teach marketers ho
 ## External Dependencies
 - **Database:** Timeweb PostgreSQL (host, port, user, password, database name, schema configured via environment variables).
 - **Payment Gateway:** YooKassa (planned integration, API routes are prepared).
-- **Analytics:** Yandex Metrika (ID 105483627) — **Status 24.11.2025**:
-  - **CSP TEMPORARILY DISABLED** in `server/index.ts` to debug Metrika blocking on production
-  - Previous attempts: SHA256-hash, 'unsafe-inline', mc.yandex.ru whitelist all failed on production
-  - Issue: Production CSP showed `'unsafe-inline-eval'` instead of configured values
-  - Suspected cause: Replit infrastructure or proxy overriding Helmet CSP headers
+- **Analytics:** Yandex Metrika (ID 105483627) — **Fixed 25.11.2025**:
+  - **CSP DISABLED** in `server/index.ts` (Replit infrastructure overrides CSP headers)
+  - **COOP/CORP CONFIGURED** for Metrika goal configuration interface:
+    - `crossOriginOpenerPolicy: "same-origin-allow-popups"` (allows Metrika popups for goal setup)
+    - `crossOriginResourcePolicy: "cross-origin"` (allows analytics scripts to load)
+    - `referrerPolicy: "strict-origin-when-cross-origin"` (proper referrer for analytics)
   - Metrika script in `index.html` `<head>` with `ssr:true`, webvisor, clickmap, ecommerce, accurateTrackBounce, trackLinks
-  - `<noscript>` pixel in `<body>` styled via `.ym-pixel` CSS class for future CSP re-enablement
-  - **TODO**: Re-enable CSP after confirming Metrika works with disabled CSP
+  - `<noscript>` pixel in `<body>` styled via `.ym-pixel` CSS class
+  - **Goal configuration interface** now works in Metrika dashboard
 - **UI Library:** Shadcn/UI.
 - **CSS Framework:** Tailwind CSS.
 - **Image Hosting:** All images for the simulator (e.g., `roses.png`, `tulips.png`, `box-composition.png`) are stored locally within `attached_assets/`.

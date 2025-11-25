@@ -21,9 +21,17 @@ const PORT = parseInt(process.env.PORT || (isProduction ? '5000' : '3001'), 10);
 // ============================================
 
 // SECURITY: Helmet - Set security HTTP headers
-// TEMPORARY: CSP DISABLED to debug Yandex Metrika blocking issue
+// YANDEX METRIKA FIX: CSP disabled, COOP/CORP configured for analytics compatibility
 app.use(helmet({
   contentSecurityPolicy: false, // DISABLED: Yandex Metrika being blocked by CSP on production
+  // FIX: Allow popups for Yandex Metrika goal configuration interface
+  crossOriginOpenerPolicy: { 
+    policy: "same-origin-allow-popups" 
+  },
+  // FIX: Allow cross-origin resources for analytics scripts
+  crossOriginResourcePolicy: { 
+    policy: "cross-origin" 
+  },
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
