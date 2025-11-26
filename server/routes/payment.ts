@@ -77,15 +77,13 @@ router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
         },
         items: [
           {
-            description: 'Полный доступ к тренажеру маркетолога',
-            quantity: '1',
+            description: 'Полный доступ к тренажеру маркетолога "Твой первый клиент"',
+            quantity: 1,
             amount: {
               value: PREMIUM_PRICE,
               currency: CURRENCY
             },
-            vat_code: 1,
-            payment_subject: 'service',
-            payment_mode: 'full_payment'
+            vat_code: 1
           }
         ]
       }
