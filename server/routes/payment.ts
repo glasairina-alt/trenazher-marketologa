@@ -1,115 +1,214 @@
 import express from 'express';
-import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 import { query } from '../db';
 import { authenticateToken, webhookLimiter, AuthRequest } from '../middleware';
 import { securityLogger } from '../utils/logger';
 
+const YooKassa = require('yookassa');
+
 const router = express.Router();
 
-// Create payment (will integrate with YooKassa later)
-// 💳 PAYMENT INTEGRATION REQUIRED
-// This is a STUB - requires YooKassa shop_id and secret_key from user
-// Price: 790 RUB for premium access
+// Initialize YooKassa client
+const shopId = process.env.YOOKASSA_SHOP_ID;
+const secretKey = process.env.YOOKASSA_SECRET_KEY;
+
+let yooKassa: any = null;
+
+if (shopId && secretKey) {
+  yooKassa = new YooKassa({
+    shopId: shopId,
+    secretKey: secretKey
+  });
+  console.log('✅ YooKassa initialized with shop ID:', shopId);
+} else {
+  console.warn('⚠️ YooKassa credentials not set - payment creation will fail');
+}
+
+// Price for premium access
+const PREMIUM_PRICE = '790.00';
+const CURRENCY = 'RUB';
+
+// Create payment with YooKassa
 router.post('/create', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
+    const userEmail = req.user!.email;
     
-    // TODO: Integrate with YooKassa API when shop credentials are provided
-    // Steps needed:
-    // 1. Get YooKassa shop_id and secret_key from user
-    // 2. Call YooKassa API to create payment
-    // 3. Return real payment URL to frontend
-    // For now, return a mock payment URL
+    if (!yooKassa) {
+      console.error('❌ YooKassa not initialized');
+      return res.status(503).json({ error: 'Payment system not configured' });
+    }
     
-    const paymentData = {
-      paymentId: `test_${Date.now()}`,
-      amount: 790,
-      currency: 'RUB',
-      description: 'Полный доступ к тренажеру маркетолога',
-      confirmationUrl: `${req.protocol}://${req.get('host')}/payment/confirm`,
-      userId: userId,
-    };
+    // Check if user is already premium
+    const existingPremium = await query(
+      `SELECT role FROM trainer_marketing.users WHERE id = $1`,
+      [userId]
+    );
     
-    res.json(paymentData);
-  } catch (error) {
-    console.error('Create payment error:', error);
-    res.status(500).json({ error: 'Failed to create payment' });
+    if (existingPremium.rows.length > 0 && existingPremium.rows[0].role === 'premium_user') {
+      return res.status(400).json({ error: 'У вас уже есть премиум-доступ' });
+    }
+    
+    // Get host for return URL
+    const host = req.get('host');
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const baseUrl = `${protocol}://${host}`;
+    
+    // Create payment via YooKassa API
+    const idempotenceKey = uuidv4();
+    
+    const payment = await yooKassa.createPayment({
+      amount: {
+        value: PREMIUM_PRICE,
+        currency: CURRENCY
+      },
+      capture: true,
+      confirmation: {
+        type: 'redirect',
+        return_url: `${baseUrl}/payment/success`
+      },
+      description: 'Полный доступ к тренажеру маркетолога "Твой первый клиент"',
+      metadata: {
+        userId: String(userId),
+        userEmail: userEmail
+      },
+      receipt: {
+        customer: {
+          email: userEmail
+        },
+        items: [
+          {
+            description: 'Полный доступ к тренажеру маркетолога',
+            quantity: '1',
+            amount: {
+              value: PREMIUM_PRICE,
+              currency: CURRENCY
+            },
+            vat_code: 1,
+            payment_subject: 'service',
+            payment_mode: 'full_payment'
+          }
+        ]
+      }
+    }, idempotenceKey);
+    
+    console.log(`💳 Payment created: ${payment.id} for user ${userId} (${userEmail})`);
+    
+    // Return payment data to frontend
+    res.json({
+      paymentId: payment.id,
+      confirmationUrl: payment.confirmation.confirmation_url,
+      status: payment.status,
+      amount: payment.amount.value,
+      currency: payment.amount.currency
+    });
+    
+  } catch (error: any) {
+    console.error('❌ Create payment error:', error);
+    
+    // Handle YooKassa specific errors
+    if (error.code) {
+      return res.status(400).json({ 
+        error: 'Ошибка платежной системы', 
+        details: error.message 
+      });
+    }
+    
+    res.status(500).json({ error: 'Не удалось создать платёж' });
   }
 });
 
-// Payment webhook from YooKassa
-// ✅ SECURED: HMAC signature verification + rate limiting
-router.post('/webhook', webhookLimiter, async (req, res) => {
+// Check payment status
+router.get('/status/:paymentId', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const webhookSecret = process.env.YOOKASSA_WEBHOOK_SECRET;
+    const { paymentId } = req.params;
+    const userId = req.user!.id;
     
-    if (!webhookSecret) {
-      console.error('❌ YOOKASSA_WEBHOOK_SECRET not set - webhook disabled for security');
-      return res.status(503).json({ error: 'Webhook not configured' });
+    if (!yooKassa) {
+      return res.status(503).json({ error: 'Payment system not configured' });
     }
     
-    // SECURITY: req.body is a Buffer (raw body) thanks to express.raw middleware
-    // This is CRITICAL for HMAC verification - we must verify the exact bytes YooKassa signed
-    const rawBody = req.body as Buffer;
+    const payment = await yooKassa.getPayment(paymentId);
     
-    if (!rawBody || rawBody.length === 0) {
-      return res.status(400).json({ error: 'Empty request body' });
+    // Verify this payment belongs to the requesting user
+    if (payment.metadata?.userId !== String(userId)) {
+      return res.status(403).json({ error: 'Access denied' });
     }
     
-    // SECURITY: Verify HMAC signature from YooKassa
-    const signature = req.headers['x-yookassa-signature'] as string;
-    
-    if (!signature) {
-      securityLogger.logWebhookSignatureInvalid(req.ip, undefined);
-      return res.status(403).json({ error: 'Missing signature' });
-    }
-    
-    // SECURITY: Normalize and validate signature (must be hex string)
-    const normalizedSignature = signature.trim().toLowerCase();
-    if (!/^[a-f0-9]{64}$/.test(normalizedSignature)) {
-      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
-      return res.status(403).json({ error: 'Invalid signature format' });
-    }
-    
-    // SECURITY: Calculate HMAC over RAW BODY (not parsed JSON)
-    // This is the only way to correctly verify YooKassa signatures
-    const hmac = crypto.createHmac('sha256', webhookSecret);
-    hmac.update(rawBody);
-    const expectedSignature = hmac.digest('hex');
-    
-    // SECURITY: Constant-time comparison to prevent timing attacks
-    // Both signatures are now normalized to same length/format
-    let signaturesMatch = false;
-    try {
-      signaturesMatch = crypto.timingSafeEqual(
-        Buffer.from(normalizedSignature, 'hex'),
-        Buffer.from(expectedSignature, 'hex')
+    // If payment succeeded, upgrade user to premium
+    if (payment.status === 'succeeded' && payment.paid === true) {
+      const result = await query(
+        `UPDATE trainer_marketing.users 
+         SET role = 'premium_user' 
+         WHERE id = $1 AND role != 'premium_user'
+         RETURNING id, email, role`,
+        [userId]
       );
-    } catch (error) {
-      // Length mismatch or encoding error - signature is invalid
-      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
-      return res.status(403).json({ error: 'Invalid signature' });
+      
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        securityLogger.logPaymentUpgrade(user.id, user.email, paymentId);
+        console.log(`✅ User ${userId} upgraded to premium via status check`);
+      }
     }
     
-    if (!signaturesMatch) {
-      securityLogger.logWebhookSignatureInvalid(req.ip, normalizedSignature);
-      return res.status(403).json({ error: 'Invalid signature' });
+    res.json({
+      paymentId: payment.id,
+      status: payment.status,
+      paid: payment.paid,
+      amount: payment.amount.value,
+      currency: payment.amount.currency
+    });
+    
+  } catch (error: any) {
+    console.error('❌ Get payment status error:', error);
+    res.status(500).json({ error: 'Не удалось получить статус платежа' });
+  }
+});
+
+// YooKassa webhook for payment notifications
+// Note: YooKassa sends notifications from specific IP ranges
+const YOOKASSA_IP_RANGES = [
+  '185.71.76.',
+  '185.71.77.',
+  '77.75.153.',
+  '77.75.154.',
+  '77.75.156.'
+];
+
+function isYooKassaIP(ip: string | undefined): boolean {
+  if (!ip) return false;
+  
+  // Handle x-forwarded-for
+  const clientIP = ip.split(',')[0].trim();
+  
+  // Remove IPv6 prefix if present
+  const cleanIP = clientIP.replace('::ffff:', '');
+  
+  // In development, allow localhost
+  if (process.env.NODE_ENV !== 'production' && (cleanIP === '127.0.0.1' || cleanIP === 'localhost')) {
+    return true;
+  }
+  
+  return YOOKASSA_IP_RANGES.some(range => cleanIP.startsWith(range));
+}
+
+router.post('/webhook', webhookLimiter, express.json(), async (req, res) => {
+  try {
+    // Log incoming webhook for debugging
+    console.log('📥 Webhook received from IP:', req.ip);
+    
+    // Verify IP in production
+    if (process.env.NODE_ENV === 'production' && !isYooKassaIP(req.ip)) {
+      console.warn('⚠️ Webhook from unauthorized IP:', req.ip);
+      return res.status(403).json({ error: 'Forbidden' });
     }
     
-    // SECURITY: Signature verified! Now parse JSON for processing
-    let parsedBody: any;
-    try {
-      parsedBody = JSON.parse(rawBody.toString('utf8'));
-    } catch (error) {
-      return res.status(400).json({ error: 'Invalid JSON' });
-    }
+    const { event, object } = req.body;
     
-    const { event, object } = parsedBody;
+    console.log(`📥 Webhook event: ${event}, payment: ${object?.id}, status: ${object?.status}`);
     
-    // SECURITY: Log verified webhook for monitoring
-    securityLogger.logWebhookVerified(object?.id, 0, object?.amount?.value, req.ip);
-    
-    // When payment is successful
+    // Handle successful payment
     if (event === 'payment.succeeded' && object?.status === 'succeeded') {
       const userId = object.metadata?.userId;
       const paymentId = object.id;
@@ -117,23 +216,23 @@ router.post('/webhook', webhookLimiter, async (req, res) => {
       
       if (!userId) {
         console.error('❌ Payment succeeded but no userId in metadata');
-        return res.status(400).json({ error: 'Missing userId in metadata' });
+        return res.status(200).json({ received: true, message: 'No userId' });
       }
       
-      // Verify amount (790 RUB for premium)
-      if (parseFloat(amount) !== 790) {
-        console.error(`❌ Payment amount mismatch: expected 790, got ${amount}`);
-        return res.status(400).json({ error: 'Invalid payment amount' });
+      // Verify amount
+      if (amount !== PREMIUM_PRICE) {
+        console.error(`❌ Payment amount mismatch: expected ${PREMIUM_PRICE}, got ${amount}`);
+        return res.status(200).json({ received: true, message: 'Amount mismatch' });
       }
       
-      // Check if payment was already processed (idempotency)
-      const existingPayment = await query(
+      // Check if already processed (idempotency)
+      const existingPremium = await query(
         `SELECT id FROM trainer_marketing.users WHERE id = $1 AND role = 'premium_user'`,
         [userId]
       );
       
-      if (existingPayment.rows.length > 0) {
-        console.log(`⚠️ User ${userId} already premium - duplicate webhook ignored`);
+      if (existingPremium.rows.length > 0) {
+        console.log(`⚠️ User ${userId} already premium - webhook duplicate`);
         return res.status(200).json({ received: true, message: 'Already processed' });
       }
       
@@ -147,62 +246,33 @@ router.post('/webhook', webhookLimiter, async (req, res) => {
       );
       
       if (result.rows.length === 0) {
-        console.error(`❌ User ${userId} not found in database`);
-        return res.status(404).json({ error: 'User not found' });
+        console.error(`❌ User ${userId} not found`);
+        return res.status(200).json({ received: true, message: 'User not found' });
       }
       
       const user = result.rows[0];
-      
-      // SECURITY: Log successful premium upgrade for audit trail
       securityLogger.logPaymentUpgrade(user.id, user.email, paymentId);
-      
-      console.log(`✅ User ${userId} (${user.email}) upgraded to premium after payment ${paymentId}`);
+      console.log(`✅ User ${userId} (${user.email}) upgraded to premium via webhook`);
     }
     
+    // Handle cancelled payment
+    if (event === 'payment.canceled') {
+      console.log(`❌ Payment ${object?.id} was cancelled`);
+    }
+    
+    // Always respond 200 to acknowledge receipt
     res.status(200).json({ received: true });
+    
   } catch (error) {
     console.error('❌ Webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    // Still respond 200 to prevent retries for processing errors
+    res.status(200).json({ received: true, error: 'Processing error' });
   }
 });
 
-// Mock payment confirmation page
-router.get('/confirm', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Оплата успешна</title>
-      <meta charset="UTF-8">
-      <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        .success { color: #22c55e; font-size: 24px; margin-bottom: 20px; }
-        .message { font-size: 18px; margin-bottom: 30px; }
-        button { 
-          background: #4680C2; 
-          color: white; 
-          border: none; 
-          padding: 12px 24px; 
-          font-size: 16px; 
-          border-radius: 6px; 
-          cursor: pointer; 
-        }
-        button:hover { background: #3a6ba5; }
-      </style>
-    </head>
-    <body>
-      <div class="success">✅ Оплата прошла успешно!</div>
-      <div class="message">Теперь у вас есть полный доступ к тренажеру</div>
-      <button onclick="window.location.href='/'">Перейти к тренажеру</button>
-      <script>
-        // Auto redirect after 3 seconds
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3000);
-      </script>
-    </body>
-    </html>
-  `);
+// Success page after payment
+router.get('/success', (req, res) => {
+  res.redirect('/payment/success');
 });
 
 export default router;
