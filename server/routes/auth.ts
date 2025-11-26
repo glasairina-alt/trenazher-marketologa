@@ -22,14 +22,10 @@ const registerSchema = z.object({
     .min(6, 'Пароль должен быть минимум 6 символов'),
   name: z.string().min(2, 'Имя должно быть минимум 2 символа').max(100),
   phone: z.string()
-    .nullable()
+    .min(10, 'Телефон должен содержать минимум 10 цифр')
+    .max(20, 'Телефон слишком длинный')
     .optional()
-    .refine((val) => {
-      if (!val) return true; // Allow null/undefined/empty
-      return /^\+7\s?\(?\d{3}\)?\s?\d{3}(-|\s)?\d{2}(-|\s)?\d{2}$/.test(val);
-    }, {
-      message: 'Телефон должен быть в российском формате (например, +7 (999) 123-45-67)'
-    }),
+    .or(z.literal('')),
 });
 
 const loginSchema = z.object({
