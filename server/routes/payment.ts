@@ -3,8 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { query } from '../db';
 import { authenticateToken, webhookLimiter, AuthRequest } from '../middleware';
 import { securityLogger } from '../utils/logger';
-
-const YooKassa = require('yookassa');
+import YooKassa from 'yookassa';
 
 const router = express.Router();
 

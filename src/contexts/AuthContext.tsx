@@ -14,12 +14,14 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
+  isAuthenticated: boolean;
   isAuthModalOpen: boolean;
   authModalMode: 'login' | 'register';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, phone: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   openAuthModal: (mode: 'login' | 'register') => void;
   closeAuthModal: () => void;
 }
@@ -121,16 +123,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsAuthModalOpen(false);
   };
 
+  const refreshUser = async () => {
+    const storedToken = localStorage.getItem('auth_token');
+    if (!storedToken) return;
+    
+    try {
+      const response = await api.get<{ user: User }>('/api/auth/me');
+      setUser(response.user);
+    } catch (error) {
+      console.error('Refresh user failed:', error);
+    }
+  };
+
+  const isAuthenticated = !!user && !!token;
+
   const value: AuthContextType = {
     user,
     token,
     loading,
+    isAuthenticated,
     isAuthModalOpen,
     authModalMode,
     login,
     register,
     logout,
     checkAuth,
+    refreshUser,
     openAuthModal,
     closeAuthModal,
   };

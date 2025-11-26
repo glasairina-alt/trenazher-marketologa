@@ -12,6 +12,8 @@ import Index from "./pages/Index";
 import Oferta from "./pages/Oferta";
 import Admin from "./pages/Admin";
 import AdminContent from "./pages/AdminContent";
+import Payment from "./pages/Payment";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,8 +35,8 @@ const AppContent = () => {
         <Route path="/oferta" element={<Oferta />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/content" element={<AdminContent />} />
-        {/* Payment page placeholder - will be implemented */}
-        <Route path="/payment" element={<div className="flex items-center justify-center min-h-screen bg-[#0B0C10] text-white text-2xl">Страница оплаты (в разработке)</div>} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
