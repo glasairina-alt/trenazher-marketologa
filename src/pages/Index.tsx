@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/ChatInterface";
 import { AdCabinet } from "@/components/AdCabinet";
 import { AdReportTab } from "@/components/AdReportTab";
-import { PaywallModal } from "@/components/PaywallModal";
+import { PremiumPurchaseModal } from "@/components/PremiumPurchaseModal";
 import { AuthModal } from "@/components/AuthModal";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 import { MessageCircle, TrendingUp, FileText, Lock, User, LogOut, Shield, Key } from "lucide-react";
@@ -12,6 +12,7 @@ import type { StageType, Message } from "@/types/stages";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { reachGoal, MetrikaGoals } from "@/lib/metrika";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -79,7 +80,16 @@ const Index = () => {
                 </Button>
               )}
               {!isPaidUser && !isAdmin && (
-                <Button onClick={() => setIsPaywallOpen(true)} variant="default" size="sm" className="gap-2">
+                <Button 
+                  onClick={() => {
+                    reachGoal(MetrikaGoals.BUTTON_UNLOCK_PREMIUM);
+                    setIsPaywallOpen(true);
+                  }} 
+                  variant="default" 
+                  size="sm" 
+                  className="gap-2"
+                  data-testid="button-unlock-premium-header"
+                >
                   <Lock className="h-4 w-4" />
                   <span className="hidden sm:inline">Полный доступ</span>
                 </Button>
@@ -149,13 +159,7 @@ const Index = () => {
                 setAdData={setAdData}
                 setActiveTab={setActiveTab}
                 isPaidUser={isPaidUser}
-                onPurchaseRequest={() => {
-                  // TODO: Здесь вызовите вашу логику оплаты
-                  // После успешной оплаты: setIsPaidUser(true)
-                  console.log("Запрос на оплату 790₽");
-                  // Временно для теста:
-                  // setIsPaidUser(true);
-                }}
+                onPurchaseRequest={() => setIsPaywallOpen(true)}
               />
             </div>
           </TabsContent>
@@ -207,15 +211,9 @@ const Index = () => {
         </div>
       </footer>
 
-      <PaywallModal
+      <PremiumPurchaseModal
         isOpen={isPaywallOpen}
         onClose={() => setIsPaywallOpen(false)}
-        onPurchase={() => {
-          console.log("Запрос на оплату 790₽");
-          // TODO: Реализовать реальную оплату
-          // После успешной оплаты: setIsPaidUser(true)
-          setIsPaywallOpen(false);
-        }}
       />
 
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onSuccess={handleAuthSuccess} />

@@ -19,7 +19,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import defaultLogo from "@/assets/default-ad-logo.png";
-import { PaywallModal } from "./PaywallModal";
 import { LockedSection } from "./LockedSection";
 
 interface AdCabinetProps {
@@ -52,8 +51,6 @@ export const AdCabinet = ({
   const [clicks, setClicks] = useState(41);
   const [remainingBudget, setRemainingBudget] = useState(10547);
   const [campaignLaunched, setCampaignLaunched] = useState(false);
-  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
-  
   // Campaign settings
   const [campaignType, setCampaignType] = useState("");
   const [regions, setRegions] = useState<string[]>([]);
@@ -507,7 +504,7 @@ export const AdCabinet = ({
               )}
             </Card>
           ) : (
-            <LockedSection onClick={() => setIsPaywallOpen(true)}>
+            <LockedSection onClick={onPurchaseRequest}>
               <Card className="border-[#E7E8EC] bg-white">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm sm:text-base font-medium">Демография</CardTitle>
@@ -572,7 +569,7 @@ export const AdCabinet = ({
               )}
             </Card>
           ) : (
-            <LockedSection onClick={() => setIsPaywallOpen(true)}>
+            <LockedSection onClick={onPurchaseRequest}>
               <Card className="border-[#E7E8EC] bg-white">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">
@@ -589,7 +586,7 @@ export const AdCabinet = ({
 
           {/* Ad Creative */}
           {!isPaidUser ? (
-            <LockedSection onClick={() => setIsPaywallOpen(true)}>
+            <LockedSection onClick={onPurchaseRequest}>
               <Card className="border-[#E7E8EC] bg-white">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">

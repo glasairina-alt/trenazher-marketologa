@@ -4,12 +4,16 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
-- **26.11.2025:** YooKassa payment integration:
+- **26.11.2025:** YooKassa payment integration (popup-based):
   - Installed `yookassa` package for YooKassa API
   - `POST /api/payment/create` — creates real payment via YooKassa API with metadata.userId
   - `GET /api/payment/status/:paymentId` — checks payment status and upgrades user if succeeded
   - `POST /api/payment/webhook` — handles YooKassa notifications (IP validation in production)
-  - Created `/payment` page with premium purchase UI (790 RUB)
+  - **UX IMPROVEMENT:** `PremiumPurchaseModal` component — single popup for registration + payment
+    - Shows features list and 790 RUB price
+    - If not authenticated: registration form → auto-redirect to YooKassa
+    - If authenticated: direct payment button → redirect to YooKassa
+    - Replaces old PaywallModal with full purchase flow
   - Created `/payment/success` page for post-payment redirect with status polling
   - Added `isAuthenticated` and `refreshUser` to AuthContext
   - TypeScript types for yookassa module in `server/types/yookassa.d.ts`
