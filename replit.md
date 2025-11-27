@@ -97,14 +97,29 @@ This project is an interactive training simulator designed to teach marketers ho
   - **SOLUTION:** Use JavaScript API for goals instead of "Element selector" mode
   - Metrika script in `index.html` `<head>` with `ssr:true`, webvisor, clickmap, ecommerce, accurateTrackBounce, trackLinks
   - `<noscript>` pixel in `<body>` styled via `.ym-pixel` CSS class
-  - **Goals tracking via JavaScript API** (`src/lib/metrika.ts`):
-    - `button_start_free` — click "Начать бесплатно"
-    - `button_login` — click "Войти"
-    - `button_unlock_premium` — click "Открыть доступ за 790₽"
-    - `button_telegram_channel` — click Telegram channel button
-    - `login_success` — successful login
-    - `register_success` — successful registration
-    - `password_change_success` — successful password change
+  - **Goals tracking via JavaScript API** (`src/lib/metrika.ts`) — 13 целей:
+    
+    **Кнопки на лендинге:**
+    - `button_start_free` — клик "Начать бесплатно"
+    - `button_login` — клик "Войти"
+    - `button_try_demo` — клик "Попробовать демо"
+    - `button_unlock_premium` — клик "Открыть доступ за 790₽"
+    - `button_telegram_channel` — клик на кнопку Telegram канала
+    
+    **Аутентификация:**
+    - `login_success` — успешный вход в аккаунт
+    - `register_success` — успешная регистрация
+    - `logout` — выход из аккаунта
+    - `password_change_success` — успешная смена пароля
+    
+    **Оплата:**
+    - `payment_started` — начало процесса оплаты (переход на ЮКассу)
+    - `payment_success` — успешная оплата
+    
+    **Тренажёр:**
+    - `trainer_started` — начало работы с тренажёром
+    - `lesson_completed` — урок завершён
+    
   - **Setup in Metrika:** Create goals with type "JavaScript-событие" and matching identifiers
 - **UI Library:** Shadcn/UI.
 - **CSS Framework:** Tailwind CSS.
