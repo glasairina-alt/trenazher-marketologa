@@ -469,8 +469,7 @@ export const ChatInterface = ({
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept="image/*,image/heic,image/heif"
-            capture="environment"
+            accept="image/*"
             onChange={(e) => {
               if (e.target.files?.[0]) {
                 handleFileUpload(e.target.files[0]);
