@@ -4,6 +4,12 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
+- **27.11.2025 (Latest):** UI improvements - added "Начать бесплатно" buttons:
+  - Added button after "Полный маршрут маркетолога" section (data-testid: `button-start-free-roadmap`)
+  - Added button after "3 в 1: Чат, Запуск, Отчёт" section (data-testid: `button-start-free-interface`)
+  - Both buttons use consistent styling with lime green accent (#C5F82A)
+  - Buttons trigger trainer navigation with Metrika goal tracking
+
 - **27.11.2025:** CORS and Metrika goals fixes:
   - Fixed CORS to allow production domains `https://trafik-im.ru` and `https://www.trafik-im.ru`
   - Fixed file upload (paperclip) by removing `capture="environment"` attribute

@@ -336,13 +336,24 @@ export default function Landing() {
             </div>
           </div>
         </div>
+
+        <div className="text-center mt-16">
+          <button 
+            onClick={handleStartFree}
+            className="bg-[#C5F82A] hover:bg-[#b2e615] text-black px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.3)] mx-auto"
+            data-testid="button-start-free-roadmap"
+          >
+            Начать бесплатно
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
       </section>
 
       {/* Roadmap Section */}
       <RoadmapSection />
 
       {/* Interface Preview Section */}
-      <InterfacePreviewSection />
+      <InterfacePreviewSection onStartClick={handleStartFree} />
       
       {/* Results & Why it works */}
       <section className="py-20 px-4">
@@ -547,7 +558,7 @@ const Bar = ({ height, color, tooltip, final }: { height: string; color: string;
   </div>
 );
 
-const InterfacePreviewSection = () => (
+const InterfacePreviewSection = ({ onStartClick }: { onStartClick: () => void }) => (
   <section className="py-20 px-4 bg-[#0F1116] relative">
     <div className="max-w-6xl mx-auto">
       <div className="mb-12 text-left">
@@ -580,6 +591,17 @@ const InterfacePreviewSection = () => (
           />
           <button disabled={true} className="p-3 bg-[#C5F82A] rounded-xl text-black transition-colors cursor-not-allowed">
             <Send size={20} />
+          </button>
+        </div>
+
+        <div className="text-center mt-12">
+          <button 
+            onClick={onStartClick}
+            className="bg-[#C5F82A] hover:bg-[#b2e615] text-black px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.3)] mx-auto"
+            data-testid="button-start-free-interface"
+          >
+            Начать бесплатно
+            <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       </div>
