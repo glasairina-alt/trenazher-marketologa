@@ -56,7 +56,7 @@ app.use(helmet({
 // SECURITY: CORS configuration (restrict origins in production)
 const corsOptions = {
   origin: isProduction 
-    ? process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:5000'
+    ? ['https://trafik-im.ru', 'https://www.trafik-im.ru']
     : true, // Allow all origins in development
   credentials: true,
   optionsSuccessStatus: 200
