@@ -4,6 +4,13 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
+- **27.11.2025:** CORS and Metrika goals fixes:
+  - Fixed CORS to allow production domains `https://trafik-im.ru` and `https://www.trafik-im.ru`
+  - Fixed file upload (paperclip) by removing `capture="environment"` attribute
+  - Added `trainer_started` goal trigger on `/start` command in ChatInterface.tsx
+  - Added `lesson_completed` goal trigger via useEffect when stage reaches FINAL in Index.tsx
+  - Uses `lessonCompletedRef` to prevent duplicate goal fires
+
 - **26.11.2025:** YooKassa payment integration (popup-based):
   - Installed `yookassa` package for YooKassa API
   - `POST /api/payment/create` — creates real payment via YooKassa API with metadata.userId
