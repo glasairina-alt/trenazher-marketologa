@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Message, StageType } from "@/types/stages";
 import { handleStageLogic } from "@/utils/stageHandlers";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { reachGoal, MetrikaGoals } from "@/lib/metrika";
 import { VoiceMessage } from "@/components/VoiceMessage";
 import rosesImage from "@assets/roses.png";
 import tulipsImage from "@assets/tulips.png";
@@ -125,6 +126,9 @@ export const ChatInterface = ({
 
     // Команда /start
     if (userInput.toLowerCase() === "/start") {
+      // Отправляем цель в Метрику - начало работы с тренажёром
+      reachGoal(MetrikaGoals.TRAINER_STARTED);
+      
       addMessage(
         "**Кейс:** Клиент 'Анна' (магазин цветов) присылает вам сообщение 12 февраля.",
         "system"

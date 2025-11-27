@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -42,6 +42,21 @@ const Index = () => {
 
   const isAdmin = user?.role === "admin";
   const isPaidUser = user?.role === "admin" || user?.role === "premium_user";
+  
+  // Ref для отслеживания, была ли уже отправлена цель lesson_completed
+  const lessonCompletedRef = useRef(false);
+  
+  // Отправка цели lesson_completed при достижении стадии FINAL
+  useEffect(() => {
+    if (currentStage === "FINAL" && !lessonCompletedRef.current) {
+      reachGoal(MetrikaGoals.LESSON_COMPLETED);
+      lessonCompletedRef.current = true;
+    }
+    // Сбрасываем флаг при начале нового кейса
+    if (currentStage === "INITIAL") {
+      lessonCompletedRef.current = false;
+    }
+  }, [currentStage]);
 
   const handleLogout = () => {
     logout();
