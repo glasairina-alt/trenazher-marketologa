@@ -27,7 +27,7 @@ const Index = () => {
     {
       id: 1,
       type: "bot",
-      text: "Привет! Введите /start чтобы начать кейс.",
+      text: "Привет! Введите start или старт чтобы начать кейс.",
       timestamp: new Date(),
     },
   ]);

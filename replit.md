@@ -4,7 +4,14 @@
 This project is an interactive training simulator designed to teach marketers how to launch targeted advertising campaigns. It uses a real-world case study of a flower shop, "ФлорАнна," to provide practical experience. The simulator guides users through various stages, from initial client interaction and creative development to ad launch, performance monitoring, and reporting, aiming to equip future marketers with essential skills.
 
 ## Recent Changes
-- **27.11.2025 (Latest):** UI improvements - added "Начать бесплатно" buttons:
+- **27.11.2025 (Latest):** Simplified trainer start command:
+  - Changed from `/start` requirement to accept `start`, `старт`, or `/start`
+  - Updated initial message: "Привет! Введите start или старт чтобы начать кейс."
+  - Better UX for users who don't type the slash prefix
+  - Maintains backward compatibility with `/start` command
+  - Metrika event `trainer_started` fires correctly on any valid command
+
+- **27.11.2025:** UI improvements - added "Начать бесплатно" buttons:
   - Added button after "Полный маршрут маркетолога" section (data-testid: `button-start-free-roadmap`)
   - Added button after "3 в 1: Чат, Запуск, Отчёт" section (data-testid: `button-start-free-interface`)
   - Both buttons use consistent styling with lime green accent (#C5F82A)

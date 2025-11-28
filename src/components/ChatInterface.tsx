@@ -124,8 +124,9 @@ export const ChatInterface = ({
     addMessage(userInput, "user");
     setInputValue("");
 
-    // Команда /start
-    if (userInput.toLowerCase() === "/start") {
+    // Команда start или старт (с поддержкой /start для совместимости)
+    const inputLower = userInput.toLowerCase().trim();
+    if (inputLower === "start" || inputLower === "старт" || inputLower === "/start") {
       // Отправляем цель в Метрику - начало работы с тренажёром
       reachGoal(MetrikaGoals.TRAINER_STARTED);
       
